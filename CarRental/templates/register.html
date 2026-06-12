@@ -1,0 +1,137 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block messages %}{% endblock %}
+
+{% block content %}
+
+<section class="signup-page">
+
+    <!-- LEFT -->
+
+    <div class="left">
+      <div class="overlay"></div>
+      <div class="content">
+        
+        <h1> Start Your <br> Journey Today </h1>
+        <p> Create your account and experience seamless car rentals with premium comfort. </p>
+
+      </div>
+    </div>
+
+
+    <!-- RIGHT -->
+
+    <div class="right">
+      <div class="form-container">
+
+        <h2>Create Account</h2>
+        <p class="subtitle"> Fill in your details to get started </p>
+
+        {% if messages %}
+          {% for msg in messages %}
+            <div class="alert alert-{{ msg.tags }}" style="margin-bottom:18px;border-radius:10px;padding:12px 16px;font-size:14px;">
+              {{ msg }}
+            </div>
+          {% endfor %}
+        {% endif %}
+
+        <form method="POST" action="/register/">
+          {% csrf_token %}
+
+          <div class="input-box">
+            <label>First Name</label>
+            <div class="input-field">
+              <img class="icons" src="{% static 'img/user.svg' %}" alt="name">
+              <input type="text" name="first_name" placeholder="Enter your first name" required>
+            </div>
+          </div>
+
+          <div class="input-box">
+            <label>Last Name</label>
+            <div class="input-field">
+              <img class="icons" src="{% static 'img/user.svg' %}" alt="name">
+              <input type="text" name="last_name" placeholder="Enter your Last name" required>
+            </div>
+          </div>
+
+          <div class="input-box">
+            <label>Email Address</label>
+            <div class="input-field">
+              <img class="icons" src="{% static 'img/sms.svg' %}" alt="email">
+              <input type="email" name="email" placeholder="Enter your email" required>
+            </div>
+          </div>
+
+          <div class="input-box">
+            <label>Phone Number</label>
+            <div class="input-field">
+              <img class="icons" src="{% static 'img/call.svg' %}" alt="phone">
+              <input type="tel" name="phone" placeholder="Enter your phone number"
+                     maxlength="10" required>
+            </div>
+          </div>
+
+          <div class="input-box">
+            <label>Password</label>
+            <div class="input-field">
+              <img class="icons" src="{% static 'img/lock.svg' %}" alt="password">
+              <input type="password" name="password1" placeholder="Create password" required>
+            </div>
+          </div>
+
+
+          <div class="input-box">
+            <label>Confirm Password</label>
+            <div class="input-field">
+              <img class="icons" src="{% static 'img/lock-password.svg' %}" alt="confirm">
+              <input type="password" name="password2" placeholder="Confirm password" required>
+            </div>
+          </div>
+
+          <!-- TERMS -->
+          <div class="terms">
+            <input type="checkbox" required>
+            <p>I agree to the <a href="#">Terms &amp; Conditions</a></p>
+          </div>
+
+          <!-- BUTTON -->
+          <button type="submit" class="signup-btn">Create Account</button>
+        </form>
+
+
+        <div class="divider">
+          <span>OR</span>
+        </div>
+
+
+        <!-- GOOGLE -->
+
+        <button class="google-btn">
+
+          <img
+            src="https://cdn-icons-png.flaticon.com/512/2991/2991148.png"
+            alt=""
+          >
+
+          Continue with Google
+
+        </button>
+
+
+        <!-- SIGN IN -->
+
+        <p class="signin-text">
+
+          Already have an account?
+
+          <a href="/login/">
+            Sign In
+          </a>
+        </p>
+      </div>
+    </div>
+
+  </section>
+
+  {% endblock %}

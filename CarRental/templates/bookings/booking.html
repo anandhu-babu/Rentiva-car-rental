@@ -1,0 +1,171 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+
+<div class="page-wrapper">
+
+  <div class="breadcrumb">
+    <a href="/">Home</a>
+    <i class="ri-arrow-right-s-line"></i>
+    <a href="/cars/">Cars</a>
+    <i class="ri-arrow-right-s-line"></i>
+    <a href="/cars/{{ car.id }}/">{{ car.car_name }}</a>
+    <i class="ri-arrow-right-s-line"></i>
+    <span>Booking</span>
+  </div>
+
+  <h1 class="page-title">Complete Your Booking</h1>
+
+  <div class="booking-layout">
+
+    <div class="booking-summary-card">
+      <h3>Car Summary</h3>
+
+      <div class="booking-car-img">
+        {% if car.image %}
+          <img src="{{ car.image.url }}" alt="{{ car.car_name }}">
+        {% else %}
+          <img src="{% static 'img/car-fill.svg' %}" alt="{{ car.car_name }}"
+               class="placeholder-img">
+        {% endif %}
+      </div>
+
+      <div class="booking-car-info">
+        <h2>{{ car.car_name }}</h2>
+        <p class="booking-car-brand">{{ car.brand|default:"" }}</p>
+
+        <div class="booking-car-specs">
+          <div class="booking-spec">
+            <img src="{% static 'img/car-features/user.svg' %}">
+            <span>{{ car.seats }} Seats</span>
+          </div>
+          <div class="booking-spec">
+            <img src="{% static 'img/car-features/transmission.svg' %}">
+            <span>{{ car.get_transmission_display }}</span>
+          </div>
+          <div class="booking-spec">
+            <img src="{% static 'img/car-features/gas-station-fill.svg' %}">
+            <span>{{ car.get_fuel_display }}</span>
+          </div>
+        </div>
+
+        <div class="booking-price-tag">
+          <span class="price-amount">₹{{ car.rent_per_day|floatformat:0 }}</span>
+          <span class="price-unit">/day</span>
+        </div>
+      </div>
+
+      <!-- Live price breakdown -->
+      <div class="price-breakdown">
+        <div class="breakdown-row">
+          <span>Daily rate</span>
+          <span>₹{{ car.rent_per_day|floatformat:0 }}</span>
+        </div>
+        <div class="breakdown-row">
+          <span>Rental days</span>
+          <span id="rental-days">—</span>
+        </div>
+        <div class="breakdown-row breakdown-total">
+          <span>Estimated Total</span>
+          <span id="total-amount">₹—</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="booking-form-card">
+      <h3>Booking Details</h3>
+
+      <form method="POST" action="/booking/{{ car.id }}/">
+        {% csrf_token %}
+
+        <div class="form-group">
+          <label class="form-label">
+            <img src="{% static 'img/location.svg' %}" style="width:14px;"> Pickup Location
+          </label>
+          <select name="pickup_location" class="form-control" required>
+            <option value="">Select pickup location</option>
+            
+            {% for loc in locations %}
+              <option value="{{ loc.id }}">{{ loc.city }}, {{ loc.state }}</option>
+            {% empty %}
+              <option value="" disabled>No locations available</option>
+            {% endfor %}
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">
+            <img src="{% static 'img/location.svg' %}" style="width:14px;"> Drop Location
+          </label>
+          <select name="drop_location" class="form-control" required>
+            <option value="">Select drop location</option>
+            {% for loc in locations %}
+              <option value="{{ loc.id }}">{{ loc.city }}, {{ loc.state }}</option>
+            {% endfor %}
+          </select>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">
+              <img src="{% static 'img/calendar.svg' %}" style="width:14px;"> Pickup Date
+            </label>
+            <input type="date" name="pickup_date" id="pickup_date"
+                   class="form-control" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label">
+              <img src="{% static 'img/calendar.svg' %}" style="width:14px;">Return Date
+            </label>
+            <input type="date" name="return_date" id="return_date"
+                   class="form-control" required>
+          </div>
+        </div>
+
+        <div class="booking-terms">
+          <i class="ri-shield-check-line"></i>
+          <p>Free cancellation up to 24 hours before pickup. Full refund guaranteed.</p>
+        </div>
+
+        <button type="submit" class="btn-book">
+          <i class="ri-calendar-check-line"></i>
+          Proceed to Payment
+        </button>
+      </form>
+    </div>
+
+  </div><!-- /booking-layout -->
+</div><!-- /page-wrapper -->
+
+<script>
+const pricePerDay = parseFloat('{{ car.rent_per_day }}');
+const pickupInput = document.getElementById('pickup_date');
+const returnInput = document.getElementById('return_date');
+const today = new Date().toISOString().split('T')[0];
+pickupInput.min = today;
+returnInput.min = today;
+
+function calcPrice() {
+  const p = pickupInput.value;
+  const r = returnInput.value;
+  if (!p || !r) return;
+  const days = Math.ceil((new Date(r) - new Date(p)) / 86400000);
+  if (days < 1) {
+    document.getElementById('rental-days').textContent = '—';
+    document.getElementById('total-amount').textContent = '₹—';
+    return;
+  }
+  document.getElementById('rental-days').textContent =
+    days + ' day' + (days > 1 ? 's' : '');
+  document.getElementById('total-amount').textContent =
+    '₹' + (days * pricePerDay).toLocaleString('en-IN');
+  returnInput.min = new Date(new Date(p).getTime() + 86400000)
+    .toISOString().split('T')[0];
+}
+
+pickupInput.addEventListener('change', calcPrice);
+returnInput.addEventListener('change', calcPrice);
+</script>
+
+{% endblock %}

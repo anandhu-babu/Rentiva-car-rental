@@ -1,0 +1,205 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+
+<div class="ep-wrapper">
+  <form method="post" enctype="multipart/form-data" class="ep-container">
+    {% csrf_token %}
+
+    <!-- Top-right action buttons -->
+    <div class="ep-actions">
+      <button type="button" class="ep-edit-btn" id="ep-edit-btn">Edit Profile</button>
+      <button type="submit" class="ep-save-btn" id="ep-save-btn">Save profile</button>
+      <button type="button" class="ep-cancel-btn" id="ep-cancel-btn">Cancel</button>
+    </div>
+
+    <!-- ── Left Column ── -->
+    <div class="ep-left">
+
+      <!-- Avatar -->
+      <div class="ep-avatar">
+        {% if user.profile.profile %}
+          <img src="{{ user.profile.profile.url }}" alt="{{ user.username }}" id="avatar-preview">
+        {% else %}
+          <i class="ri-user-3-line ep-avatar-icon" id="avatar-icon"></i>
+          <img src="" alt="" id="avatar-preview" style="display:none;">
+        {% endif %}
+      </div>
+
+      <input type="file" name="profile_photo" id="photo-input" accept="image/*" style="display:none;">
+      <button type="button" class="ep-change-photo-btn" id="ep-photo-btn" onclick="document.getElementById('photo-input').click()">
+        Change profile photo
+      </button>
+      <p class="ep-photo-hint" id="ep-photo-hint">Add a face to the name. It'll help other hosts and guests recognize you at the beginning of a trip.</p>
+
+      <!-- Name (read-only display) -->
+      <h1 class="ep-name">{{ user.first_name|default:user.username }}</h1>
+
+      <!-- Lives -->
+      <div class="ep-field-group">
+        <label class="ep-field-label" for="id_location">Lives</label>
+        <input class="ep-field-input" type="text" id="id_location" name="location"
+               value="{{ user.profile.location|default:'' }}" placeholder="">
+      </div>
+
+      <p class="ep-joined">Joined {{ user.date_joined|date:"F Y" }}</p>
+
+      <!-- Verified Info -->
+      <div class="ep-verified-section">
+        <p class="ep-section-label">Verified Info</p>
+
+        <div class="ep-verified-item">
+          <span class="ep-verified-item-label">
+            Approved to drive
+            <i class="ri-question-line"></i>
+          </span>
+          <a href="#" class="ep-verify-link">Verify ID</a>
+        </div>
+
+        <div class="ep-verified-item">
+          <span class="ep-verified-item-label">Email address</span>
+          {% if user.email %}
+            <i class="ri-checkbox-circle-fill ep-verified-check"></i>
+          {% else %}
+            <a href="#" class="ep-verify-link">Verify email</a>
+          {% endif %}
+        </div>
+
+        <div class="ep-verified-item">
+          <span class="ep-verified-item-label">Phone number</span>
+          {% if user.profile.phone %}
+            <i class="ri-checkbox-circle-fill ep-verified-check"></i>
+          {% else %}
+            <a href="#" class="ep-verify-link">Verify phone number</a>
+          {% endif %}
+        </div>
+
+        <p class="ep-verified-note">
+          Build trust with other users on Rentiva by verifying your contact information.
+        </p>
+      </div>
+
+      <!-- Languages -->
+      <div class="ep-field-group">
+        <label class="ep-field-label" for="id_languages">Languages</label>
+        <input class="ep-field-input" type="text" id="id_languages" name="languages"
+               value="{{ user.profile.languages|default:'' }}" placeholder="">
+      </div>
+
+      <!-- Works -->
+      <div class="ep-field-group">
+        <label class="ep-field-label" for="id_work">Works</label>
+        <input class="ep-field-input" type="text" id="id_work" name="work"
+               value="{{ user.profile.work|default:'' }}" placeholder="">
+      </div>
+
+      <!-- School -->
+      <div class="ep-field-group">
+        <label class="ep-field-label" for="id_school">School</label>
+        <input class="ep-field-input" type="text" id="id_school" name="school"
+               value="{{ user.profile.school|default:'' }}" placeholder="">
+      </div>
+
+    </div>
+
+    <!-- ── Right Column ── -->
+    <div class="ep-right">
+
+      <!-- About section -->
+      <div class="ep-about-section">
+        <p class="ep-section-label">About {{ user.first_name|default:user.username }}</p>
+        <p class="ep-about-hint">
+          Tell hosts and guests about yourself and why you're a responsible, trustworthy person.
+          Share your favorite travel experiences, your hobbies, your dream car, or your driving experience.
+          Feel free to include links to your LinkedIn, or Twitter profiles so they get to know you even better.
+        </p>
+        <textarea class="ep-textarea" name="about" id="id_about" rows="5"
+                  placeholder="">{{ user.profile.about|default:'' }}</textarea>
+      </div>
+
+      <!-- Reviews -->
+      <div class="ep-reviews-section">
+        <p class="ep-section-label">Reviews From Hosts</p>
+
+        <div class="ep-no-reviews">
+          <div class="ep-review-avatar">
+            <i class="ri-user-3-line"></i>
+          </div>
+          <div class="ep-no-reviews-text">
+            <h3>No reviews yet</h3>
+            <p>{{ user.first_name|default:user.username }} hasn't received a review on Rentiva yet.</p>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+  </form>
+</div>
+
+<script>
+(function () {
+  var editBtn    = document.getElementById('ep-edit-btn');
+  var saveBtn    = document.getElementById('ep-save-btn');
+  var cancelBtn  = document.getElementById('ep-cancel-btn');
+  var photoBtn   = document.getElementById('ep-photo-btn');
+  var photoHint  = document.getElementById('ep-photo-hint');
+  var photoInput = document.getElementById('photo-input');
+  var fields     = document.querySelectorAll('.ep-field-input, .ep-textarea');
+  var preview    = document.getElementById('avatar-preview');
+  var icon       = document.getElementById('avatar-icon');
+
+  var origValues = {};
+  fields.forEach(function (f) { origValues[f.name] = f.value; });
+  var origPreviewSrc     = preview ? preview.src : '';
+  var origPreviewVisible = preview ? preview.style.display !== 'none' : false;
+  var origIconVisible    = icon    ? icon.style.display    !== 'none' : false;
+
+  function setViewMode() {
+    fields.forEach(function (f) { f.setAttribute('readonly', ''); });
+    editBtn.style.display   = '';
+    saveBtn.style.display   = 'none';
+    cancelBtn.style.display = 'none';
+    photoBtn.style.display  = 'none';
+    photoHint.style.display = 'none';
+  }
+
+  function setEditMode() {
+    fields.forEach(function (f) { f.removeAttribute('readonly'); });
+    editBtn.style.display   = 'none';
+    saveBtn.style.display   = '';
+    cancelBtn.style.display = '';
+    photoBtn.style.display  = '';
+    photoHint.style.display = '';
+  }
+
+  editBtn.addEventListener('click', setEditMode);
+
+  cancelBtn.addEventListener('click', function () {
+    fields.forEach(function (f) { f.value = origValues[f.name]; });
+    photoInput.value = '';
+    if (preview) {
+      preview.src = origPreviewSrc;
+      preview.style.display = origPreviewVisible ? 'block' : 'none';
+    }
+    if (icon) icon.style.display = origIconVisible ? '' : 'none';
+    setViewMode();
+  });
+
+  setViewMode();
+
+  photoInput.addEventListener('change', function () {
+    var file = this.files[0];
+    if (!file) return;
+    var reader = new FileReader();
+    reader.onload = function (e) {
+      if (preview) { preview.src = e.target.result; preview.style.display = 'block'; }
+      if (icon) icon.style.display = 'none';
+    };
+    reader.readAsDataURL(file);
+  });
+})();
+</script>
+
+{% endblock %}

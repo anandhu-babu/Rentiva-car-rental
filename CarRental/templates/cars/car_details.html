@@ -1,0 +1,219 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+
+<!-- Breadcrumb -->
+<div class="car-page-breadcrumb">
+  <a href="/">Home</a>
+  <i class="ri-arrow-right-s-line"></i>
+  <a href="/cars/">Cars</a>
+  <i class="ri-arrow-right-s-line"></i>
+  <span>{{ car.car_name }}</span>
+</div>
+
+<section class="car-details">
+
+  <!-- ── LEFT: Image panel ── -->
+  <div class="left-side">
+    <div class="left-side-main">
+      <h1>{{ car.car_name }}</h1>
+      <div class="price">
+        <span>₹{{ car.rent_per_day|floatformat:0 }}</span>
+        <small>/ day</small>
+      </div>
+      <div class="main-image">
+        {% if car.image %}
+          <img src="{{ car.image.url }}" alt="{{ car.car_name }}">
+        {% else %}
+          <img src="{% static 'img/car-fill.svg' %}" alt="{{ car.car_name }}"
+               style="opacity:0.15;width:60%;margin:auto;display:block;">
+        {% endif %}
+      </div>
+    </div>
+
+    <!-- Thumbnail row (single image repeated for visual) -->
+    <div class="thumbs">
+      <div class="thumb active">
+        {% if car.image %}
+          <img src="{{ car.image.url }}" alt="">
+        {% else %}
+          <img src="{% static 'img/car-fill.svg' %}" alt="" style="opacity:0.2;">
+        {% endif %}
+      </div>
+      <div class="thumb">
+        <img src="{% static 'img/brands/{{ car.brand.name|lower }}.svg' %}" alt=""
+             onerror="this.src='{% static 'img/car-fill.svg' %}';">
+      </div>
+      <div class="thumb" style="display:flex;align-items:center;justify-content:center;font-size:32px;color:#1572D3;">
+        <i class="ri-car-line"></i>
+      </div>
+    </div>
+
+    <!-- Rating & Reviews -->
+    {% if avg_rating %}
+    <div style="display:flex;align-items:center;gap:8px;margin-top:18px;padding:0 4px;">
+      <span style="font-size:22px;font-weight:700;color:#111;">{{ avg_rating|floatformat:1 }}</span>
+      <span style="color:#f5a623;font-size:18px;">★★★★★</span>
+      <span style="font-size:13px;color:#888;">({{ review_count }} review{{ review_count|pluralize }})</span>
+    </div>
+    {% endif %}
+  </div>
+
+  <!-- ── RIGHT: Specs & CTA ── -->
+  <div class="right-side">
+    <h2>Technical Specification</h2>
+
+    <div class="spec-grid">
+      <div class="spec-card">
+        <img src="{% static 'img/car-features/settings-line.svg' %}">
+        <h4>Gear Box</h4>
+        <p>{{ car.get_transmission_display }}</p>
+      </div>
+      <div class="spec-card">
+        <img src="{% static 'img/car-features/gas-station-fill.svg' %}">
+        <h4>Fuel</h4>
+        <p>{{ car.get_fuel_display }}</p>
+      </div>
+      <div class="spec-card">
+        <img src="{% static 'img/car-features/doors.svg' %}">
+        <h4>Year</h4>
+        <p>{{ car.year }}</p>
+      </div>
+      <div class="spec-card">
+        <img src="{% static 'img/car-features/temp.svg' %}">
+        <h4>Air Conditioner</h4>
+        <p>Yes</p>
+      </div>
+      <div class="spec-card">
+        <img src="{% static 'img/car-features/user.svg' %}">
+        <h4>Seats</h4>
+        <p>{{ car.seats }}</p>
+      </div>
+      <div class="spec-card">
+        <img src="{% static 'img/car-features/routing.svg' %}">
+        <h4>Brand</h4>
+        <p>{{ car.brand|default:"—" }}</p>
+      </div>
+    </div>
+
+    {% if car.availability %}
+      {% if user.is_authenticated %}
+        <a href="/booking/{{ car.id }}/">
+          <button class="rent-btn">Rent a car</button>
+        </a>
+      {% else %}
+        <a href="/login/?next=/booking/{{ car.id }}/">
+          <button class="rent-btn">Sign in to Rent</button>
+        </a>
+      {% endif %}
+    {% else %}
+      <button class="rent-btn" disabled
+              style="background:#ccc;cursor:not-allowed;box-shadow:none;">
+        Currently Unavailable
+      </button>
+    {% endif %}
+
+    {% if car.description %}
+    <div style="margin-top:24px;padding:16px;background:#f8f9fa;border-radius:12px;">
+      <h4 style="margin-bottom:8px;font-size:14px;font-weight:700;color:#333;">About this car</h4>
+      <p style="font-size:14px;color:#666;line-height:1.7;">{{ car.description }}</p>
+    </div>
+    {% endif %}
+
+    <div class="equipment">
+      <h2>Car Equipment</h2>
+      <div class="equipment-grid">
+        <div class="equipment-item">
+          <i class="ri-checkbox-circle-fill"></i>
+          <span>ABS Brakes</span>
+        </div>
+        <div class="equipment-item">
+          <i class="ri-checkbox-circle-fill"></i>
+          <span>Air Bags</span>
+        </div>
+        <div class="equipment-item">
+          <i class="ri-checkbox-circle-fill"></i>
+          <span>Cruise Control</span>
+        </div>
+        <div class="equipment-item">
+          <i class="ri-checkbox-circle-fill"></i>
+          <span>Air Conditioner</span>
+        </div>
+        <div class="equipment-item">
+          <i class="ri-checkbox-circle-fill"></i>
+          <span>Power Steering</span>
+        </div>
+        <div class="equipment-item">
+          <i class="ri-checkbox-circle-fill"></i>
+          <span>Central Lock</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</section>
+
+<!-- Reviews Section -->
+{% if reviews %}
+<section class="car-reviews-section">
+  <h2>Customer Reviews</h2>
+  <div class="car-reviews-grid">
+    {% for review in reviews %}
+    <div style="background:#fff;border:1.5px solid #f0f0f0;border-radius:14px;padding:20px;">
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px;">
+        <div style="width:38px;height:38px;background:#e8f3ff;border-radius:50%;display:flex;align-items:center;justify-content:center;color:#1572D3;">
+          <i class="ri-user-3-line"></i>
+        </div>
+        <div>
+          <p style="font-weight:600;font-size:14px;color:#111;">{{ review.user.get_full_name|default:review.user.username }}</p>
+          <p style="font-size:12px;color:#aaa;">{{ review.created_at|date:"d M Y" }}</p>
+        </div>
+        <span style="margin-left:auto;color:#f5a623;font-weight:700;">{{ review.rating }}/5 ★</span>
+      </div>
+      <p style="font-size:14px;color:#555;line-height:1.6;">{{ review.comment }}</p>
+    </div>
+    {% endfor %}
+  </div>
+</section>
+{% endif %}
+
+<!-- Other Cars -->
+{% if other_cars %}
+<section class="other-cars">
+  <div class="other-cars-header">
+    <h2>Other Cars</h2>
+    <a href="/cars/" class="view-all">View All <i class="ri-arrow-right-line"></i></a>
+  </div>
+
+  <div class="car-list">
+    {% for c in other_cars %}
+      <a href="/cars/{{ c.id }}/" style="text-decoration:none;">
+        <div class="car-card">
+          <div class="car-card-img">
+            {% if c.image %}
+              <img src="{{ c.image.url }}" alt="{{ c.car_name }}">
+            {% else %}
+              <img src="{% static 'img/car-fill.svg' %}" alt="{{ c.car_name }}"
+                   style="opacity:0.15;width:55%;">
+            {% endif %}
+          </div>
+          <h3 class="car-card-name">{{ c.car_name }}</h3>
+          <div class="car-card-rating">
+            <span class="rating-star">&#9733;</span>
+            <span>{{ c.brand|default:"—" }}</span>
+          </div>
+          <hr class="car-card-divider">
+          <div class="car-card-price-row">
+            <span class="car-price-label">Price</span>
+            <span class="car-price-value">₹{{ c.rent_per_day|floatformat:0 }} <small>/day</small></span>
+          </div>
+          <button class="car-rent-btn">View Details <i class="ri-arrow-right-line"></i></button>
+        </div>
+      </a>
+    {% endfor %}
+  </div>
+</section>
+{% endif %}
+
+{% endblock %}

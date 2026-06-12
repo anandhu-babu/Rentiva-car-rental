@@ -1,0 +1,206 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+
+<div class="page-wrapper">
+
+  <!-- Breadcrumb -->
+  <div class="breadcrumb">
+    <a href="/">Home</a>
+    <i class="ri-arrow-right-s-line"></i>
+    <a href="/profile/">Dashboard</a>
+    <i class="ri-arrow-right-s-line"></i>
+    <span>Payment</span>
+  </div>
+
+  <h1 class="page-title">Confirm &amp; Pay</h1>
+
+  <div class="payment-layout">
+
+    <!-- ── Booking Summary ── -->
+    <div class="payment-summary-card">
+      <h3>Booking Summary</h3>
+
+      <div class="summary-car">
+        {% if booking.car.image %}
+          <img src="{{ booking.car.image.url }}" alt="{{ booking.car.car_name }}"
+               class="summary-car-img">
+        {% else %}
+          <div class="summary-car-img"
+               style="display:flex;align-items:center;justify-content:center;background:#f5f5f5;border-radius:10px;">
+            <i class="ri-car-line" style="font-size:24px;color:#ccc;"></i>
+          </div>
+        {% endif %}
+        <div>
+          <h4>{{ booking.car.car_name }}</h4>
+          <p>{{ booking.car.brand.name|default:"" }}</p>
+        </div>
+      </div>
+
+      <div class="summary-details">
+        <div class="summary-row">
+          <span><i class="ri-map-pin-line"></i> Pickup</span>
+          <span>{{ booking.pickup_location.city }}, {{ booking.pickup_location.state }}</span>
+        </div>
+        <div class="summary-row">
+          <span><i class="ri-map-pin-2-line"></i> Drop</span>
+          <span>{{ booking.drop_location.city }}, {{ booking.drop_location.state }}</span>
+        </div>
+        <div class="summary-row">
+          <span><i class="ri-calendar-line"></i> Pickup Date</span>
+          <span>{{ booking.pickup_date|date:"d M Y" }}</span>
+        </div>
+        <div class="summary-row">
+          <span><i class="ri-calendar-check-line"></i> Return Date</span>
+          <span>{{ booking.return_date|date:"d M Y" }}</span>
+        </div>
+        <div class="summary-row">
+          <span><i class="ri-car-line"></i> Daily Rate</span>
+          <span>₹{{ booking.car.rent_per_day|floatformat:0 }}/day</span>
+        </div>
+      </div>
+
+      <div class="summary-total">
+        <span>Total Amount</span>
+        <span class="total-amount">₹{{ booking.total_amount|floatformat:0 }}</span>
+      </div>
+    </div>
+
+    <!-- ── Payment Form ── -->
+    <div class="payment-form-card">
+      <h3>Payment Method</h3>
+
+      <form method="POST" action="/payment/{{ booking.id }}/" id="payment-form">
+        {% csrf_token %}
+
+        <!-- Method Selector -->
+        <div class="payment-methods">
+
+          <label class="payment-method-option active" id="opt-upi">
+            <input type="radio" name="payment_method" value="upi"
+                   checked onchange="switchMethod('upi')">
+            <div class="method-icon"><i class="ri-smartphone-line"></i></div>
+            <div class="method-info">
+              <span class="method-name">UPI</span>
+              <span class="method-desc">Pay via UPI ID</span>
+            </div>
+          </label>
+
+          <label class="payment-method-option" id="opt-card">
+            <input type="radio" name="payment_method" value="card"
+                   onchange="switchMethod('card')">
+            <div class="method-icon"><i class="ri-bank-card-line"></i></div>
+            <div class="method-info">
+              <span class="method-name">Card</span>
+              <span class="method-desc">Credit / Debit card</span>
+            </div>
+          </label>
+
+          <label class="payment-method-option" id="opt-cash">
+            <input type="radio" name="payment_method" value="cash"
+                   onchange="switchMethod('cash')">
+            <div class="method-icon"><i class="ri-money-rupee-circle-line"></i></div>
+            <div class="method-info">
+              <span class="method-name">Cash</span>
+              <span class="method-desc">Pay at pickup</span>
+            </div>
+          </label>
+
+        </div>
+
+        <!-- UPI Fields -->
+        <div id="fields-upi" class="payment-fields">
+          <div class="form-group">
+            <label class="form-label">UPI ID</label>
+            <input type="text" id="upi-id-input" class="form-control"
+                   placeholder="yourname@upi">
+          </div>
+          <p class="payment-note">
+            <i class="ri-information-line"></i>
+            Enter your UPI ID. A payment request will be sent to your UPI app.
+          </p>
+          <!-- hidden field carries txn id -->
+          <input type="hidden" name="transaction_id" id="txn-upi">
+        </div>
+
+        <!-- Card Fields -->
+        <div id="fields-card" class="payment-fields" style="display:none;">
+          <div class="form-group">
+            <label class="form-label">Card Number</label>
+            <input type="text" class="form-control" placeholder="1234 5678 9012 3456"
+                   maxlength="19" id="card-num">
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label">Expiry</label>
+              <input type="text" class="form-control" placeholder="MM / YY" maxlength="7">
+            </div>
+            <div class="form-group">
+              <label class="form-label">CVV</label>
+              <input type="password" class="form-control" placeholder="•••" maxlength="3">
+            </div>
+          </div>
+          <input type="hidden" name="transaction_id" id="txn-card"
+                 value="CARD-{{ booking.id }}">
+        </div>
+
+        <!-- Cash Fields -->
+        <div id="fields-cash" class="payment-fields" style="display:none;">
+          <div class="cash-note">
+            <i class="ri-information-line"></i>
+            <div>
+              <h4>Pay at Pickup</h4>
+              <p>Bring exact cash of <strong>₹{{ booking.total_amount|floatformat:0 }}</strong>
+                 at the pickup location.</p>
+            </div>
+          </div>
+          <input type="hidden" name="transaction_id" value="CASH-{{ booking.id }}">
+        </div>
+
+        <!-- Security badge -->
+        <div class="payment-secure">
+          <i class="ri-lock-line"></i>
+          <span>Secured with 256-bit SSL encryption</span>
+        </div>
+
+        <button type="submit" class="btn-pay">
+          <i class="ri-secure-payment-line"></i>
+          Confirm &amp; Pay ₹{{ booking.total_amount|floatformat:0 }}
+        </button>
+      </form>
+    </div>
+
+  </div><!-- /payment-layout -->
+</div><!-- /page-wrapper -->
+
+<script>
+// Format card number with spaces
+const cardNum = document.getElementById('card-num');
+if (cardNum) {
+  cardNum.addEventListener('input', function () {
+    let v = this.value.replace(/\D/g, '').substring(0, 16);
+    this.value = v.replace(/(.{4})/g, '$1 ').trim();
+  });
+}
+
+// UPI ID sync to hidden txn field
+const upiInput = document.getElementById('upi-id-input');
+const txnUpi   = document.getElementById('txn-upi');
+if (upiInput) {
+  upiInput.addEventListener('input', function () {
+    txnUpi.value = this.value || 'UPI-{{ booking.id }}';
+  });
+  txnUpi.value = 'UPI-{{ booking.id }}';
+}
+
+function switchMethod(method) {
+  ['upi', 'card', 'cash'].forEach(m => {
+    document.getElementById('fields-' + m).style.display = m === method ? 'block' : 'none';
+    const opt = document.getElementById('opt-' + m);
+    if (opt) opt.classList.toggle('active', m === method);
+  });
+}
+</script>
+
+{% endblock %}

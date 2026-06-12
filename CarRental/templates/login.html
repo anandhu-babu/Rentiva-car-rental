@@ -1,0 +1,95 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block messages %}{% endblock %}
+
+{% block content %}
+
+  <section class="signin-page">
+
+    <div class="left">
+      <div class="overlay"> </div>
+      <div class="content">
+
+        <h1> Welcome Back </h1>
+        <p>
+          Sign in to continue booking your
+          dream cars with ease.
+        </p>
+      </div>
+    </div>
+
+    <div class="right">
+      <div class="form-container">
+
+        <h2>Sign In</h2>
+        <p class="subtitle">
+          Enter your credentials to continue
+        </p>
+
+        {% if messages %}
+          {% for msg in messages %}
+            <div class="alert alert-{{ msg.tags }}" style="margin-bottom:18px;border-radius:10px;padding:12px 16px;font-size:14px;">
+              {{ msg }}
+            </div>
+          {% endfor %}
+        {% endif %}
+
+        <form method="POST" action="/login/">
+          {% csrf_token %}
+
+          <div class="input-box">
+            <label>Email Address</label>
+              <div class="input-field">
+                <img class="icons" src="{% static 'img/sms.svg' %}" alt="email">
+                <input type="email" name="email" placeholder="Enter your email" required>
+              </div>
+          </div>
+
+          <div class="input-box">
+            <label>Password</label>
+              <div class="input-field">
+                <img class="icons" src="{% static 'img/lock.svg' %}" alt="password">
+                <input type="password" name="password" placeholder="Enter your password" required>
+              </div>
+          </div>
+
+          <div class="options">
+            <div class="remember">
+              <input type="checkbox" name="remember">
+              <span>Remember me</span>
+            </div>
+            <a href="#">Forgot password?</a>
+          </div>
+
+          <button type="submit" class="signin-btn">Sign In</button>
+        </form>
+
+
+        <div class="divider">
+          <span>OR</span>
+        </div>
+
+
+        <button class="google-btn">
+          <img
+            src="https://cdn-icons-png.flaticon.com/512/2991/2991148.png"
+            alt=""
+          >
+
+          Continue with Google
+        </button>
+
+
+        <p class="signup-text">
+          Don’t have an account?
+          <a href="/register/">Sign Up</a>
+        </p>
+
+      </div>
+
+    </div>
+
+  </section>
+
+{% endblock %}

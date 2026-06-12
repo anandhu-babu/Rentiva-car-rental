@@ -1,0 +1,80 @@
+{% load static %}
+
+<!-- ── Chat Toggle Button ──────────────────────────────── -->
+<div class="chat-toggle-btn" id="chatToggleBtn" role="button" aria-label="Open chat assistant" tabindex="0">
+    <img src="{% static 'img/chatbot.svg' %}" alt="Chat">
+</div>
+
+<!-- ── Chatbot Window ──────────────────────────────────── -->
+<div class="chatbot-container" id="chatbotContainer" role="dialog" aria-modal="true" aria-label="Rentiva AI Assistant">
+
+    <!-- Header -->
+    <div class="chatbot-header">
+        <div class="chatbot-profile">
+            <div class="chatbot-avatar-wrap">
+                <img src="{% static 'img/chatbot.svg' %}" alt="AI Assistant">
+                <span class="online-dot"></span>
+            </div>
+            <div class="chatbot-profile-info">
+                <h3>AI Assistant</h3>
+                <span>Online &mdash; replies instantly</span>
+            </div>
+        </div>
+        <button id="closeChatbot" aria-label="Close chat">
+            <i class="ri-close-line"></i>
+        </button>
+    </div>
+
+    <!-- Message Body -->
+    <div class="chatbot-body" id="chatBody">
+
+        <div class="bot-message">
+            <p>👋 Hi! I'm Rentiva's AI assistant. Ask me anything about cars, bookings, or rentals!</p>
+        </div>
+
+        <!-- Quick Action Suggestions -->
+        <div class="chat-suggestions">
+
+            <span class="chat-suggestion-label">For Customers</span>
+            <div class="suggestion-grid">
+                <button onclick="sendSuggestion('Available Cars Today')">🚗 Available Cars</button>
+                <button onclick="sendSuggestion('Luxury Cars')">✨ Luxury Cars</button>
+                <button onclick="sendSuggestion('SUVs & Family Cars')">🚙 SUVs &amp; Family</button>
+                <button onclick="sendSuggestion('Budget Cars Under ₹2000')">💰 Budget Cars</button>
+                <button onclick="sendSuggestion('How to Book a Car?')">📅 How to Book?</button>
+                {% if user.is_authenticated %}
+                <button onclick="sendSuggestion('My Booking Status')">📋 My Bookings</button>
+                {% endif %}
+                <button onclick="sendSuggestion('Contact Support')">📞 Support</button>
+            </div>
+
+            <span class="chat-suggestion-label">For Renters</span>
+            <div class="suggestion-grid">
+                {% if user.is_authenticated and user.profile.role == 'renter' %}
+                <button onclick="sendSuggestion('Manage My Cars')">🛠️ Manage Cars</button>
+                <button onclick="sendSuggestion('View Renter Dashboard')">📊 Renter Dashboard</button>
+                {% else %}
+                <button onclick="sendSuggestion('Become a Renter')">🚗 Become a Renter</button>
+                {% endif %}
+                <button onclick="sendSuggestion('How to List My Car?')">📝 List My Car</button>
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- Input Area -->
+    <div class="chatbot-input">
+        <input
+            type="text"
+            id="userInput"
+            placeholder="Ask anything…"
+            autocomplete="off"
+            aria-label="Chat message"
+        >
+        <button onclick="sendMessage()" aria-label="Send message">
+            <i class="ri-send-plane-fill"></i>
+        </button>
+    </div>
+
+</div>

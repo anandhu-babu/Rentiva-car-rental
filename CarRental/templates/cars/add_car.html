@@ -1,0 +1,249 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+
+<div class="page-wrapper">
+
+  <div class="breadcrumb">
+    <a href="/">Home</a>
+    <i class="ri-arrow-right-s-line"></i>
+    <a href="/dashboard/renter/">Dashboard</a>
+    <i class="ri-arrow-right-s-line"></i>
+    <span>Add Car</span>
+  </div>
+
+  <div class="add-car-page">
+
+    <div class="add-car-header">
+      <h1>List Your Car</h1>
+      <p>Fill in the details below to make your car available for rent</p>
+    </div>
+
+    <form method="POST" action="/add-car/" enctype="multipart/form-data" class="add-car-form">
+      {% csrf_token %}
+
+      <div class="form-section">
+        <div class="form-section-header">
+          <span class="section-num">1</span>
+          <h3>Basic Information</h3>
+        </div>
+
+        <div class="form-grid">
+
+          <div class="form-group full-width">
+            <label class="form-label">
+              Car Name <span class="required">*</span>
+            </label>
+            <input type="text" name="car_name" class="form-control"
+                   placeholder="e.g. BMW X5 Sport"
+                   value="{{ form.car_name.value|default:'' }}" required>
+            {% if form.car_name.errors %}
+              <span class="form-error">{{ form.car_name.errors.0 }}</span>
+            {% endif %}
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Brand</label>
+            <select name="brand" class="form-control">
+              <option value="">Select Brand</option>
+              {% for brand in brands %}
+                <option value="{{ brand.id }}"
+                  {% if form.brand.value == brand.id|stringformat:"s" %}selected{% endif %}>
+                  {{ brand.name }}
+                </option>
+              {% endfor %}
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Category</label>
+            <select name="category" class="form-control">
+              <option value="">Select Category</option>
+              {% for cat in categories %}
+                <option value="{{ cat.id }}"
+                  {% if form.category.value == cat.id|stringformat:"s" %}selected{% endif %}>
+                  {{ cat.name }}
+                </option>
+              {% endfor %}
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">
+              Model <span class="required">*</span>
+            </label>
+            <input type="text" name="model" class="form-control"
+                   placeholder="e.g. X5 M Sport"
+                   value="{{ form.model.value|default:'' }}" required>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">
+              Year <span class="required">*</span>
+            </label>
+            <input type="number" name="year" class="form-control"
+                   placeholder="2024" min="2000" max="2030"
+                   value="{{ form.year.value|default:'' }}" required>
+          </div>
+
+          <div class="form-group full-width">
+            <label class="form-label">
+                Location (City) <span class="required">*</span>
+            </label>
+
+            <select id="location-select" name="location" class="form-control" required>
+                <option value="">Select Location</option>
+                {% for location in locations %}
+                    <option value="{{ location.city }}">
+                        {{ location.city }}, {{ location.state }}
+                    </option>
+                {% endfor %}
+            </select>
+        </div>
+
+        </div>
+      </div>
+
+      <div class="form-section">
+        <div class="form-section-header">
+          <span class="section-num">2</span>
+          <h3>Specifications</h3>
+        </div>
+
+        <div class="form-grid">
+
+          <div class="form-group">
+            <label class="form-label">
+              Fuel Type <span class="required">*</span>
+            </label>
+            <select name="fuel" class="form-control" required>
+              <option value="">Select Fuel Type</option>
+              <option value="petrol"
+                {% if form.fuel.value == 'petrol' %}selected{% endif %}>Petrol</option>
+              <option value="diesel"
+                {% if form.fuel.value == 'diesel' %}selected{% endif %}>Diesel</option>
+              <option value="electric"
+                {% if form.fuel.value == 'electric' %}selected{% endif %}>Electric</option>
+              <option value="hybrid"
+                {% if form.fuel.value == 'hybrid' %}selected{% endif %}>Hybrid</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">
+              Transmission <span class="required">*</span>
+            </label>
+            <select name="transmission" class="form-control" required>
+              <option value="">Select Transmission</option>
+              <option value="manual"
+                {% if form.transmission.value == 'manual' %}selected{% endif %}>Manual</option>
+              <option value="automatic"
+                {% if form.transmission.value == 'automatic' %}selected{% endif %}>Automatic</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">
+              Number of Seats <span class="required">*</span>
+            </label>
+            <input type="number" name="seats" class="form-control"
+                   placeholder="5" min="1" max="12"
+                   value="{{ form.seats.value|default:'' }}" required>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Availability</label>
+            <label class="toggle-switch" style="margin-top:8px;">
+              <input type="checkbox" name="availability"
+                {% if form.availability.value %}checked{% endif %}>
+              <span class="toggle-track"></span>
+              <span class="toggle-label">Available for rent immediately</span>
+            </label>
+          </div>
+
+        </div>
+      </div>
+
+      <div class="form-section">
+        <div class="form-section-header">
+          <span class="section-num">3</span>
+          <h3>Pricing &amp; Media</h3>
+        </div>
+
+        <div class="form-grid">
+
+          <div class="form-group">
+            <label class="form-label">
+              Price per Day (₹) <span class="required">*</span>
+            </label>
+            <div class="input-prefix-wrap">
+              <span class="input-prefix">₹</span>
+              <input type="number" name="rent_per_day" class="form-control"
+                     placeholder="2000" min="100" step="50"
+                     value="{{ form.rent_per_day.value|default:'' }}" required>
+            </div>
+          </div>
+
+          <div class="form-group full-width">
+            <label class="form-label">Car Photo</label>
+            <div class="file-upload-area" id="upload-area">
+              <input type="file" name="image" id="car-image" accept="image/*"
+                     class="file-input" onchange="previewImage(event)">
+              <div class="upload-placeholder" id="upload-placeholder">
+                <i class="ri-camera-line"></i>
+                <p>Click to upload car photo</p>
+                <small>JPG, PNG — up to 10 MB</small>
+              </div>
+              <img id="image-preview" alt="Preview" style="display:none;">
+            </div>
+          </div>
+
+          <div class="form-group full-width">
+            <label class="form-label">Description</label>
+            <textarea name="description" class="form-control" rows="4"
+                      placeholder="Describe your car, features, and rental terms…">{{ form.description.value|default:'' }}</textarea>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- Actions -->
+      <div class="form-actions">
+        <a href="/dashboard/renter/" class="btn-cancel">Cancel</a>
+        <button type="submit" class="btn-primary">
+          <i class="ri-car-line"></i> List My Car
+        </button>
+      </div>
+
+    </form>
+  </div><!-- /add-car-page -->
+</div><!-- /page-wrapper -->
+
+<script>
+function previewImage(e) {
+  const file = e.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = () => {
+    const preview     = document.getElementById('image-preview');
+    const placeholder = document.getElementById('upload-placeholder');
+    preview.src               = reader.result;
+    preview.style.display     = 'block';
+    placeholder.style.display = 'none';
+  };
+  reader.readAsDataURL(file);
+}
+</script>
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+    new TomSelect("#location-select", {
+        create: false,
+        maxOptions: 10,
+        placeholder: "Search Location..."
+    });
+});
+</script>
+
+{% endblock %}

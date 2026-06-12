@@ -1,0 +1,184 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block messages %}{% endblock %}
+
+{% block content %}
+
+<div class="owner-dashboard">
+  {% if messages %}
+  <div class="messages-bar" style="padding:0 0 20px;">
+    {% for msg in messages %}
+      <div class="alert alert-{{ msg.tags }}">{{ msg }}</div>
+    {% endfor %}
+  </div>
+  {% endif %}
+
+  <div class="od-header">
+    <div>
+      <h1>Renter Dashboard</h1>
+      <p>Welcome back, {{ user.first_name|default:user.username }}</p>
+    </div>
+    <a href="/add-car/" class="btn-primary">
+      <i class="ri-add-line"></i> Add New Car
+    </a>
+  </div>
+
+  <div class="stats-grid">
+    <div class="stat-card">
+      <div class="stat-icon stat-blue">
+        <div class="car-icon"></div>
+      </div>
+      <div class="stat-info">
+        <h3>{{ stats.total_cars|default:"0" }}</h3>
+        <p>Total Cars Listed</p>
+      </div>
+    </div>
+
+    <div class="stat-card">
+      <div class="stat-icon stat-orange">
+        <div class="calendar-icon"></div>
+      </div>
+      <div class="stat-info">
+        <h3>{{ stats.active_bookings|default:"0" }}</h3>
+        <p>Active Bookings</p>
+      </div>
+    </div>
+
+    <div class="stat-card">
+      <div class="stat-icon stat-green">
+        <i class="ri-money-rupee-circle-line"></i>
+      </div>
+      <div class="stat-info">
+        <h3>₹{{ stats.total_revenue|default:"0"|floatformat:0 }}</h3>
+        <p>Total Revenue</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── My Cars ── -->
+  <div class="od-section">
+    <div class="od-section-header">
+      <h2>My Cars</h2>
+      <a href="/add-car/" class="btn-outline">
+        <i class="ri-add-line"></i> Add Car
+      </a>
+    </div>
+
+    {% if cars %}
+      <div class="table-wrapper">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>Car</th>
+              <th>Brand</th>
+              <th>Category</th>
+              <th>Price / Day</th>
+              <th>Bookings</th>
+              <th>Status</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+
+        <tbody>
+          {% for car in cars %}
+          <tr>
+              <td style="font-weight:600;">{{ car.car_name }}</td>
+              <td>{{ car.brand|default:"—" }}</td>
+              <td>{{ car.category|default:"—" }}</td>
+              <td>₹{{ car.rent_per_day|floatformat:0 }}/day</td>
+              <td>{{ car.booking_count }}</td>
+              <td>
+                  <span class="status-badge {% if car.availability %}status-approved{% else %}status-cancelled{% endif %}">
+                      {% if car.availability %}Available{% else %}Unavailable{% endif %}
+                  </span>
+              </td>
+              <td>
+                  <a href="/cars/{{ car.id }}/"
+                     class="action-btn"
+                     style="background:#dbeafe;color:#1d4ed8;border:1px solid #93c5fd;">
+                      View
+                  </a>
+                  <a href="/my-cars/edit/{{ car.id }}/"
+                     class="action-btn"
+                     style="background:#fef9c3;color:#854d0e;border:1px solid #fde047;">
+                      Edit
+                  </a>
+                  <form method="post" action="/my-cars/delete/{{ car.id }}/" style="display:inline;"
+                        onsubmit="return confirm('Delete {{ car.car_name }}? This cannot be undone.');">
+                      {% csrf_token %}
+                      <button type="submit"
+                              class="action-btn"
+                              style="background:#fee2e2;color:#991b1b;border:1px solid #fecaca;cursor:pointer;">
+                          Delete
+                      </button>
+                  </form>
+              </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+        </table>
+      </div>
+
+    {% else %}
+      <div class="empty-state">
+        <i class="ri-car-line"></i>
+        <h3>No cars listed yet</h3>
+        <p>Start earning by listing your first car on Rentiva.</p>
+        <a href="/add-car/" class="btn-primary">List Your Car</a>
+      </div>
+    {% endif %}
+  </div>
+
+  <!-- ── Recent Bookings ── -->
+  <div class="od-section">
+    <div class="od-section-header">
+      <h2>Recent Bookings</h2>
+    </div>
+
+    {% if recent_bookings %}
+      <div class="table-wrapper">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>Booking ID</th>
+              <th>Car</th>
+              <th>Customer</th>
+              <th>Pickup</th>
+              <th>Return</th>
+              <th>Amount</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for booking in recent_bookings %}
+            <tr>
+              <td style="font-weight:600;color:#1572D3;">#{{ booking.id }}</td>
+              <td>{{ booking.car.car_name }}</td>
+              <td>{{ booking.user.get_full_name|default:booking.user.username }}</td>
+              <td>{{ booking.pickup_date|date:"d M Y" }}</td>
+              <td>{{ booking.return_date|date:"d M Y" }}</td>
+              <td>₹{{ booking.total_amount|floatformat:0 }}</td>
+              <td>
+                <span class="status-badge status-{{ booking.booking_status }}">
+                  {{ booking.get_booking_status_display }}
+                </span>
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+
+    {% else %}
+      <div class="empty-state small">
+        <i class="ri-calendar-line"></i>
+        <h3>No bookings yet</h3>
+        <p>Bookings for your cars will appear here.</p>
+      </div>
+    {% endif %}
+  </div>
+
+</div><!-- /owner-dashboard -->
+
+{% endblock %}

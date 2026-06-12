@@ -1,0 +1,239 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css">
+{% endblock %}
+
+{% block content %}
+
+<section class="hero">
+  <div class="hero-text">
+    <h1>Find, book and<br>rent a car <span>Easily<img class="underline" src="{% static 'img/vector-1.svg' %}"></span></h1>
+    <p>Get a car wherever and whenever you need it with your iOS and Android device.</p>
+
+    <div class="store-buttons">
+      <img src="{% static 'img/play-store.svg' %}" alt="Google Play">
+      <img src="{% static 'img/app-store.svg' %}" alt="App Store">
+    </div>
+  </div>
+
+  <div class="hero-img">
+    <img class="hero-frame-bg" src="" alt="">
+    <img class="hero-car-img" src="" alt="">
+  </div>
+
+  <form method="GET" action="/cars/" class="search-box">
+    <div class="search-field">
+      <img src="{% static 'img/location.svg' %}" class="search-icon" alt="">
+      <div class="search-field-text">
+        <h4>Location</h4>
+        <input name="location" type="text" id="locationInput" placeholder="Search your location">
+      </div>
+    </div>
+
+    <div class="search-divider"></div>
+
+    <div class="search-field">
+      <img src="{% static 'img/calendar.svg' %}" class="search-icon" alt="">
+      <div class="search-field-text">
+        <h4>Pickup date</h4>
+        <input name="pickup_date" type="date">
+      </div>
+    </div>
+    <div class="search-divider"></div>
+
+    <div class="search-field">
+      <img src="{% static 'img/calendar.svg' %}" class="search-icon" alt="">
+      <div class="search-field-text">
+        <h4>Return date</h4>
+        <input name="return_date" type="date">
+      </div>
+    </div>
+    <button type="submit" class="search-btn">Search</button>
+  </form>
+</section>
+
+<section class="steps" id="steps">
+  <span class="tag">HOW IT WORK</span>
+  <h2>Rent with following 3 working steps</h2>
+
+  <div class="step-box">
+    <div class="step">
+      <div class="icon">
+        <img src="{% static 'img/location-tick-fill.svg' %}"/>
+      </div>
+
+      <h3>Choose location</h3>
+      <p>Choose your and find your best car</p>
+    </div>
+
+    <div class="step">
+      <div class="icon">
+        <img src="{% static 'img/calendar-fill.svg' %}"/>
+      </div>
+      <h3>Pick-up date</h3>
+      <p>Select your pick up date and time</p>
+    </div>
+
+    <div class="step">
+      <div class="icon">
+        <img src="{% static 'img/car-fill.svg' %}"/>
+      </div>
+      <h3>Book your car</h3>
+      <p>Book your car and we will deliver it</p>
+    </div>
+  </div>
+</section>
+
+<section class="brands">
+  <div class="brands-container">
+  <img src="{% static 'img/brands/bmw.svg' %}" alt="icons"/>
+  <img src="{% static 'img/brands/Jaguar.svg' %}" alt="icons"/>
+  <img src="{% static 'img/brands/nissan.svg' %}" alt="icons"/>
+  <img src="{% static 'img/brands/ford.svg' %}" alt="icons"/>
+  <img src="{% static 'img/brands/jeep.svg' %}" alt="icons"/>
+  <img src="{% static 'img/brands/audi.svg' %}" alt="icons"/>
+  <img src="{% static 'img/brands/benz.svg' %}" alt="icons"/>
+
+  </div>
+</section>
+
+<section class="experience" id="experience">
+  <div class="exp-img">
+    <img src="{% static 'images/audi.png' %}" alt="Car" style="padding:40px;">
+  </div>
+
+  <div class="exp-content">
+    <span class="tag">WHY CHOOSE US</span>
+    <h2>We offer the best experience with our rental deals</h2>
+
+    <div class="feature">
+        <div class="icon-container">
+            <img src="{% static 'img/wallet.svg' %}" alt="Price Guarantee"/>
+        </div>
+        <div class="feature-text">
+            <h3>Best price guaranteed</h3>
+            <p>Find a lower price? We'll refund you 100% of the difference.</p>
+        </div>
+    </div>
+
+    <div class="feature">
+        <div class="icon-container">
+            <img src="{% static 'img/user-tick.svg' %}" alt="Experienced Driver"/>
+        </div>
+        <div class="feature-text">
+            <h3>Experience driver</h3>
+            <p>Don’t have driver? Don’t worry, we have many experienced driver for you.</p>
+        </div>
+    </div>
+
+    <div class="feature">
+        <div class="icon-container">
+            <img src="{% static 'img/24-support.svg' %}" alt="24 Hour Delivery"/>
+        </div>
+        <div class="feature-text">
+            <h3>24 hour car delivery</h3>
+            <p>Book your car anytime and we will deliver it directly to you.</p>
+        </div>
+    </div>
+
+    <div class="feature">
+        <div class="icon-container">
+            <img src="{% static 'img/messages-2.svg' %}" alt="Technical Support"/>
+        </div>
+        <div class="feature-text">
+            <h3>24/7 technical support</h3>
+            <p>Have a question? Contact Rentcars support any time when you have problem.</p>
+        </div>
+    </div>
+  </div>
+</section>
+
+<section class="deals" id="deals">
+  <span class="tag">POPULAR RENTAL DEALS</span>
+  <h2>Most popular cars rental deals</h2>
+
+  {% if cars %}
+    <div class="car-list">
+      {% for car in cars %}
+        <a href="/cars/{{ car.id }}/" style="text-decoration:none;display:block;">
+          <div class="car-card">
+            <div class="car-card-img">
+              {% if car.image %}
+                <img src="{{ car.image.url }}" alt="{{ car.car_name }}">
+              {% else %}
+                <img src="{% static 'img/car-fill.svg' %}" alt="{{ car.car_name }}" class="car-placeholder" style="opacity:0.18;width:55%;">
+              {% endif %}
+            </div>
+            <h3 class="car-card-name">{{ car.car_name }}</h3>
+            <div class="car-card-rating">
+              <span class="rating-star">&#9733;</span>
+              <span>{{ car.brand|default:"—" }}</span>
+            </div>
+            <div class="car-card-features">
+              <div class="car-feature-item">
+                <img src="{% static 'img/car-features/user.svg' %}">
+                <span>{{ car.seats }} Seats</span>
+              </div>
+              <div class="car-feature-item">
+                <img src="{% static 'img/car-features/transmission.svg' %}">
+                <span>{{ car.get_transmission_display }}</span>
+              </div>
+              <div class="car-feature-item">
+                <img src="{% static 'img/car-features/gas-station-fill.svg' %}">
+                <span>{{ car.get_fuel_display }}</span>
+              </div>
+              <div class="car-feature-item">
+                <img src="{% static 'img/car-features/temp.svg' %}">
+                <span>Air Conditioning</span>
+              </div>
+            </div>
+            <hr class="car-card-divider">
+            <div class="car-card-price-row">
+              <span class="car-price-label" style="color:#595959">Price</span>
+              <span class="car-price-value">₹{{ car.rent_per_day|floatformat:0 }} <small>/day</small></span>
+            </div>
+            <button class="car-rent-btn">Rent Now <i class="ri-arrow-right-line"></i></button>
+          </div>
+        </a>
+      {% endfor %}
+    </div>
+  {% else %}
+    <div class="car-list" id="carList"></div>
+    <script src="{% static 'js/carList.js' %}"></script>
+  {% endif %}
+
+  <a class="show-all" href="car/list/">Show all vehicles →</a>
+</section>
+
+{% include 'includes/testimonials.html' %}
+
+<section class="app">
+  <div>
+    <span class="tag">DOWNLOAD</span>
+    <h2>Download Rentiva<br>App for <span>FREE</span></h2>
+    <p>For faster, easier booking and exclusive deals.</p>
+
+    <div class="store-buttons">
+      <img src="{% static 'img/play-store.svg' %}" alt="">
+      <img src="{% static 'img/app-store.svg' %}" alt="">
+    </div>
+  </div>
+
+  <div class="app-phone-mock">
+    <i class="ri-smartphone-line" style="font-size:clamp(60px,8vw,100px);color:#1572D3;opacity:0.5;"></i>
+  </div>
+</section>
+
+{% include 'includes/chatbot.html' %}
+
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
+<script src="{% static 'js/testimonials.js' %}"></script>
+<script src="{% static 'js/chatbot.js' %}"></script>
+<script src="{% static 'js/location.js' %}"></script>
+
+{% endblock %}

@@ -1,0 +1,183 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+
+<!-- Page Header -->
+<div class="cars-header">
+  <div class="cars-header-content">
+    <h1>Browse Our Fleet</h1>
+    <p>{{ cars|length }} car{{ cars|length|pluralize }} available for rent</p>
+  </div>
+
+  <form method="GET" action="/cars/">
+    <div class="cars-search-bar">
+      <i class="ri-search-line"></i>
+      <input type="text" name="search" placeholder="Search by name or brand…"
+             value="{{ filters.search|default:'' }}">
+      <button type="submit">Search</button>
+    </div>
+  </form>
+</div>
+
+<!-- Main content: sidebar + grid -->
+<div class="cars-main">
+
+  <!-- ── Filters Sidebar ── -->
+  <aside class="filters-sidebar">
+    <form method="GET" action="/cars/" id="filter-form">
+
+      {% if filters.search %}
+        <input type="hidden" name="search" value="{{ filters.search }}">
+      {% endif %}
+
+      <h3 class="filter-title">Filters</h3>
+
+      <!-- Brand -->
+      <div class="filter-group">
+        <label class="filter-label">Brand</label>
+        <select name="brand" class="filter-select">
+          <option value="">All Brands</option>
+          {% for brand in brands %}
+            <option value="{{ brand.id }}"
+              {% if filters.brand == brand.id|stringformat:"s" %}selected{% endif %}>
+              {{ brand.name }}
+            </option>
+          {% endfor %}
+        </select>
+      </div>
+
+      <!-- Fuel -->
+      <div class="filter-group">
+        <label class="filter-label">Fuel Type</label>
+        <div class="filter-radio-group">
+          <label class="filter-radio">
+            <input type="radio" name="fuel" value=""
+              {% if not filters.fuel %}checked{% endif %}> All
+          </label>
+          {% for val, lbl in fuel_choices %}
+            <label class="filter-radio">
+              <input type="radio" name="fuel" value="{{ val }}"
+                {% if filters.fuel == val %}checked{% endif %}> {{ lbl }}
+            </label>
+          {% endfor %}
+        </div>
+      </div>
+
+      <!-- Transmission -->
+      <div class="filter-group">
+        <label class="filter-label">Transmission</label>
+        <div class="filter-radio-group">
+          <label class="filter-radio">
+            <input type="radio" name="transmission" value=""
+              {% if not filters.transmission %}checked{% endif %}> All
+          </label>
+          {% for val, lbl in transmission_choices %}
+            <label class="filter-radio">
+              <input type="radio" name="transmission" value="{{ val }}"
+                {% if filters.transmission == val %}checked{% endif %}> {{ lbl }}
+            </label>
+          {% endfor %}
+        </div>
+      </div>
+
+      <!-- Max Price -->
+      <div class="filter-group">
+        <label class="filter-label">Max Price / Day</label>
+        <div class="price-range">
+          <input type="range" name="max_price" min="500" max="10000" step="500"
+                 id="priceRange"
+                 value="{{ filters.max_price|default:'10000' }}"
+                 oninput="updatePrice(this.value)">
+          <span class="price-display">
+            ₹<span id="priceVal">{{ filters.max_price|default:'10,000' }}</span>
+          </span>
+        </div>
+      </div>
+
+      <button type="submit" class="filter-apply-btn">Apply Filters</button>
+      <a href="/cars/" class="filter-clear-btn">Clear all</a>
+    </form>
+  </aside>
+
+  <!-- ── Car Grid ── -->
+  <div class="cars-grid-wrapper">
+    {% if cars %}
+      <div class="car-list cars-grid">
+        {% for car in cars %}
+          <a href="/cars/{{ car.id }}/" class="car-card-link">
+            <div class="car-card">
+
+              <div class="car-card-img">
+                {% if car.image %}
+                  <img src="{{ car.image.url }}" alt="{{ car.car_name }}">
+                {% else %}
+                  <img src="{% static 'img/car-fill.svg' %}" alt="{{ car.car_name }}" class="car-placeholder">
+                {% endif %}
+              </div>
+
+              <h3 class="car-card-name">{{ car.car_name }}</h3>
+
+              <div class="car-card-rating">
+                <span class="rating-star">&#9733;</span>
+                <span>{{ car.brand|default:"—" }} &middot; {{ car.get_fuel_display }}</span>
+              </div>
+
+              <div class="car-card-features">
+                <div class="car-feature-item">
+                  <img src="{% static 'img/car-features/user.svg' %}">
+                  <span>{{ car.seats }} Seats</span>
+                </div>
+                <div class="car-feature-item">
+                  <img src="{% static 'img/car-features/transmission.svg' %}">
+                  <span>{{ car.get_transmission_display }}</span>
+                </div>
+                <div class="car-feature-item">
+                  <img src="{% static 'img/car-features/gas-station-fill.svg' %}">
+                  <span>{{ car.get_fuel_display }}</span>
+                </div>
+                <div class="car-feature-item">
+                  <img src="{% static 'img/car-features/temp.svg' %}">
+                  <span>Air Conditioning</span>
+                </div>
+              </div>
+
+              <hr class="car-card-divider">
+
+              <div class="car-card-price-row">
+                <span class="car-price-label">Price</span>
+                <span class="car-price-value">
+                  ₹{{ car.rent_per_day|floatformat:0 }} <small>/day</small>
+                </span>
+              </div>
+
+              <button class="car-rent-btn">
+                Rent Now <i class="ri-arrow-right-line"></i>
+              </button>
+
+            </div>
+          </a>
+        {% endfor %}
+      </div>
+
+    {% else %}
+      <div class="no-cars">
+        <i class="ri-car-line"></i>
+        <h3>No cars found</h3>
+        <p>Try adjusting your filters or search terms.</p>
+        <a href="/car/list/" class="btn-primary" style="margin-top:8px;">View All Cars</a>
+      </div>
+    {% endif %}
+  </div>
+
+</div><!-- /cars-main -->
+
+<script>
+function updatePrice(val) {
+  document.getElementById('priceVal').textContent =
+    parseInt(val).toLocaleString('en-IN');
+}
+updatePrice(document.getElementById('priceRange').value);
+</script>
+
+{% endblock %}

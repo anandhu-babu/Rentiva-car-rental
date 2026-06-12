@@ -1,0 +1,25 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block style %}
+  <link rel="stylesheet" href="{% static 'css/style.css' %}">
+{% endblock %}
+
+{% block content %}
+
+
+{% for i in pro %}
+
+<div class="card" style="width: 18rem;margin-top:20px;margin-left:20px;" onclick="window.location.href='/viewproduct/{{i.id}}'">
+  <img class="card-img-top" src="{{i.img.url}}" alt="Card image cap">
+    <div class="card-body">
+      <div class="price">{{i.price}}</div>
+          <div class="title">{{i.title}}</div>
+          <div class="location">{{i.location}}</div>
+          <div class="date">{{i.date}}</div>
+    </div>
+  </div>
+{% endfor%}
+
+    
+{% endblock %}

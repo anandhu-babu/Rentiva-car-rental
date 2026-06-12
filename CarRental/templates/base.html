@@ -1,0 +1,197 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rentiva</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Google+Sans:ital,opsz@0,17..18;1,17..18&family=Lexend+Mega:wght@100..900&family=Plus+Jakarta+Sans:ital,wght@0,200..800;1,200..800&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Roboto:ital,wght@0,100..900;1,100..900&family=Turret+Road:wght@200;300;400;500;700;800&family=Zain:ital,wght@0,200;0,300;0,400;0,700;0,800;0,900;1,300;1,400&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@4.6.0/fonts/remixicon.css" rel="stylesheet" />
+    <link href="https://cdn.jsdelivr.net/npm/tom-select@2.3.1/dist/css/tom-select.css" rel="stylesheet">
+
+    {% block extra_css %}{% endblock %}
+</head>
+<body>
+<header class="header">
+  <div class="logo">
+    <img src="{% static 'img/rentiva.svg' %}">
+    <a href="/">Rentiva</a>
+  </div>
+
+  <nav>
+    {% if user.is_authenticated %}
+      {% if user.profile.role == 'renter' %}
+        <a href="/dashboard/renter/">Renter Dashboard</a>
+      {% else %}
+        <a href="/become-renter/">Become a Renter</a>
+      {% endif %}
+    {% else %}
+      <a href="/become-renter//">Become a Renter</a>
+    {% endif %}
+    <a href="/#deals">Rental deals</a>
+    <a href="/#steps">How it works</a>
+    <a href="/#experience">Why choose us</a>
+  </nav>
+
+  <div class="auth">
+    {% if user.is_authenticated %}
+      <a href="/profile/" class="user-greeting">
+        <i class="ri-user-3-line"></i>
+        {{ user.first_name|default:user.username }}
+      </a>
+      {% if user.profile.role == 'renter' %}
+        <a href="/dashboard/renter/"><button>Dashboard</button></a>
+      {% else %}
+        <a href="/dashboard/customer/"><button>Dashboard</button></a>
+      {% endif %}
+      <a href="/logout/" class="signout-link">Sign out</a>
+    {% else %}
+      <a href="/login/">Sign in</a>
+      <a href="/register/"><button>Sign up</button></a>
+    {% endif %}
+  </div>
+
+  <button class="hamburger" id="hamburger" aria-label="Open menu">
+    <span></span>
+    <span></span>
+    <span></span>
+  </button>
+</header>
+
+<div class="mobile-nav-overlay" id="mobileNavOverlay"></div>
+<div class="mobile-nav" id="mobileNav">
+  <button class="mobile-nav-close" id="mobileNavClose">
+    <i class="ri-close-line"></i>
+  </button>
+  <div class="mobile-nav-links">
+    {% if user.is_authenticated %}
+      {% if user.profile.role == 'renter' %}
+        <a href="/dashboard/renter/">Renter Dashboard</a>
+      {% else %}
+        <a href="/become-renter/">Become a Renter</a>
+      {% endif %}
+    {% else %}
+      <a href="/login/">Become a Renter</a>
+    {% endif %}
+    <a href="/#deals">Rental deals</a>
+    <a href="/#steps">How it works</a>
+    <a href="/#experience">Why choose us</a>
+  </div>
+  <div class="mobile-nav-auth">
+    {% if user.is_authenticated %}
+      <a href="/profile/" class="user-greeting">
+        <i class="ri-user-3-line"></i>
+        {{ user.first_name|default:user.username }}
+      </a>
+      {% if user.profile.role == 'renter' %}
+        <a href="/dashboard/renter/"><button>Dashboard</button></a>
+      {% else %}
+        <a href="/dashboard/customer/"><button>Dashboard</button></a>
+      {% endif %}
+      <a href="/logout/" class="signout-link">Sign out</a>
+    {% else %}
+      <a href="/login/">Sign in</a>
+      <a href="/register/"><button>Sign up</button></a>
+    {% endif %}
+  </div>
+</div>
+
+{% block messages %}
+{% if messages %}
+<div class="messages-bar">
+  {% for msg in messages %}
+    <div class="alert alert-{{ msg.tags }}">{{ msg }}</div>
+  {% endfor %}
+</div>
+{% endif %}
+{% endblock %}
+
+{% block content %}
+
+{% endblock %}
+
+<footer>
+  <div class="footer-top">
+    <div class="footer-brand">
+      <div class="footer-logo">
+        <div class="company-icon"></div>
+        <span>RENTIVA</span>
+      </div>
+      <div class="footer-contact">
+        <p><img src="{% static 'img/footer/location.svg' %}"><span>25566 Hc 1, Glenallen,<br>Alaska, 99588, USA</span></p>
+        <p><img src="{% static 'img/footer/call.svg' %}"><span>+603 4784 273 12</span></p>
+        <p><img src="{% static 'img/footer/sms.svg' %}"><span>rentivacars@gmail.com</span></p>
+      </div>
+    </div>
+
+    <div class="footer-col">
+      <h4>Our Product</h4>
+      <a href="#">Career</a>
+      <a href="/car/list/">Car</a>
+      <a href="#">Packages</a>
+      <a href="#">Features</a>
+      <a href="#">Priceline</a>
+    </div>
+
+    <div class="footer-col">
+      <h4>Resources</h4>
+      <a href="#">Download</a>
+      <a href="#">Help Centre</a>
+      <a href="#">Guides</a>
+      <a href="#">Partner Network</a>
+      <a href="#">Cruises</a>
+      <a href="#">Developer</a>
+    </div>
+
+    <div class="footer-col">
+      <h4>About Rentiva</h4>
+      <a href="/#experience">Why choose us</a>
+      <a href="#">Our Story</a>
+      <a href="#">Investor Relations</a>
+      <a href="#">Press Center</a>
+      <a href="#">Advertise</a>
+    </div>
+
+    <div class="footer-col">
+      <h4>Follow Us</h4>
+      <div class="social-media">
+        <a href="#"><img src="{% static 'img/footer/facebook.svg' %}"></a>
+        <a href="#"><img src="{% static 'img/footer/instagram.svg' %}"></a>
+        <a href="#"><img src="{% static 'img/footer/youtube.svg' %}"></a>
+      </div>
+    </div>
+  </div>
+
+  <div class="footer-bottom">
+    <i class="ri-copyright-line"></i><span>Copyright 2023 &bull; Rentiva, All Rights Reserved</span>
+  </div>
+</footer>
+
+<script>window.STATIC_URL = "{% static '' %}";</script>
+<script>
+(function () {
+  var hamburger = document.getElementById('hamburger');
+  var mobileNav = document.getElementById('mobileNav');
+  var overlay   = document.getElementById('mobileNavOverlay');
+  var closeBtn  = document.getElementById('mobileNavClose');
+  function openMenu()  { mobileNav.classList.add('open'); overlay.classList.add('open'); document.body.style.overflow = 'hidden'; }
+  function closeMenu() { mobileNav.classList.remove('open'); overlay.classList.remove('open'); document.body.style.overflow = ''; }
+  hamburger.addEventListener('click', openMenu);
+  closeBtn.addEventListener('click', closeMenu);
+  overlay.addEventListener('click', closeMenu);
+})();
+</script>
+
+<script src="https://cdn.jsdelivr.net/npm/tom-select@2.3.1/dist/js/tom-select.complete.min.js"></script>
+
+{% block extra_js %}
+
+{% endblock %}
+</body>
+</html>
