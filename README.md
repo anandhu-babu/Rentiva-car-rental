@@ -2,7 +2,7 @@
 
 ## Project Overview
 
-Rentiva is a Django-based car rental platform that connects vehicle owners (Renters) with customers looking to rent vehicles. The platform provides vehicle listing, booking management, role-based dashboards, and an AI-powered chatbot assistant.
+Rentiva is a Django-based car rental platform that connects vehicle owners (Renters) with customers looking to rent vehicles. The platform provides vehicle listing, booking management, role-based dashboards, user authentication, and an AI-powered chatbot assistant.
 
 ---
 
@@ -13,6 +13,7 @@ Rentiva is a Django-based car rental platform that connects vehicle owners (Rent
 * User Registration
 * User Login and Logout
 * Profile Management
+* Role-Based Access Control
 
 ### Customer Features
 
@@ -20,7 +21,8 @@ Rentiva is a Django-based car rental platform that connects vehicle owners (Rent
 * View Car Details
 * Search Cars by Location
 * Book Vehicles
-* Manage Profile
+* View Booking Status
+* Manage User Profile
 
 ### Renter Features
 
@@ -80,7 +82,7 @@ Rentiva is a Django-based car rental platform that connects vehicle owners (Rent
 
 ## Project Structure
 
-text
+```text
 Rentiva/
 │
 ├── CarRental/
@@ -93,8 +95,10 @@ Rentiva/
 │
 ├── uploads/
 ├── manage.py
-└── README.md
-
+├── requirements.txt
+├── README.md
+└── db.sqlite3
+```
 
 ---
 
@@ -102,55 +106,55 @@ Rentiva/
 
 ### Clone Repository
 
-bash
+```bash
 git clone https://github.com/anandhu-babu/Rentiva-car-rental.git
 
 cd Rentiva-car-rental
-
+```
 
 ### Create Virtual Environment
 
-bash
+```bash
 python -m venv env
-
+```
 
 ### Activate Virtual Environment
 
 Windows:
 
-bash
+```bash
 env\Scripts\activate
+```
 
+Linux/macOS:
 
-Linux / macOS:
-
-bash
+```bash
 source env/bin/activate
-
+```
 
 ### Install Dependencies
 
-bash
+```bash
 pip install -r requirements.txt
-
+```
 
 ### Apply Migrations
 
-bash
+```bash
 python manage.py migrate
-
+```
 
 ### Run Development Server
 
-bash
+```bash
 python manage.py runserver
+```
 
+Open in browser:
 
-Open the application in a browser:
-
-text
+```text
 http://127.0.0.1:8000/
-
+```
 
 ---
 
@@ -158,16 +162,16 @@ http://127.0.0.1:8000/
 
 ### Cars API
 
-text
+```text
 /api/cars/
 /api/cars/add/
-
+```
 
 ### Chatbot API
 
-text
+```text
 /api/chatbot/
-
+```
 
 ---
 
