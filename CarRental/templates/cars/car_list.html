@@ -3,6 +3,9 @@
 
 {% block content %}
 
+<!-- Filter drawer overlay (mobile) -->
+<div class="filter-overlay" id="filterOverlay"></div>
+
 <!-- Page Header -->
 <div class="cars-header">
   <div class="cars-header-content">
@@ -23,8 +26,14 @@
 <!-- Main content: sidebar + grid -->
 <div class="cars-main">
 
-  <!-- ── Filters Sidebar ── -->
+  <!-- ── Filters Sidebar / Mobile Drawer ── -->
   <aside class="filters-sidebar">
+
+    <!-- Close button: shown only on mobile -->
+    <button type="button" class="filter-drawer-close" id="filterCloseBtn" aria-label="Close filters">
+      <i class="ri-close-line"></i>
+    </button>
+
     <form method="GET" action="/cars/" id="filter-form">
 
       {% if filters.search %}
@@ -99,6 +108,17 @@
       <a href="/cars/" class="filter-clear-btn">Clear all</a>
     </form>
   </aside>
+
+  <!-- ── Mobile filter trigger bar (hidden on desktop) ── -->
+  <div class="filter-mobile-bar">
+    <button type="button" class="filter-open-btn" id="filterOpenBtn">
+      <i class="ri-equalizer-line"></i> Filters
+      {% if filters.brand or filters.fuel or filters.transmission %}
+        <span class="filter-active-dot"></span>
+      {% endif %}
+    </button>
+    <span class="filter-results-count">{{ cars|length }} car{{ cars|length|pluralize }}</span>
+  </div>
 
   <!-- ── Car Grid ── -->
   <div class="cars-grid-wrapper">
@@ -178,6 +198,29 @@ function updatePrice(val) {
     parseInt(val).toLocaleString('en-IN');
 }
 updatePrice(document.getElementById('priceRange').value);
+
+/* ── Mobile filter drawer ── */
+(function () {
+  var openBtn  = document.getElementById('filterOpenBtn');
+  var closeBtn = document.getElementById('filterCloseBtn');
+  var overlay  = document.getElementById('filterOverlay');
+  var sidebar  = document.querySelector('.filters-sidebar');
+
+  function openDrawer() {
+    sidebar.classList.add('open');
+    overlay.classList.add('open');
+    document.body.style.overflow = 'hidden';
+  }
+  function closeDrawer() {
+    sidebar.classList.remove('open');
+    overlay.classList.remove('open');
+    document.body.style.overflow = '';
+  }
+
+  if (openBtn)  openBtn.addEventListener('click', openDrawer);
+  if (closeBtn) closeBtn.addEventListener('click', closeDrawer);
+  if (overlay)  overlay.addEventListener('click', closeDrawer);
+}());
 </script>
 
 {% endblock %}

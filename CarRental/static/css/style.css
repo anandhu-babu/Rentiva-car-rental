@@ -897,8 +897,9 @@ footer {
   /* Testimonials pagination: add side padding so arrows aren't edge-flush */
   .testi-pagination-wrap { padding: 0 24px; }
 
-  /* Footer */
-  .footer-top { grid-template-columns: 1fr 1fr; gap: 28px; }
+  /* Footer: brand full-width at top, 4 link cols in 2-col grid */
+  .footer-top { grid-template-columns: repeat(2, 1fr); gap: 28px; }
+  .footer-brand { grid-column: 1 / -1; }
 
   /* List container */
   .list-container { padding-left: 24px; padding-right: 24px; }
@@ -912,7 +913,9 @@ footer {
   .hero-text p  { font-size: 15px; }
   .hero { padding-bottom: 30px; }
   .car-list { grid-template-columns: 1fr; }
-  .footer-top { grid-template-columns: 1fr; }
+  /* Footer: keep 2-col grid with brand spanning full width */
+  .footer-top { grid-template-columns: repeat(2, 1fr); }
+  .footer-brand { grid-column: 1 / -1; }
   .brands-container img { max-width: 80px; }
 
   .steps  { padding-top: 40px; padding-bottom: 40px; }
@@ -977,7 +980,8 @@ footer {
 
   /* ── Footer: compact ── */
   footer { padding-top: 28px; padding-bottom: 18px; }
-  .footer-top { gap: 14px; margin-bottom: 18px; }
+  .footer-top { grid-template-columns: repeat(2, 1fr); gap: 12px 16px; margin-bottom: 18px; }
+  .footer-brand { grid-column: 1 / -1; margin-bottom: 4px; }
   .footer-logo { margin-bottom: 12px; }
   .footer-logo span { font-size: 14px; }
   .footer-col h4 { font-size: 13px; margin-bottom: 10px; }
@@ -989,11 +993,12 @@ footer {
   .footer-bottom p { font-size: 11px; }
 }
 
-/* Mobile/tablet boundary — enforce 1-col, iOS zoom fix, touch improvements */
+/* Mobile/tablet boundary — iOS zoom fix, touch improvements */
 @media (max-width: 767px) {
-  /* 1-column layouts at mobile boundary */
+  /* 1-column for car list, 2-col for footer (brand spans full width) */
   .car-list   { grid-template-columns: 1fr; }
-  .footer-top { grid-template-columns: 1fr; }
+  .footer-top { grid-template-columns: repeat(2, 1fr); }
+  .footer-brand { grid-column: 1 / -1; }
 
   /* Step cards fill width on mobile */
   .step { width: 100%; max-width: 300px; }
@@ -1628,6 +1633,75 @@ select.form-control { cursor: pointer; }
 .no-cars h3 { font-size: 20px; color: #555; margin-bottom: 8px; }
 .no-cars p  { color: #aaa; margin-bottom: 22px; }
 
+/* ── Filter drawer (mobile) ── */
+.filter-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.45);
+  z-index: 498;
+}
+.filter-overlay.open { display: block; }
+
+.filter-mobile-bar { display: none; }
+
+.filter-open-btn {
+  display: none;
+  align-items: center;
+  gap: 7px;
+  background: #fff;
+  border: 1.5px solid #e0e0e0;
+  border-radius: 10px;
+  padding: 9px 16px;
+  font-size: 14px;
+  font-weight: 600;
+  color: #333;
+  cursor: pointer;
+  font-family: "Plus Jakarta Sans", sans-serif;
+  transition: border-color 0.2s, color 0.2s;
+  touch-action: manipulation;
+  position: relative;
+}
+.filter-open-btn:hover,
+.filter-open-btn:active { border-color: #1572D3; color: #1572D3; }
+.filter-open-btn i { font-size: 17px; }
+
+.filter-active-dot {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  width: 8px;
+  height: 8px;
+  background: #1572D3;
+  border-radius: 50%;
+  border: 1.5px solid #fff;
+}
+
+.filter-results-count { font-size: 13px; color: #888; }
+
+.filter-drawer-close {
+  display: none;
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  width: 34px;
+  height: 34px;
+  background: #f0f0f0;
+  border: none;
+  border-radius: 50%;
+  cursor: pointer;
+  color: #555;
+  font-size: 20px;
+  line-height: 1;
+  padding: 0;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.2s;
+  touch-action: manipulation;
+  font-family: inherit;
+}
+.filter-drawer-close:hover { background: #e0e0e0; }
+
 
 /* ============================================================
    BOOKING PAGE
@@ -2187,8 +2261,8 @@ select.form-control { cursor: pointer; }
 @media (max-width: 900px) {
   .booking-layout,
   .payment-layout { grid-template-columns: 1fr; }
-  /* Filter moves above car list */
-  .filters-sidebar { width: 100%; position: static; }
+  /* Filter sidebar width reset; positioning handled by drawer CSS below */
+  .filters-sidebar { width: 100%; }
   .cars-main { flex-direction: column; }
   .cars-search-bar { min-width: 100%; }
   .cars-header { flex-direction: column; align-items: flex-start; }
@@ -2202,10 +2276,10 @@ select.form-control { cursor: pointer; }
   .form-section { padding: 18px; }
 }
 
-/* Mobile (≤ 767 px) — 1-col car grid, iOS zoom prevention, touch targets */
+/* Mobile (≤ 767 px) — 2-col car grid (matches home Popular Deals), iOS zoom prevention, touch targets */
 @media (max-width: 767px) {
-  /* 1-col car grid */
-  .cars-grid { grid-template-columns: 1fr !important; }
+  /* 2-col car grid on mobile to match home page Popular Deals layout */
+  .cars-grid { grid-template-columns: repeat(2, 1fr) !important; }
 
   /* Remove split gradient — looks bad at narrow widths */
   .cars-header { background: #fff; }
@@ -2283,6 +2357,57 @@ select.form-control { cursor: pointer; }
     justify-content: center;
     text-align: center;
   }
+
+  /* Car list: tighter 2-col grid with compact gap */
+  .cars-grid { grid-template-columns: repeat(2, 1fr) !important; gap: 8px; }
+}
+
+/* ── Filter drawer: mobile bottom-sheet behavior ── */
+@media (max-width: 900px) {
+  /* Show the mobile filter trigger bar above the car grid */
+  .filter-mobile-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding-bottom: 12px;
+    margin-bottom: 8px;
+    border-bottom: 1px solid #f0f0f0;
+  }
+  .filter-open-btn   { display: inline-flex; }
+  .filter-drawer-close { display: flex; }
+
+  /* Convert sidebar to fixed bottom-sheet drawer */
+  .filters-sidebar {
+    position: fixed !important;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    top: auto;
+    width: 100% !important;
+    max-height: 82vh;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    border-radius: 20px 20px 0 0;
+    z-index: 499;
+    transform: translateY(110%);
+    transition: transform 0.32s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 -8px 40px rgba(0, 0, 0, 0.2);
+    padding: 8px 20px 48px;
+  }
+  /* Drag-handle indicator at top of drawer */
+  .filters-sidebar::before {
+    content: '';
+    display: block;
+    width: 40px;
+    height: 4px;
+    background: #ddd;
+    border-radius: 2px;
+    margin: 8px auto 18px;
+  }
+  .filters-sidebar.open { transform: translateY(0); }
+
+  .filters-sidebar .filter-title { margin-bottom: 16px; padding-bottom: 12px; }
+  .filters-sidebar .filter-group { margin-bottom: 16px; }
 }
 
 /* ============================================================
@@ -2639,13 +2764,44 @@ body:has(.car-details) {
     gap: 10px;
   }
 
-  .equipment-grid { grid-template-columns: 1fr; }
+  .equipment-grid { grid-template-columns: 1fr; row-gap: 16px; }
+  .equipment-item i    { font-size: 22px; }
+  .equipment-item span { font-size: 14px; }
 }
 
 @media (max-width: 480px) {
-  .left-side h1 { font-size: 22px; }
-  .price span   { font-size: 30px; }
-  .main-image   { height: 180px; }
+  .car-details { padding-top: 16px; padding-bottom: 28px; gap: 16px; }
+
+  .left-side h1 { font-size: 20px; }
+  .price { margin-bottom: 14px; }
+  .price span  { font-size: 28px; }
+  .price small { font-size: 15px; }
+  .main-image  { height: 175px; margin-bottom: 12px; }
+
+  /* Spec cards: ~25% smaller */
+  .spec-grid { gap: 8px; margin-bottom: 16px; }
+  .spec-card { padding: 12px 10px; border-radius: 10px; }
+  .spec-card img { width: 22px; height: 22px; margin-bottom: 8px; }
+  .spec-card h4  { font-size: 12px; margin-bottom: 3px; }
+  .spec-card p   { font-size: 11px; }
+
+  /* Section headings */
+  .right-side > h2,
+  .equipment h2 { font-size: 16px; margin-bottom: 14px; }
+
+  /* Rent button */
+  .rent-btn { height: 50px; font-size: 16px; margin-bottom: 22px; }
+
+  /* Equipment */
+  .equipment-grid { row-gap: 12px; }
+  .equipment-item { gap: 8px; }
+  .equipment-item i    { font-size: 18px; }
+  .equipment-item span { font-size: 12px; }
+
+  /* Other cars section */
+  .other-cars { padding-top: 24px; padding-bottom: 28px; }
+  .other-cars-header { margin-bottom: 14px; }
+  .other-cars-header h2 { font-size: 20px; }
 }
 
 /* Very small phones — shrink thumbnails so 3 fit per row */
