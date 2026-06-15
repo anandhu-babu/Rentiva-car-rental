@@ -6,6 +6,10 @@
    Section banners below mark where each original file's rules begin.
    Below: contents of base.css (global reset, header, hero, footer, nav, etc.)
    ================================================================ */
+html {
+  scroll-behavior: smooth;
+}
+
 * {
   margin: 0;
   padding: 0;
@@ -473,14 +477,21 @@ button {
   text-decoration: none;
 }
 
-
-.app {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  background: #fff;
-  margin-bottom: 100px;
+.app{
+    position: relative;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    min-height: 600px;
+    padding: 80px 160px 0;
+    overflow: visible;
 }
+
+.app-content{
+    width: 42%;
+    z-index: 2;
+}
+
 
 .app h2 {
   font-size: 38px;
@@ -498,22 +509,31 @@ button {
   margin-bottom: 40px;
 }
 
-.app > img {
-  width: 360px;
+.app > div:first-child{
+    width: 48%;
+    position: relative;
+    z-index: 2;
 }
 
-/* Responsive phone mock in the app download section.
-   Replaces the old inline style="width:280px;height:320px;flex-shrink:0" */
-.app-phone-mock {
-  width: clamp(140px, 22vw, 280px);
-  aspect-ratio: 7 / 8;
-  background: #e8f3ff;
-  border-radius: 30px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-shrink: 1;
-  min-width: 120px;
+
+.app-phone-mock{
+    width: 58%;
+    position: relative;
+    display: flex;
+    justify-content: flex-end;
+    align-items: flex-end;
+    overflow: visible;
+}
+
+
+.app-phone-img{
+    width: 520px;
+    max-width: none;
+    height: auto;
+    position: relative;
+    bottom: -48px;   /* footerilekku overlap */
+    z-index: 5;
+    display: block;
 }
 
 footer {
@@ -4173,7 +4193,7 @@ body:has(.signup-page){
 /* Pagination + Navigation */
 .testi-pagination-wrap {
   display: flex;
-  justify-content: center;
+  justify-content: space-between;
   align-items: center;
   gap: 16px;
   margin-top: 40px;
@@ -4217,7 +4237,16 @@ body:has(.signup-page){
 .testi-pagination {
   display: flex;
   align-items: center;
+  justify-content: center;
   gap: 6px;
+  /* Swiper injects position:absolute + left:0 + width:100% onto this element,
+     which pulls it out of the flex row and left-aligns the dots.
+     These overrides restore it as a normal flex child. */
+  position: static !important;
+  flex: 1;
+  bottom: auto !important;
+  width: auto !important;
+  transform: none !important;
 }
 
 .testi-pagination .swiper-pagination-bullet {
