@@ -1,4 +1,4 @@
-/* ================================================================
+﻿/* ================================================================
    RENTIVA — CONSOLIDATED STYLESHEET
    This file merges (in their original <link> loading order) the rules that
    used to live in: base.css, style.css, pages.css, car_details.css,
@@ -744,11 +744,8 @@ footer {
   margin-bottom: 30px;
 }
 
-/* ────────────────────────────────────────
-   RESPONSIVE BREAKPOINTS
-──────────────────────────────────────── */
+/* RESPONSIVE */
 
-/* Large tablet — reduce 160px gutter to 80px */
 @media (max-width: 1200px) {
   header, .hero, .steps,
   .experience, .deals,
@@ -791,7 +788,7 @@ footer {
   /* Hero — stack vertically, enough bottom padding for search box */
   .hero {
     flex-direction: column;
-    padding: 40px 24px 340px;
+    padding: 28px 24px 30px;
     background: #fff;
     min-height: unset;
   }
@@ -803,7 +800,7 @@ footer {
   }
 
   .hero-right,
-  .hero-img   { height: 300px; }
+  .hero-img   { display: none; }
   .hero-visual { height: 300px; }
   .hero-frame  { top: 0; right: -10px; transform: none; width: 100%; height: 300px; }
   .hero-car    { right: -10px; bottom: 0; width: calc(100% + 10px); }
@@ -815,17 +812,22 @@ footer {
   .search-box {
     flex-direction: column;
     align-items: flex-start;
-    gap: 14px;
-    width: calc(100% - 48px);
+    gap: 10px;
+    width: 100%;
     max-width: none;
-    left: 24px;
-    bottom: 24px;
+    position: relative;
+    left: 0;
+    bottom: 0;
+    margin: 20px 0 0;
     height: auto;
-    padding: 18px;
+    padding: 16px 14px;
   }
-  .search-field { padding: 0; width: 100%; }
+
+  .search-field { padding: 0; min-height: 44px; }
+  .search-field img { width: 24px; height: 24px; }
+  .search-field-text h4 { font-size: 14px; }
   .search-divider { display: none; }
-  .search-box button { margin-left: 0; width: 100%; }
+  .search-box button { margin-left: 0; width: 100%; height: 48px; }
 
   /* Steps */
   .step-box {
@@ -843,17 +845,19 @@ footer {
     width: 100%;
   }
 
- .experience{
-    display: flex;
-    align-items: center;
-    gap: 90px;
+  .experience {
+    flex-direction: column;
+    gap: 0;
+    padding-top: 50px;
+    padding-bottom: 50px;
+  }
+  .exp-img { display: none; }
 
-    padding-top: 100px;
-    padding-bottom: 100px;
-}
-
-  .exp-content { width: 100%; }
-  .exp-content h2 { font-size: 28px; }
+  .exp-content { width: 100%; text-align: center; }
+  .exp-content h2 { font-size: 28px; text-align: center; }
+  .exp-content .tag { display: block; text-align: center; }
+  /* Reset: only the badge and heading are centered — feature items stay left-aligned */
+  .feature-text { text-align: left; }
 
   /* Deals car list */
   .car-list { grid-template-columns: repeat(2, 1fr); }
@@ -864,17 +868,34 @@ footer {
     text-align: center;
     gap: 24px;
     align-items: center;
+    min-height: unset;
   }
+  .app-content,
+  .app > div:first-child { width: 100%; }
   .app > img {
     width: 100%;
     max-width: 300px;
     align-self: center;
   }
   .app-phone-mock {
-    width: clamp(120px, 40vw, 200px);
+    width: 100%;
+    max-width: 240px;
     align-self: center;
   }
+  .app-phone-img {
+    width: 100%;
+    max-width: 100%;
+    position: static;
+    bottom: auto;
+  }
   .store-buttons { justify-content: center; }
+
+  /* Reduce excessive vertical padding on tablet */
+  .steps  { padding-top: 50px; padding-bottom: 50px; }
+  .brands { padding-top: 40px; padding-bottom: 40px; }
+
+  /* Testimonials pagination: add side padding so arrows aren't edge-flush */
+  .testi-pagination-wrap { padding: 0 24px; }
 
   /* Footer */
   .footer-top { grid-template-columns: 1fr 1fr; gap: 28px; }
@@ -886,22 +907,22 @@ footer {
 /* Large mobile */
 @media (max-width: 640px) {
   h2 { font-size: 28px; }
+
   .hero-text h1 { font-size: 28px; }
   .hero-text p  { font-size: 15px; }
-  .hero { padding-bottom: 340px; }
-  .hero-right,
-  .hero-img   { height: 240px; }
-  .hero-visual { height: 240px; }
-
+  .hero { padding-bottom: 30px; }
   .car-list { grid-template-columns: 1fr; }
   .footer-top { grid-template-columns: 1fr; }
-
   .brands-container img { max-width: 80px; }
+
+  .steps  { padding-top: 40px; padding-bottom: 40px; }
+  .brands { padding-top: 28px; padding-bottom: 28px; }
+  .steps h2, .deals h2 { margin-bottom: 30px; }
 }
 
 /* Small mobile */
 @media (max-width: 480px) {
-  h2 { font-size: 24px; }
+  h2 { font-size: 22px; }
 
   header, .steps, .experience,
   .deals, .testimonial, .app, footer {
@@ -909,26 +930,63 @@ footer {
     padding-right: 16px;
   }
 
-  .hero {
-    padding: 32px 16px 320px;
-  }
+  .hero { padding: 20px 16px 20px; }
 
   .hero-text h1 { font-size: 24px; }
   .hero-text p  { font-size: 14px; }
-  .hero-right,
-  .hero-img   { height: 200px; }
-  .hero-visual { height: 200px; }
   .hero-car    { right: 0; width: 100%; }
 
-  .search-box {
-    left: 16px;
-    width: calc(100% - 32px);
-    max-width: none;
-  }
+  .steps  { padding-top: 24px; padding-bottom: 24px; }
+  .brands { padding-top: 20px; padding-bottom: 20px; }
+  .steps h2, .deals h2 { margin-bottom: 18px; }
+  /* align pagination arrows with the narrowed swiper outer margin */
+  .testi-pagination-wrap { padding: 0 20px; }
 
-  .store-buttons img { height: 38px; }
+  .store-buttons img { height: 36px; }
 
   .list-container { padding-left: 16px; padding-right: 16px; }
+
+  /* ── Tag: scale down on small screens ── */
+  .tag {
+    padding: 7px 18px;
+    font-size: 12px;
+    height: auto;
+    min-width: 0;
+    margin-bottom: 10px;
+  }
+
+  /* ── How It Works: compact icons, tighter stack ── */
+  .step-box { gap: 20px; }
+  .icon { width: 72px; height: 72px; border-radius: 10px; margin-bottom: 12px; }
+  .icon img { width: 30px; height: 30px; }
+  .step h3 { font-size: 14px; margin-bottom: 5px; }
+  .step p  { font-size: 12px; }
+
+  /* ── Brands: fit max logos on one row ── */
+  .brands-container { gap: 4px 8px; }
+  .brands-container img { max-width: 42px; }
+
+  /* ── Experience: tighten spacing ── */
+  .experience { padding-top: 28px; padding-bottom: 28px; }
+  .exp-content h2 { font-size: 19px; margin-bottom: 14px; }
+  .feature { gap: 12px; margin-bottom: 14px; }
+  .feature .icon-container { width: 44px; height: 44px; border-radius: 10px; }
+  .feature .icon-container img { width: 20px; height: 20px; }
+  .feature-text h3 { font-size: 14px; }
+  .feature-text p { font-size: 12px; }
+
+  /* ── Footer: compact ── */
+  footer { padding-top: 28px; padding-bottom: 18px; }
+  .footer-top { gap: 14px; margin-bottom: 18px; }
+  .footer-logo { margin-bottom: 12px; }
+  .footer-logo span { font-size: 14px; }
+  .footer-col h4 { font-size: 13px; margin-bottom: 10px; }
+  .footer-col a { font-size: 12px; margin-bottom: 7px; }
+  .footer-contact p { font-size: 12px; margin-bottom: 8px; gap: 8px; }
+  .social-media { gap: 10px; }
+  .social-media img { width: 20px; height: 20px; }
+  .footer-bottom { padding-top: 14px; }
+  .footer-bottom p { font-size: 11px; }
 }
 
 /* Mobile/tablet boundary — enforce 1-col, iOS zoom fix, touch improvements */
@@ -1112,6 +1170,49 @@ footer {
 @media (max-width: 767px) {
   .car-list {
     grid-template-columns: 1fr !important;
+  }
+}
+
+/* Small mobile (≤ 480 px): 2 cards per row with compact card styles.
+   Must come after the 767px block to win the cascade. */
+@media (max-width: 480px) {
+  .car-list {
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 8px;
+  }
+  .car-card {
+    padding: 10px 8px;
+    gap: 8px;
+  }
+  .car-card-img {
+    height: 90px;
+  }
+  .car-card-name {
+    font-size: 13px;
+  }
+  .car-card-rating {
+    font-size: 11px;
+    margin-top: -2px;
+  }
+  .car-card-features {
+    row-gap: 6px;
+    column-gap: 4px;
+  }
+  .car-feature-item {
+    font-size: 10px;
+    gap: 4px;
+    white-space: normal;
+  }
+  .car-feature-item img {
+    width: 12px;
+    height: 12px;
+  }
+  .car-price-label { font-size: 12px; }
+  .car-price-value { font-size: 16px; }
+  .car-rent-btn {
+    padding: 10px 0;
+    font-size: 12px;
+    gap: 4px;
   }
 }
 
@@ -4334,17 +4435,37 @@ body:has(.signup-page){
 }
 
 @media (max-width: 480px) {
-  .testi-heading {
-    font-size: 22px;
-  }
-  .testi-card {
-    padding: 18px 16px 14px;
-  }
+  .testimonials { padding-top: 40px; padding-bottom: 40px; }
+
+  /* Header: pull in from full-width edges */
+  .testi-header { padding: 0 16px; margin-bottom: 24px; }
+  .testi-heading { font-size: 19px; }
+  .testi-subtext { font-size: 12px; margin-bottom: 16px; }
+  .testi-stat__num { font-size: 22px; }
+  .testi-stat__lbl { font-size: 11px; }
+  .testi-stat-sep { height: 28px; }
+
+  /* Swiper: constrain to viewport-40px so card isn't edge-to-edge */
+  .testi-swiper-outer { margin: 0 20px; }
+
+  /* Compact card */
+  .testi-card { padding: 14px 12px 10px; border-radius: 14px; }
+  .testi-card__top { margin-bottom: 10px; }
+  .testi-rating__num { font-size: 24px; }
+  .testi-stars i { font-size: 13px; }
+  .testi-quote-icon { font-size: 28px; }
+  .testi-text { font-size: 12px; line-height: 1.6; margin-bottom: 10px; }
+  .testi-card__badges { gap: 5px; margin-bottom: 10px; }
+  .testi-badge { font-size: 9px; padding: 3px 8px; }
+  .testi-card__footer { padding-top: 10px; gap: 8px; }
+  .testi-avatar { width: 30px; height: 30px; font-size: 10px; }
+  .testi-customer { gap: 8px; }
+  .testi-name { font-size: 12px; }
+  .testi-location,
+  .testi-date { font-size: 10px; }
 }
 
-/* ============================================================
-   Below: contents of chatbot.css (home page chat widget)
-   ============================================================ */
+
 .chat-toggle-btn{
     position: fixed;
     right: 30px;
@@ -4706,3 +4827,4 @@ body:has(.signup-page){
     border-radius: 50%;
     border: 2px solid #1572D3;
 }
+
