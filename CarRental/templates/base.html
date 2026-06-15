@@ -106,7 +106,10 @@
 {% if messages %}
 <div class="messages-bar">
   {% for msg in messages %}
-    <div class="alert alert-{{ msg.tags }}">{{ msg }}</div>
+    <div class="alert alert-{{ msg.tags }}">
+      <span>{{ msg }}</span>
+      <button class="alert-close" aria-label="Dismiss">&times;</button>
+    </div>
   {% endfor %}
 </div>
 {% endif %}
@@ -141,7 +144,7 @@
 
     <div class="footer-col">
       <h4>Resources</h4>
-      <a href="#">Download</a>
+      <a href="/#app">Download</a>
       <a href="#">Help Centre</a>
       <a href="#">Guides</a>
       <a href="#">Partner Network</a>
@@ -185,6 +188,33 @@
   hamburger.addEventListener('click', openMenu);
   closeBtn.addEventListener('click', closeMenu);
   overlay.addEventListener('click', closeMenu);
+})();
+</script>
+
+<script>
+(function () {
+  var DELAYS = { success: 3000, info: 4000, warning: 5000, error: 6000, danger: 6000 };
+
+  function dismissAlert(el) {
+    el.style.transition = 'opacity 0.4s ease';
+    el.style.opacity = '0';
+    setTimeout(function () { if (el.parentNode) el.parentNode.removeChild(el); }, 420);
+  }
+
+  document.querySelectorAll('.alert').forEach(function (el) {
+    var tag = '';
+    el.classList.forEach(function (c) { if (c.indexOf('alert-') === 0) tag = c.slice(6); });
+    var delay = DELAYS[tag] || 4000;
+    var timer = setTimeout(function () { dismissAlert(el); }, delay);
+
+    var closeBtn = el.querySelector('.alert-close');
+    if (closeBtn) {
+      closeBtn.addEventListener('click', function () {
+        clearTimeout(timer);
+        dismissAlert(el);
+      });
+    }
+  });
 })();
 </script>
 

@@ -35,6 +35,7 @@ urlpatterns = [
     # Profile
     path('profile/', editDashboardfn),
     path('edit-profile/', editDashboardfn),
+    path('remove-profile-photo/', removeProfilePhotofn),
 
     # Chatbot
     path('chatbot/query/', chatbot_query),

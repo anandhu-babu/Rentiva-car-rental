@@ -427,6 +427,20 @@ def paymentfn(request):
 
 
 @login_required
+def removeProfilePhotofn(request):
+    if request.method == 'POST':
+        profile = request.user.profile
+        if profile.profile:
+            storage, path = profile.profile.storage, profile.profile.name
+            profile.profile = None
+            profile.save()
+            if storage.exists(path):
+                storage.delete(path)
+            messages.success(request, 'Profile photo removed.')
+    return redirect('/edit-profile/')
+
+
+@login_required
 def editDashboardfn(request):
     profile = request.user.profile
 
@@ -447,7 +461,7 @@ def editDashboardfn(request):
 
         profile.save()
         messages.success(request, 'Profile updated successfully!')
-        return redirect('/profile/')
+        return redirect('/dashboard/customer/')
 
     return render(request, 'dashboard/edit_dashboard.html')
 

@@ -9,7 +9,6 @@
 
     <!-- Top-right action buttons -->
     <div class="ep-actions">
-      <button type="button" class="ep-edit-btn" id="ep-edit-btn">Edit Profile</button>
       <button type="submit" class="ep-save-btn" id="ep-save-btn">Save profile</button>
       <button type="button" class="ep-cancel-btn" id="ep-cancel-btn">Cancel</button>
     </div>
@@ -31,6 +30,11 @@
       <button type="button" class="ep-change-photo-btn" id="ep-photo-btn" onclick="document.getElementById('photo-input').click()">
         Change profile photo
       </button>
+      {% if user.profile.profile %}
+      <button type="button" class="ep-remove-photo-btn" id="ep-remove-photo-btn" onclick="removeProfilePhoto()">
+        Remove Photo
+      </button>
+      {% endif %}
       <p class="ep-photo-hint" id="ep-photo-hint">Add a face to the name. It'll help other hosts and guests recognize you at the beginning of a trip.</p>
 
       <!-- Name (read-only display) -->
@@ -140,7 +144,6 @@
 
 <script>
 (function () {
-  var editBtn    = document.getElementById('ep-edit-btn');
   var saveBtn    = document.getElementById('ep-save-btn');
   var cancelBtn  = document.getElementById('ep-cancel-btn');
   var photoBtn   = document.getElementById('ep-photo-btn');
@@ -156,25 +159,13 @@
   var origPreviewVisible = preview ? preview.style.display !== 'none' : false;
   var origIconVisible    = icon    ? icon.style.display    !== 'none' : false;
 
-  function setViewMode() {
-    fields.forEach(function (f) { f.setAttribute('readonly', ''); });
-    editBtn.style.display   = '';
-    saveBtn.style.display   = 'none';
-    cancelBtn.style.display = 'none';
-    photoBtn.style.display  = 'none';
-    photoHint.style.display = 'none';
-  }
-
   function setEditMode() {
     fields.forEach(function (f) { f.removeAttribute('readonly'); });
-    editBtn.style.display   = 'none';
     saveBtn.style.display   = '';
     cancelBtn.style.display = '';
     photoBtn.style.display  = '';
     photoHint.style.display = '';
   }
-
-  editBtn.addEventListener('click', setEditMode);
 
   cancelBtn.addEventListener('click', function () {
     fields.forEach(function (f) { f.value = origValues[f.name]; });
@@ -184,10 +175,23 @@
       preview.style.display = origPreviewVisible ? 'block' : 'none';
     }
     if (icon) icon.style.display = origIconVisible ? '' : 'none';
-    setViewMode();
+    window.location.href = '/dashboard/customer/';
   });
 
-  setViewMode();
+  setEditMode();
+
+  window.removeProfilePhoto = function () {
+    if (!confirm('Are you sure you want to remove your profile photo?')) return;
+    var csrf = document.querySelector('[name=csrfmiddlewaretoken]').value;
+    fetch('/remove-profile-photo/', {
+      method: 'POST',
+      headers: { 'X-CSRFToken': csrf },
+    }).then(function () {
+      window.location.href = '/edit-profile/';
+    }).catch(function () {
+      window.location.href = '/edit-profile/';
+    });
+  };
 
   photoInput.addEventListener('change', function () {
     var file = this.files[0];
