@@ -1,23 +1,61 @@
-const chatToggleBtn    = document.getElementById("chatToggleBtn");
-const chatbotContainer = document.getElementById("chatbotContainer");
-const closeChatbot     = document.getElementById("closeChatbot");
-const chatBody         = document.getElementById("chatBody");
-const userInput        = document.getElementById("userInput");
+const chatToggleBtn     = document.getElementById("chatToggleBtn");
+const chatbotContainer  = document.getElementById("chatbotContainer");
+const closeChatbot      = document.getElementById("closeChatbot");
+const chatBody          = document.getElementById("chatBody");
+const userInput         = document.getElementById("userInput");
+const sendBtn           = document.getElementById("sendBtn");
+const suggestionsToggle = document.getElementById("suggestionsToggle");
+const suggestionsPanel  = document.getElementById("suggestionsPanel");
+const closeSuggestions  = document.getElementById("closeSuggestions");
 
-chatToggleBtn.onclick = () => { chatbotContainer.style.display = "flex"; scrollToBottom(); };
-closeChatbot.onclick  = () => { chatbotContainer.style.display = "none"; };
-
-userInput.addEventListener("keydown", e => {
-    if (e.key === "Enter") sendMessage();
+// ── Open / close chat window ──────────────────────────────
+chatToggleBtn.addEventListener("click", () => {
+    chatbotContainer.classList.add("open");
+    scrollToBottom();
+    userInput.focus();
 });
 
+closeChatbot.addEventListener("click", () => {
+    chatbotContainer.classList.remove("open");
+    closeSuggestionsPanel();
+});
+
+// ── Suggestions panel toggle ──────────────────────────────
+suggestionsToggle.addEventListener("click", () => {
+    if (suggestionsPanel.classList.contains("open")) {
+        closeSuggestionsPanel();
+    } else {
+        openSuggestionsPanel();
+    }
+});
+
+closeSuggestions.addEventListener("click", closeSuggestionsPanel);
+
+function openSuggestionsPanel() {
+    suggestionsPanel.classList.add("open");
+    suggestionsToggle.classList.add("active");
+}
+
+function closeSuggestionsPanel() {
+    suggestionsPanel.classList.remove("open");
+    suggestionsToggle.classList.remove("active");
+}
+
+// ── Enter key sends message ───────────────────────────────
+userInput.addEventListener("keydown", e => {
+    if (e.key === "Enter" && !e.shiftKey) sendMessage();
+});
+
+// ── Helpers ──────────────────────────────────────────────
 function getCsrfToken() {
     const match = document.cookie.match(/csrftoken=([^;]+)/);
     return match ? match[1] : "";
 }
 
 function scrollToBottom() {
-    chatBody.scrollTop = chatBody.scrollHeight;
+    requestAnimationFrame(() => {
+        chatBody.scrollTop = chatBody.scrollHeight;
+    });
 }
 
 // role: "user" | "bot"  |  html: true renders innerHTML (bot only)
@@ -40,10 +78,14 @@ async function sendMessage() {
     const message = userInput.value.trim();
     if (!message) return;
 
+    closeSuggestionsPanel();
     appendMessage("user", message);
     userInput.value = "";
 
-    // Animated typing indicator
+    // Disable input while waiting for response
+    userInput.disabled = true;
+    sendBtn.disabled = true;
+
     const botDiv = appendMessage(
         "bot",
         '<span class="typing-dots"><span></span><span></span><span></span></span>',
@@ -62,13 +104,18 @@ async function sendMessage() {
         const data = await res.json();
         botDiv.querySelector("p").innerHTML = data.reply;
     } catch {
-        botDiv.querySelector("p").textContent = "⚠️ Could not connect. Please try again.";
+        botDiv.querySelector("p").innerHTML =
+            '<span style="color:#ef4444"><i class="ri-error-warning-line"></i> Could not connect. Please try again.</span>';
     }
 
+    userInput.disabled = false;
+    sendBtn.disabled = false;
+    userInput.focus();
     scrollToBottom();
 }
 
 function sendSuggestion(text) {
+    closeSuggestionsPanel();
     userInput.value = text;
     sendMessage();
 }

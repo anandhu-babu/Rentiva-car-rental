@@ -1,9 +1,9 @@
 {% load static %}
 
 <!-- ── Chat Toggle Button ──────────────────────────────── -->
-<div class="chat-toggle-btn" id="chatToggleBtn" role="button" aria-label="Open chat assistant" tabindex="0">
-    <img src="{% static 'img/chatbot.svg' %}" alt="Chat">
-</div>
+<button class="chat-toggle-btn" id="chatToggleBtn" aria-label="Open chat assistant">
+    <img src="{% static 'img/chatbot.svg' %}" alt="">
+</button>
 
 <!-- ── Chatbot Window ──────────────────────────────────── -->
 <div class="chatbot-container" id="chatbotContainer" role="dialog" aria-modal="true" aria-label="Rentiva AI Assistant">
@@ -12,59 +12,97 @@
     <div class="chatbot-header">
         <div class="chatbot-profile">
             <div class="chatbot-avatar-wrap">
-                <img src="{% static 'img/chatbot.svg' %}" alt="AI Assistant">
+                <img src="{% static 'img/chatbot.svg' %}" alt="">
                 <span class="online-dot"></span>
             </div>
             <div class="chatbot-profile-info">
-                <h3>AI Assistant</h3>
-                <span>Online &mdash; replies instantly</span>
+                <h3>Rentiva AI</h3>
+                <span class="chatbot-status">
+                    <span class="status-pulse"></span>Online &mdash; replies instantly
+                </span>
             </div>
         </div>
-        <button id="closeChatbot" aria-label="Close chat">
+        <button id="closeChatbot" class="chatbot-close-btn" aria-label="Close chat">
             <i class="ri-close-line"></i>
         </button>
     </div>
 
     <!-- Message Body -->
     <div class="chatbot-body" id="chatBody">
+        <div class="bot-message welcome-message">
+            <p>Hi there! I'm Rentiva's AI assistant. Ask me about cars, bookings, pricing, or anything else — I'm here to help.</p>
+        </div>
+    </div>
 
-        <div class="bot-message">
-            <p>👋 Hi! I'm Rentiva's AI assistant. Ask me anything about cars, bookings, or rentals!</p>
+    <!-- Suggestions Panel — hidden until toggle button is clicked -->
+    <div class="chatbot-suggestions-panel" id="suggestionsPanel">
+        <div class="suggestions-panel-header">
+            <span><i class="ri-flashlight-line"></i>Quick Actions</span>
+            <button id="closeSuggestions" class="suggestions-close-btn" aria-label="Close suggestions">
+                <i class="ri-close-line"></i>
+            </button>
         </div>
 
-        <!-- Quick Action Suggestions -->
-        <div class="chat-suggestions">
+        <div class="suggestions-scroll">
 
-            <span class="chat-suggestion-label">For Customers</span>
-            <div class="suggestion-grid">
-                <button onclick="sendSuggestion('Available Cars Today')">🚗 Available Cars</button>
-                <button onclick="sendSuggestion('Luxury Cars')">✨ Luxury Cars</button>
-                <button onclick="sendSuggestion('SUVs & Family Cars')">🚙 SUVs &amp; Family</button>
-                <button onclick="sendSuggestion('Budget Cars Under ₹2000')">💰 Budget Cars</button>
-                <button onclick="sendSuggestion('How to Book a Car?')">📅 How to Book?</button>
-                {% if user.is_authenticated %}
-                <button onclick="sendSuggestion('My Booking Status')">📋 My Bookings</button>
-                {% endif %}
-                <button onclick="sendSuggestion('Contact Support')">📞 Support</button>
+            <div class="suggestions-section">
+                <div class="suggestions-section-label">For Customers</div>
+                <div class="suggestion-grid">
+                    <button onclick="sendSuggestion('Available Cars Today')">
+                        <i class="ri-car-line"></i>Available Cars
+                    </button>
+                    <button onclick="sendSuggestion('Luxury Cars')">
+                        <i class="ri-vip-diamond-line"></i>Luxury Cars
+                    </button>
+                    <button onclick="sendSuggestion('SUVs & Family Cars')">
+                        <i class="ri-truck-line"></i>SUVs &amp; Family
+                    </button>
+                    <button onclick="sendSuggestion('Budget Cars Under ₹2000')">
+                        <i class="ri-price-tag-3-line"></i>Budget Cars
+                    </button>
+                    <button onclick="sendSuggestion('How to Book a Car?')">
+                        <i class="ri-calendar-check-line"></i>How to Book?
+                    </button>
+                    {% if user.is_authenticated %}
+                    <button onclick="sendSuggestion('My Booking Status')">
+                        <i class="ri-file-list-3-line"></i>My Bookings
+                    </button>
+                    {% endif %}
+                    <button onclick="sendSuggestion('Contact Support')">
+                        <i class="ri-customer-service-2-line"></i>Support
+                    </button>
+                </div>
             </div>
 
-            <span class="chat-suggestion-label">For Renters</span>
-            <div class="suggestion-grid">
-                {% if user.is_authenticated and user.profile.role == 'renter' %}
-                <button onclick="sendSuggestion('Manage My Cars')">🛠️ Manage Cars</button>
-                <button onclick="sendSuggestion('View Renter Dashboard')">📊 Renter Dashboard</button>
-                {% else %}
-                <button onclick="sendSuggestion('Become a Renter')">🚗 Become a Renter</button>
-                {% endif %}
-                <button onclick="sendSuggestion('How to List My Car?')">📝 List My Car</button>
+            <div class="suggestions-section">
+                <div class="suggestions-section-label">For Renters</div>
+                <div class="suggestion-grid">
+                    {% if user.is_authenticated and user.profile.role == 'renter' %}
+                    <button onclick="sendSuggestion('Manage My Cars')">
+                        <i class="ri-settings-3-line"></i>Manage Cars
+                    </button>
+                    <button onclick="sendSuggestion('View Renter Dashboard')">
+                        <i class="ri-dashboard-3-line"></i>Dashboard
+                    </button>
+                    {% else %}
+                    <button onclick="sendSuggestion('Become a Renter')">
+                        <i class="ri-exchange-line"></i>Become a Renter
+                    </button>
+                    {% endif %}
+                    <button onclick="sendSuggestion('How to List My Car?')">
+                        <i class="ri-add-circle-line"></i>List My Car
+                    </button>
+                </div>
             </div>
 
         </div>
-
     </div>
 
     <!-- Input Area -->
     <div class="chatbot-input">
+        <button class="suggestions-trigger-btn" id="suggestionsToggle" aria-label="Quick actions" title="Quick actions">
+            <i class="ri-apps-2-line"></i>
+        </button>
         <input
             type="text"
             id="userInput"
@@ -72,7 +110,7 @@
             autocomplete="off"
             aria-label="Chat message"
         >
-        <button onclick="sendMessage()" aria-label="Send message">
+        <button class="send-btn" id="sendBtn" onclick="sendMessage()" aria-label="Send message">
             <i class="ri-send-plane-fill"></i>
         </button>
     </div>
