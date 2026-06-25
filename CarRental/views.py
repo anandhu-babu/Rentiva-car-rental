@@ -27,16 +27,6 @@ def _brand_list():
     return [BrandOption(name) for val, name in BRAND_CHOICES if val]
 
 
-def _brand_list_from_db():
-    names = (
-        Car.objects.exclude(brand='').exclude(brand=None)
-        .values_list('brand', flat=True)
-        .distinct()
-        .order_by('brand')
-    )
-    return [BrandOption(n) for n in names]
-
-
 def _resolve_plan(plan_key, car):
     if plan_key == 'weekly' and car.weekly_rent:
         return 'weekly', car.weekly_rent, 'Weekly'
@@ -58,28 +48,28 @@ def customer_register(request):
     if request.method == 'POST':
         form = CustomerRegistrationForm(request.POST, request.FILES)
         if form.is_valid():
-            d = form.cleaned_data
+            data = form.cleaned_data
             user = User.objects.create_user(
-                username=d['email'].lower(),
-                email=d['email'].lower(),
-                password=d['password1'],
-                first_name=d['first_name'].strip(),
-                last_name=d['last_name'].strip(),
+                username=data['email'].lower(),
+                email=data['email'].lower(),
+                password=data['password1'],
+                first_name=data['first_name'].strip(),
+                last_name=data['last_name'].strip(),
             )
             Profile.objects.create(
                 user=user,
                 role='customer',
-                phone=d['phone'],
-                dob=d['dob'],
-                driving_license_number=d['driving_license_number'].strip(),
-                driving_license_file=d['driving_license_file'],
-                government_id_file=d['government_id_file'],
+                phone=data['phone'],
+                dob=data['dob'],
+                driving_license_number=data['driving_license_number'].strip(),
+                driving_license_file=data['driving_license_file'],
+                government_id_file=data['government_id_file'],
                 verification_status='pending',
             )
             Notification.objects.create(
                 notification_type='new_customer',
                 title='New Customer Registration',
-                message=f'{d["first_name"].strip()} {d["last_name"].strip()} ({d["email"].lower()}) has registered as a customer and submitted KYC documents for verification.',
+                message=f'{data["first_name"].strip()} {data["last_name"].strip()} ({data["email"].lower()}) has registered as a customer and submitted KYC documents for verification.',
                 related_user=user,
             )
             messages.success(
@@ -97,35 +87,35 @@ def renter_register(request):
     if request.method == 'POST':
         form = RenterRegistrationForm(request.POST, request.FILES)
         if form.is_valid():
-            d = form.cleaned_data
+            data = form.cleaned_data
             user = User.objects.create_user(
-                username=d['email'].lower(),
-                email=d['email'].lower(),
-                password=d['password1'],
-                first_name=d['first_name'].strip(),
-                last_name=d['last_name'].strip(),
+                username=data['email'].lower(),
+                email=data['email'].lower(),
+                password=data['password1'],
+                first_name=data['first_name'].strip(),
+                last_name=data['last_name'].strip(),
             )
             Profile.objects.create(
                 user=user,
                 role='renter',
                 is_renter=True,
-                phone=d['phone'],
-                address=d['address'].strip(),
-                dob=d['dob'],
-                driving_license_number=d['driving_license_number'].strip(),
-                driving_license_file=d['driving_license_file'],
-                government_id_file=d['government_id_file'],
-                aadhaar_pan=d.get('aadhaar_pan', '').strip(),
-                bank_account_holder=d['bank_account_holder'].strip(),
-                bank_account_number=d['bank_account_number'].strip(),
-                ifsc_code=d['ifsc_code'],
-                profile=d['profile_photo'],
+                phone=data['phone'],
+                address=data['address'].strip(),
+                dob=data['dob'],
+                driving_license_number=data['driving_license_number'].strip(),
+                driving_license_file=data['driving_license_file'],
+                government_id_file=data['government_id_file'],
+                aadhaar_pan=data.get('aadhaar_pan', '').strip(),
+                bank_account_holder=data['bank_account_holder'].strip(),
+                bank_account_number=data['bank_account_number'].strip(),
+                ifsc_code=data['ifsc_code'],
+                profile=data['profile_photo'],
                 verification_status='pending',
             )
             Notification.objects.create(
                 notification_type='new_renter',
                 title='New Renter Registration',
-                message=f'{d["first_name"].strip()} {d["last_name"].strip()} ({d["email"].lower()}) has registered as a renter and submitted KYC documents for verification.',
+                message=f'{data["first_name"].strip()} {data["last_name"].strip()} ({data["email"].lower()}) has registered as a renter and submitted KYC documents for verification.',
                 related_user=user,
             )
             messages.success(
@@ -214,9 +204,11 @@ def car_list(request):
     if location:
         cars = cars.filter(location__icontains=location)
 
+    brand_names = Car.objects.exclude(brand='').exclude(brand=None).values_list('brand', flat=True).distinct().order_by('brand')
+
     return render(request, 'cars/car_list.html', {
         'cars': cars,
-        'brands': _brand_list_from_db(),
+        'brands': [BrandOption(n) for n in brand_names],
         'fuel_choices': Car.FUEL_TYPE,
         'transmission_choices': Car.TRANSMISSION_TYPE,
         'filters': {
@@ -385,7 +377,6 @@ def complete_booking(request, booking_id):
 
 @login_required
 def renter_confirm_booking(request, booking_id):
-    """Renter accepts or rejects a booking awaiting confirmation."""
     booking = get_object_or_404(
         Booking,
         id=booking_id,
@@ -466,46 +457,11 @@ def add_car(request):
     if request.method == 'POST':
         form = CarForm(request.POST, request.FILES)
         if form.is_valid():
-            d = form.cleaned_data
-            car = Car(
-                owner=profile,
-                car_name=d['car_name'],
-                brand=d.get('brand', ''),
-                category=d.get('category'),
-                model=d['model'],
-                year=d['year'],
-                fuel=d['fuel'],
-                transmission=d['transmission'],
-                seats=d['seats'],
-                availability=False,
-                rent_per_day=d['rent_per_day'],
-                description=d.get('description', ''),
-                location=d.get('location', ''),
-                registration_number=d.get('registration_number', ''),
-                variant=d.get('variant', ''),
-                weekly_rent=d.get('weekly_rent'),
-                monthly_rent=d.get('monthly_rent'),
-                available_from=d.get('available_from'),
-                available_to=d.get('available_to'),
-                car_status='verification_pending',
-                verification_status='pending',
-                self_pickup_available=d.get('self_pickup_available', False),
-                delivery_available=d.get('delivery_available', False),
-                pickup_point_name=d.get('pickup_point_name', ''),
-                pickup_address=d.get('pickup_address', ''),
-                pickup_latitude=d.get('pickup_latitude'),
-                pickup_longitude=d.get('pickup_longitude'),
-                delivery_radius=d.get('delivery_radius'),
-                delivery_charge=d.get('delivery_charge'),
-            )
-            if d.get('image'):
-                car.image = d['image']
-            if d.get('rc_book'):
-                car.rc_book = d['rc_book']
-            if d.get('insurance_doc'):
-                car.insurance_doc = d['insurance_doc']
-            if d.get('puc_certificate'):
-                car.puc_certificate = d['puc_certificate']
+            car = form.save(commit=False)
+            car.owner = profile
+            car.availability = False
+            car.car_status = 'verification_pending'
+            car.verification_status = 'pending'
             car.save()
 
             Notification.objects.create(
@@ -541,78 +497,14 @@ def edit_car(request, car_id):
     brands     = _brand_list()
 
     if request.method == 'POST':
-        form = CarForm(request.POST, request.FILES)
+        form = CarForm(request.POST, request.FILES, instance=car)
         if form.is_valid():
-            d = form.cleaned_data
-            car.car_name              = d['car_name']
-            car.brand                 = d.get('brand', car.brand)
-            car.model                 = d['model']
-            car.year                  = d['year']
-            car.fuel                  = d['fuel']
-            car.transmission          = d['transmission']
-            car.seats                 = d['seats']
-            car.availability          = d.get('availability', False)
-            car.rent_per_day          = d['rent_per_day']
-            car.description           = d.get('description', '')
-            car.location              = d.get('location', '')
-            car.registration_number   = d.get('registration_number', car.registration_number)
-            car.variant               = d.get('variant', car.variant)
-            car.weekly_rent           = d.get('weekly_rent') or car.weekly_rent
-            car.monthly_rent          = d.get('monthly_rent') or car.monthly_rent
-            car.available_from        = d.get('available_from') or car.available_from
-            car.available_to          = d.get('available_to') or car.available_to
-            car.self_pickup_available = d.get('self_pickup_available', False)
-            car.delivery_available    = d.get('delivery_available', False)
-            car.pickup_point_name     = d.get('pickup_point_name', car.pickup_point_name)
-            car.pickup_address        = d.get('pickup_address', car.pickup_address)
-            car.pickup_latitude       = d.get('pickup_latitude') or car.pickup_latitude
-            car.pickup_longitude      = d.get('pickup_longitude') or car.pickup_longitude
-            car.delivery_radius       = d.get('delivery_radius') or car.delivery_radius
-            car.delivery_charge       = d.get('delivery_charge') or car.delivery_charge
-            if d.get('category'):
-                car.category = d['category']
-            if d.get('image'):
-                car.image = d['image']
-            if d.get('rc_book'):
-                car.rc_book = d['rc_book']
-            if d.get('insurance_doc'):
-                car.insurance_doc = d['insurance_doc']
-            if d.get('puc_certificate'):
-                car.puc_certificate = d['puc_certificate']
-            car.save()
+            form.save()
             messages.success(request, f'"{car.car_name}" updated successfully!')
             return redirect('/dashboard/renter/')
         messages.error(request, 'Please fix the errors below.')
     else:
-        initial = {
-            'car_name':               car.car_name,
-            'brand':                  car.brand,
-            'category':               car.category,
-            'model':                  car.model,
-            'year':                   car.year,
-            'fuel':                   car.fuel,
-            'transmission':           car.transmission,
-            'seats':                  car.seats,
-            'availability':           car.availability,
-            'rent_per_day':           car.rent_per_day,
-            'description':            car.description,
-            'location':               car.location,
-            'registration_number':    car.registration_number,
-            'variant':                car.variant,
-            'weekly_rent':            car.weekly_rent,
-            'monthly_rent':           car.monthly_rent,
-            'available_from':         car.available_from,
-            'available_to':           car.available_to,
-            'self_pickup_available':  car.self_pickup_available,
-            'delivery_available':     car.delivery_available,
-            'pickup_point_name':      car.pickup_point_name,
-            'pickup_address':         car.pickup_address,
-            'pickup_latitude':        car.pickup_latitude,
-            'pickup_longitude':       car.pickup_longitude,
-            'delivery_radius':        car.delivery_radius,
-            'delivery_charge':        car.delivery_charge,
-        }
-        form = CarForm(initial=initial)
+        form = CarForm(instance=car)
 
     return render(request, 'cars/edit_car.html', {
         'form': form,

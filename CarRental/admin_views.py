@@ -6,7 +6,6 @@ from django.contrib import messages
 from django.contrib.auth import authenticate
 from django.contrib.auth.models import User
 from django.db.models import Avg, Count, Q, Sum
-from django.http import JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.utils import timezone
 
