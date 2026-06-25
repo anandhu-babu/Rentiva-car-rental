@@ -1,0 +1,316 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block messages %}{% endblock %}
+
+{% block content %}
+<section class="signup-page auth-reg">
+
+  <div class="left auth-reg-left auth-reg-left--renter">
+    <div class="overlay"></div>
+    <div class="content auth-reg-content">
+
+      <h1>Earn With<br>Your Car</h1>
+      <p>List your vehicle on Rentiva and start receiving bookings from verified customers today.</p>
+
+      <div class="auth-trust-badges">
+        <div class="auth-trust-badge">
+          <i class="ri-bank-card-line"></i>
+          <span>Fast Payouts</span>
+        </div>
+        <div class="auth-trust-badge">
+          <i class="ri-shield-user-line"></i>
+          <span>Verified Renters</span>
+        </div>
+        <div class="auth-trust-badge">
+          <i class="ri-bar-chart-line"></i>
+          <span>Earnings Dashboard</span>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <div class="right auth-reg-right">
+    <div class="form-container auth-reg-form">
+
+      <div class="auth-reg-back">
+        <a href="/register/"><i class="ri-arrow-left-line"></i> Back</a>
+      </div>
+
+      <h2>Become a Renter</h2>
+      <p class="subtitle">Set up your <strong>Renter</strong> account</p>
+
+      {% if form.errors %}
+        <div class="auth-errors">
+          {% for field in form %}
+            {% for error in field.errors %}
+              <div class="auth-error-item">
+                <i class="ri-error-warning-line"></i>
+                <strong>{{ field.label }}:</strong> {{ error }}
+              </div>
+            {% endfor %}
+          {% endfor %}
+          {% for error in form.non_field_errors %}
+            <div class="auth-error-item">
+              <i class="ri-error-warning-line"></i> {{ error }}
+            </div>
+          {% endfor %}
+        </div>
+      {% endif %}
+
+      <form method="POST" action="/register/renter/" enctype="multipart/form-data" novalidate>
+        {% csrf_token %}
+
+        <div class="form-section-divider">
+          <i class="ri-user-3-line"></i>
+          <span>Personal Details</span>
+        </div>
+
+        <div class="form-row">
+          <div class="input-box">
+            <label>First Name</label>
+            <div class="input-field {% if form.first_name.errors %}input-field--error{% endif %}">
+              <i class="ri-user-3-line"></i>
+              <input type="text" name="first_name" placeholder="First name"
+                     value="{{ form.first_name.value|default:'' }}" required>
+            </div>
+          </div>
+          <div class="input-box">
+            <label>Last Name</label>
+            <div class="input-field {% if form.last_name.errors %}input-field--error{% endif %}">
+              <i class="ri-user-3-line"></i>
+              <input type="text" name="last_name" placeholder="Last name"
+                     value="{{ form.last_name.value|default:'' }}" required>
+            </div>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="input-box">
+            <label>Email Address</label>
+            <div class="input-field {% if form.email.errors %}input-field--error{% endif %}">
+              <i class="ri-mail-line"></i>
+              <input type="email" name="email" placeholder="yourname@email.com"
+                     value="{{ form.email.value|default:'' }}" required>
+            </div>
+          </div>
+          <div class="input-box">
+            <label>Phone Number</label>
+            <div class="input-field {% if form.phone.errors %}input-field--error{% endif %}">
+              <i class="ri-smartphone-line"></i>
+              <input type="tel" name="phone" placeholder="10-digit number" maxlength="10"
+                     value="{{ form.phone.value|default:'' }}" required>
+            </div>
+          </div>
+        </div>
+
+        <div class="input-box">
+          <label>Date of Birth <span class="field-hint">(Must be 18+)</span></label>
+          <div class="input-field {% if form.dob.errors %}input-field--error{% endif %}">
+            <i class="ri-calendar-line"></i>
+            <input type="date" name="dob" value="{{ form.dob.value|default:'' }}" required>
+          </div>
+        </div>
+
+        <div class="input-box">
+          <label>Full Address</label>
+          <div class="input-field input-field--tall {% if form.address.errors %}input-field--error{% endif %}">
+            <i class="ri-map-pin-line"></i>
+            <textarea name="address" placeholder="House / Flat No, Street, City, State, PIN"
+                      rows="3" required>{{ form.address.value|default:'' }}</textarea>
+          </div>
+        </div>
+
+        <div class="form-section-divider">
+          <i class="ri-id-card-line"></i>
+          <span>Identity &amp; KYC Documents</span>
+        </div>
+
+        <div class="reg-info-box">
+          <i class="ri-information-line"></i>
+          <span>Upload your Driving Licence and a Government ID for KYC verification. Your account will be activated after admin approval.</span>
+        </div>
+
+        <div class="input-box">
+          <label>Driving Licence Number</label>
+          <div class="input-field {% if form.driving_license_number.errors %}input-field--error{% endif %}">
+            <i class="ri-id-card-line"></i>
+            <input type="text" name="driving_license_number"
+                   placeholder="e.g. KL0120230000123"
+                   value="{{ form.driving_license_number.value|default:'' }}" required>
+          </div>
+        </div>
+
+        <div class="input-box">
+          <label>
+            Upload Driving Licence
+            <span class="field-hint">&nbsp;JPG, PNG or PDF &middot; Max 5 MB</span>
+          </label>
+          <label class="file-upload-zone {% if form.driving_license_file.errors %}file-upload-zone--error{% endif %}"
+                 for="id_dl_file">
+            <i class="ri-upload-cloud-2-line"></i>
+            <span class="file-upload-text">Click to upload your Driving Licence</span>
+            <span class="file-upload-name" id="dl_file_name">No file chosen</span>
+          </label>
+          <input type="file" id="id_dl_file" name="driving_license_file"
+                 accept=".jpg,.jpeg,.png,.pdf" required style="display:none;">
+        </div>
+
+        <div class="input-box">
+          <label>
+            Government ID
+            <span class="field-hint">&nbsp;Aadhaar / PAN / Passport &middot; JPG, PNG or PDF &middot; Max 5 MB</span>
+          </label>
+          <label class="file-upload-zone {% if form.government_id_file.errors %}file-upload-zone--error{% endif %}"
+                 for="id_govt_file">
+            <i class="ri-upload-cloud-2-line"></i>
+            <span class="file-upload-text">Click to upload your Government ID</span>
+            <span class="file-upload-name" id="govt_file_name">No file chosen</span>
+          </label>
+          <input type="file" id="id_govt_file" name="government_id_file"
+                 accept=".jpg,.jpeg,.png,.pdf" required style="display:none;">
+        </div>
+
+        <div class="input-box">
+          <label>Aadhaar / PAN Number <span class="field-hint">(Optional)</span></label>
+          <div class="input-field">
+            <i class="ri-shield-user-line"></i>
+            <input type="text" name="aadhaar_pan" placeholder="12-digit Aadhaar or 10-char PAN"
+                   value="{{ form.aadhaar_pan.value|default:'' }}">
+          </div>
+        </div>
+
+        <div class="input-box">
+          <label>
+            Profile Photo
+            <span class="field-hint">&nbsp;JPG or PNG &middot; Max 2 MB</span>
+          </label>
+          <label class="file-upload-zone {% if form.profile_photo.errors %}file-upload-zone--error{% endif %}"
+                 for="id_profile_photo">
+            <i class="ri-image-line"></i>
+            <span class="file-upload-text">Click to upload a clear photo of yourself</span>
+            <span class="file-upload-name" id="photo_file_name">No file chosen</span>
+          </label>
+          <input type="file" id="id_profile_photo" name="profile_photo"
+                 accept=".jpg,.jpeg,.png" required style="display:none;">
+        </div>
+
+        <div class="form-section-divider">
+          <i class="ri-bank-line"></i>
+          <span>Bank Account Details</span>
+        </div>
+
+        <div class="input-box">
+          <label>Account Holder Name</label>
+          <div class="input-field {% if form.bank_account_holder.errors %}input-field--error{% endif %}">
+            <i class="ri-user-3-line"></i>
+            <input type="text" name="bank_account_holder" placeholder="As per bank records"
+                   value="{{ form.bank_account_holder.value|default:'' }}" required>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="input-box">
+            <label>Account Number</label>
+            <div class="input-field {% if form.bank_account_number.errors %}input-field--error{% endif %}">
+              <i class="ri-bank-line"></i>
+              <input type="text" name="bank_account_number" placeholder="Enter account number"
+                     value="{{ form.bank_account_number.value|default:'' }}" required>
+            </div>
+          </div>
+          <div class="input-box">
+            <label>IFSC Code</label>
+            <div class="input-field {% if form.ifsc_code.errors %}input-field--error{% endif %}">
+              <i class="ri-bank-line"></i>
+              <input type="text" name="ifsc_code" placeholder="e.g. SBIN0001234"
+                     maxlength="11" style="text-transform:uppercase;"
+                     value="{{ form.ifsc_code.value|default:'' }}" required>
+            </div>
+          </div>
+        </div>
+
+        <div class="form-section-divider">
+          <i class="ri-lock-2-line"></i>
+          <span>Account Security</span>
+        </div>
+
+        <div class="form-row">
+          <div class="input-box">
+            <label>Password</label>
+            <div class="input-field {% if form.password1.errors %}input-field--error{% endif %}">
+              <i class="ri-lock-2-line"></i>
+              <input type="password" name="password1" placeholder="Min. 8 characters" required>
+            </div>
+          </div>
+          <div class="input-box">
+            <label>Confirm Password</label>
+            <div class="input-field {% if form.password2.errors %}input-field--error{% endif %}">
+              <i class="ri-lock-2-line"></i>
+              <input type="password" name="password2" placeholder="Re-enter password" required>
+            </div>
+          </div>
+        </div>
+
+        <div class="terms">
+          <input type="checkbox" id="terms_check" required>
+          <label for="terms_check">
+            I agree to the <a href="#">Terms &amp; Conditions</a>,
+            <a href="#">Renter Policy</a>, and <a href="#">Privacy Policy</a>
+          </label>
+        </div>
+
+        <button type="submit" class="signup-btn signup-btn--renter">
+          Create Renter Account
+        </button>
+
+      </form>
+
+      <div class="auth-reg-alt-links">
+        <p class="signin-text">
+          Looking to rent a car? <a href="/register/customer/">Register as Customer</a>
+        </p>
+        <p class="signin-text">
+          Already have an account? <a href="/login/">Sign In</a>
+        </p>
+      </div>
+
+    </div>
+  </div>
+
+</section>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+(function () {
+  function bindFileInput(inputId, labelId) {
+    var input = document.getElementById(inputId);
+    var label = document.getElementById(labelId);
+    var zone  = input ? input.previousElementSibling : null;
+    if (!input || !label || !zone) return;
+    input.addEventListener('change', function () {
+      if (this.files && this.files[0]) {
+        label.textContent = this.files[0].name;
+        zone.classList.add('file-upload-zone--active');
+      } else {
+        label.textContent = 'No file chosen';
+        zone.classList.remove('file-upload-zone--active');
+      }
+    });
+  }
+  bindFileInput('id_dl_file', 'dl_file_name');
+  bindFileInput('id_govt_file', 'govt_file_name');
+  bindFileInput('id_profile_photo', 'photo_file_name');
+
+  var ifsc = document.querySelector('input[name="ifsc_code"]');
+  if (ifsc) {
+    ifsc.addEventListener('input', function () {
+      var pos = this.selectionStart;
+      this.value = this.value.toUpperCase();
+      this.setSelectionRange(pos, pos);
+    });
+  }
+})();
+</script>
+{% endblock %}

@@ -1,0 +1,102 @@
+{% extends 'admin_panel/base.html' %}
+{% block title %}Vehicles — Rentiva Admin{% endblock %}
+{% block breadcrumb %}Vehicle Management{% endblock %}
+
+{% block content %}
+<div class="page-hd">
+  <h1 class="page-title">Vehicle Management</h1>
+  <p class="page-sub">{{ vehicles|length }} vehicle{{ vehicles|length|pluralize }} listed on the platform.</p>
+</div>
+
+<form method="get" class="filter-bar">
+  <div class="search-wrap">
+    <i class="ri-search-line"></i>
+    <input type="text" name="search" class="search-inp" placeholder="Search vehicle or owner…" value="{{ search }}">
+  </div>
+  <select name="status" class="filter-sel">
+    <option value="">All Status</option>
+    <option value="pending"  {% if status_filter == 'pending'  %}selected{% endif %}>Pending</option>
+    <option value="approved" {% if status_filter == 'approved' %}selected{% endif %}>Approved</option>
+    <option value="rejected" {% if status_filter == 'rejected' %}selected{% endif %}>Rejected</option>
+  </select>
+  <button type="submit" class="filter-btn"><i class="ri-equalizer-line"></i> Filter</button>
+  {% if search or status_filter %}
+  <a href="/admin-panel/vehicles/" class="btn-a btn-reject" style="padding:8px 14px;">
+    <i class="ri-close-line"></i> Clear
+  </a>
+  {% endif %}
+</form>
+
+<div class="admin-card">
+  <div class="tbl-wrap">
+    <table class="admin-tbl">
+      <thead>
+        <tr>
+          <th>Image</th><th>Vehicle</th><th>Owner</th>
+          <th>Year / Fuel</th><th>Rent/Day</th>
+          <th>Availability</th><th>Verification</th><th>Listed</th><th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for car in vehicles %}
+        <tr>
+          <td>
+            {% if car.image %}
+            <img src="{{ car.image.url }}" class="veh-img" alt="{{ car.car_name }}">
+            {% else %}
+            <div class="veh-img-ph"><i class="ri-car-line"></i></div>
+            {% endif %}
+          </td>
+          <td>
+            <div class="u-name">{{ car.car_name }}</div>
+            <div class="u-email">{{ car.brand }} · {{ car.get_transmission_display }}</div>
+          </td>
+          <td>
+            <div class="u-name">{{ car.owner.user.get_full_name }}</div>
+            <div class="u-email">{{ car.owner.user.email }}</div>
+          </td>
+          <td style="font-size:13px;">{{ car.year }} / {{ car.get_fuel_display }}</td>
+          <td><span class="amount">₹{{ car.rent_per_day|floatformat:0 }}/day</span></td>
+          <td>
+            {% if car.availability %}
+            <span class="badge b-approved">Available</span>
+            {% else %}
+            <span class="badge b-rejected">Unavailable</span>
+            {% endif %}
+          </td>
+          <td><span class="badge b-{{ car.verification_status }}">{{ car.get_verification_status_display }}</span></td>
+          <td style="font-size:12px;color:var(--text-2);">{{ car.created_at|date:"M d, Y" }}</td>
+          <td>
+            <div class="actions">
+              {% if car.verification_status != 'approved' %}
+              <form method="post" action="/admin-panel/vehicles/{{ car.id }}/approve/" class="inline-form">
+                {% csrf_token %}
+                <button type="submit" class="btn-a btn-approve"><i class="ri-check-double-line"></i> Approve</button>
+              </form>
+              {% endif %}
+              {% if car.verification_status != 'rejected' %}
+              <form method="post" action="/admin-panel/vehicles/{{ car.id }}/reject/" class="inline-form"
+                    onsubmit="return confirm('Reject this vehicle listing?')">
+                {% csrf_token %}
+                <button type="submit" class="btn-a btn-reject"><i class="ri-close-circle-line"></i> Reject</button>
+              </form>
+              {% endif %}
+            </div>
+          </td>
+        </tr>
+        {% empty %}
+        <tr>
+          <td colspan="9">
+            <div class="empty-state">
+              <i class="ri-car-line"></i>
+              <h3>No vehicles found</h3>
+              <p>Adjust your search or filter to see results.</p>
+            </div>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

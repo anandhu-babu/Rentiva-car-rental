@@ -1,0 +1,116 @@
+{% extends 'admin_panel/base.html' %}
+{% block title %}Vehicle Docs — Rentiva Admin{% endblock %}
+{% block breadcrumb %}Vehicle Document Verification{% endblock %}
+
+{% block content %}
+<div class="page-hd">
+  <h1 class="page-title">Vehicle Document Verification</h1>
+  <p class="page-sub">Verify RC Book, Insurance, and PUC certificate for each listed vehicle.</p>
+</div>
+
+<div class="status-tabs">
+  <a href="?status=pending"  class="stab {% if status_filter == 'pending'  %}active{% endif %}">Pending</a>
+  <a href="?status=approved" class="stab {% if status_filter == 'approved' %}active{% endif %}">Approved</a>
+  <a href="?status=rejected" class="stab {% if status_filter == 'rejected' %}active{% endif %}">Rejected</a>
+</div>
+
+{% if vehicles %}
+<div class="verify-grid">
+  {% for car in vehicles %}
+  <div class="verify-card">
+    <div class="vc-head">
+      <div class="vc-user">
+        {% if car.image %}
+        <div class="vc-avatar" style="border-radius:9px;overflow:hidden;">
+          <img src="{{ car.image.url }}" alt="" style="width:100%;height:100%;object-fit:cover;">
+        </div>
+        {% else %}
+        <div class="vc-avatar" style="border-radius:9px;"><i class="ri-car-line" style="font-size:18px;"></i></div>
+        {% endif %}
+        <div>
+          <div class="vc-name">{{ car.car_name }}</div>
+          <div class="vc-email">{{ car.brand }} · {{ car.year }}</div>
+        </div>
+      </div>
+      <span class="badge b-{{ car.verification_status }}">{{ car.get_verification_status_display }}</span>
+    </div>
+
+    <div class="vc-fields">
+      <div class="vc-field">
+        <div class="vc-field-label">Owner</div>
+        <div class="vc-field-value">{{ car.owner.user.get_full_name }}</div>
+      </div>
+      <div class="vc-field">
+        <div class="vc-field-label">Fuel / Transmission</div>
+        <div class="vc-field-value">{{ car.get_fuel_display }} / {{ car.get_transmission_display }}</div>
+      </div>
+      <div class="vc-field">
+        <div class="vc-field-label">Seats</div>
+        <div class="vc-field-value">{{ car.seats }}</div>
+      </div>
+      <div class="vc-field">
+        <div class="vc-field-label">Rent/Day</div>
+        <div class="vc-field-value">₹{{ car.rent_per_day|floatformat:0 }}</div>
+      </div>
+    </div>
+
+    <!-- Document Links -->
+    <div style="display:flex;flex-direction:column;gap:7px;">
+      {% if car.rc_book %}
+      <a href="{{ car.rc_book.url }}" target="_blank" class="vc-doc-link">
+        <i class="ri-file-text-line"></i> RC Book
+      </a>
+      {% else %}
+      <span class="vc-doc-link missing"><i class="ri-file-warning-line"></i> RC Book — Not uploaded</span>
+      {% endif %}
+
+      {% if car.insurance_doc %}
+      <a href="{{ car.insurance_doc.url }}" target="_blank" class="vc-doc-link">
+        <i class="ri-shield-check-line"></i> Insurance Document
+      </a>
+      {% else %}
+      <span class="vc-doc-link missing"><i class="ri-file-warning-line"></i> Insurance — Not uploaded</span>
+      {% endif %}
+
+      {% if car.puc_certificate %}
+      <a href="{{ car.puc_certificate.url }}" target="_blank" class="vc-doc-link">
+        <i class="ri-leaf-line"></i> PUC Certificate
+      </a>
+      {% else %}
+      <span class="vc-doc-link missing"><i class="ri-file-warning-line"></i> PUC — Not uploaded</span>
+      {% endif %}
+    </div>
+
+    <div class="vc-actions">
+      {% if car.verification_status != 'approved' %}
+      <form method="post" action="/admin-panel/verification/vehicles/{{ car.id }}/approve/" class="inline-form">
+        {% csrf_token %}
+        <button type="submit" class="btn-a btn-approve"><i class="ri-check-double-line"></i> Approve Docs</button>
+      </form>
+      {% endif %}
+      {% if car.verification_status != 'rejected' %}
+      <form method="post" action="/admin-panel/verification/vehicles/{{ car.id }}/reject/" class="inline-form"
+            onsubmit="return confirm('Reject documents for {{ car.car_name }}?')">
+        {% csrf_token %}
+        <button type="submit" class="btn-a btn-reject"><i class="ri-close-circle-line"></i> Reject</button>
+      </form>
+      {% endif %}
+      {% if car.verification_status == 'approved' %}
+      <span style="font-size:12.5px;color:var(--success);display:flex;align-items:center;gap:4px;">
+        <i class="ri-shield-check-fill"></i> Documents Verified
+      </span>
+      {% endif %}
+    </div>
+  </div>
+  {% endfor %}
+</div>
+{% else %}
+<div class="admin-card">
+  <div class="empty-state" style="padding:60px 20px;">
+    <i class="ri-file-paper-2-line"></i>
+    <h3>No {{ status_filter }} vehicle document submissions</h3>
+    <p>Vehicle document uploads will appear here for review.</p>
+  </div>
+</div>
+{% endif %}
+{% endblock %}

@@ -3,7 +3,6 @@
 
 {% block content %}
 
-<!-- Breadcrumb -->
 <div class="car-page-breadcrumb">
   <a href="/">Home</a>
   <i class="ri-arrow-right-s-line"></i>
@@ -14,14 +13,24 @@
 
 <section class="car-details">
 
-  <!-- ── LEFT: Image panel ── -->
   <div class="left-side">
     <div class="left-side-main">
       <h1>{{ car.car_name }}</h1>
+
+
+      <!-- Server-side pricing data — read by JS, keeps script tag Django-free -->
+      <div id="plan-data"
+           data-daily="{{ price_daily }}"
+           data-weekly="{{ price_weekly }}"
+           data-monthly="{{ price_monthly }}"
+           data-car-id="{{ car.id }}"
+           style="display:none;"></div>
+
       <div class="price">
-        <span>₹{{ car.rent_per_day|floatformat:0 }}</span>
-        <small>/ day</small>
+        <span id="price-val">₹{{ car.rent_per_day|floatformat:0 }}</span>
+        <small id="price-unit">/day</small>
       </div>
+      <p id="plan-sublabel" style="font-size:12px;color:#6b7280;margin:-4px 0 8px;display:none;"></p>
       <div class="main-image">
         {% if car.image %}
           <img src="{{ car.image.url }}" alt="{{ car.car_name }}">
@@ -32,7 +41,6 @@
       </div>
     </div>
 
-    <!-- Thumbnail row (single image repeated for visual) -->
     <div class="thumbs">
       <div class="thumb active">
         {% if car.image %}
@@ -42,15 +50,16 @@
         {% endif %}
       </div>
       <div class="thumb">
-        <img src="{% static 'img/brands/{{ car.brand.name|lower }}.svg' %}" alt=""
+        {% with brand_slug=car.brand|lower %}
+        <img src="{% static 'img/brands/' %}{{ brand_slug }}.svg" alt="{{ car.brand }}"
              onerror="this.src='{% static 'img/car-fill.svg' %}';">
+        {% endwith %}
       </div>
       <div class="thumb" style="display:flex;align-items:center;justify-content:center;font-size:32px;color:#1572D3;">
         <i class="ri-car-line"></i>
       </div>
     </div>
 
-    <!-- Rating & Reviews -->
     {% if avg_rating %}
     <div style="display:flex;align-items:center;gap:8px;margin-top:18px;padding:0 4px;">
       <span style="font-size:22px;font-weight:700;color:#111;">{{ avg_rating|floatformat:1 }}</span>
@@ -60,7 +69,6 @@
     {% endif %}
   </div>
 
-  <!-- ── RIGHT: Specs & CTA ── -->
   <div class="right-side">
     <h2>Technical Specification</h2>
 
@@ -97,10 +105,85 @@
       </div>
     </div>
 
+    {% if car.self_pickup_available or car.delivery_available %}
+    <div style="margin-bottom:20px;padding:18px 20px;background:#fff;border:1.5px solid #e5e7eb;border-radius:16px;">
+      <p style="font-size:13px;font-weight:700;color:#374151;text-transform:uppercase;letter-spacing:.5px;margin-bottom:14px;">
+        <i class="ri-map-pin-line" style="color:#1572D3;margin-right:6px;"></i>Collection Options
+      </p>
+
+      <div style="display:flex;flex-direction:column;gap:10px;margin-bottom:14px;">
+
+        {% if car.self_pickup_available %}
+        <div style="display:flex;align-items:flex-start;gap:12px;padding:12px 14px;background:#EAF3FF;border-radius:10px;">
+          <i class="ri-map-pin-2-line" style="font-size:20px;color:#1572D3;flex-shrink:0;margin-top:2px;"></i>
+          <div>
+            <p style="font-size:13px;font-weight:600;color:#1572D3;margin:0 0 3px;">Self Pickup Available</p>
+            {% if car.pickup_point_name %}
+              <p style="font-size:12px;color:#374151;margin:0;">
+                <i class="ri-map-pin-line" style="font-size:11px;margin-right:3px;"></i>
+                {{ car.pickup_point_name }}{% if car.location %}, {{ car.location }}{% endif %}
+              </p>
+            {% elif car.location %}
+              <p style="font-size:12px;color:#374151;margin:0;">{{ car.location }}</p>
+            {% endif %}
+          </div>
+        </div>
+        {% endif %}
+
+        {% if car.delivery_available %}
+        <div style="display:flex;align-items:flex-start;gap:12px;padding:12px 14px;background:#EAFBF3;border-radius:10px;">
+          <i class="ri-truck-line" style="font-size:20px;color:#10B981;flex-shrink:0;margin-top:2px;"></i>
+          <div>
+            <p style="font-size:13px;font-weight:600;color:#059669;margin:0 0 3px;">Home Delivery Available</p>
+            <p style="font-size:12px;color:#374151;margin:0;">
+              {% if car.delivery_charge %}₹{{ car.delivery_charge|floatformat:0 }} delivery charge{% endif %}
+              {% if car.delivery_radius %} · within {{ car.delivery_radius|floatformat:0 }} km{% endif %}
+            </p>
+          </div>
+        </div>
+        {% endif %}
+
+      </div>
+
+      <!-- Approximate area map (zoomed out, no exact pin) -->
+      {% if car.pickup_latitude and car.pickup_longitude %}
+      <div style="position:relative;margin-bottom:12px;">
+        <div id="details-map" style="height:180px;border-radius:10px;overflow:hidden;border:1.5px solid #e5e7eb;filter:blur(1.5px);pointer-events:none;"></div>
+          <div style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;background:rgba(255,255,255,0.55);border-radius:10px;">
+          <div style="background:#1572D3;color:#fff;border-radius:20px;padding:6px 14px;display:flex;align-items:center;gap:6px;font-size:12px;font-weight:600;box-shadow:0 2px 8px rgba(21,114,211,0.25);">
+            <i class="ri-map-pin-2-line"></i>
+            {% if car.pickup_point_name %}{{ car.pickup_point_name }}{% elif car.location %}{{ car.location }}{% else %}Approximate Area{% endif %}
+          </div>
+          <p style="font-size:11px;color:#374151;margin:0;background:rgba(255,255,255,0.9);padding:3px 10px;border-radius:10px;">Approximate area shown</p>
+        </div>
+      </div>
+      <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+      <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+      <script>
+      (function(){
+        var lat = {{ car.pickup_latitude }}, lng = {{ car.pickup_longitude }};
+        var m = L.map('details-map', {zoomControl:false, scrollWheelZoom:false, dragging:false, attributionControl:false}).setView([lat, lng], 12);
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(m);
+      })();
+      </script>
+      {% endif %}
+
+      <div style="display:flex;align-items:flex-start;gap:8px;padding:10px 13px;background:#fffbeb;border:1px solid #fde68a;border-radius:8px;">
+        <i class="ri-lock-2-line" style="color:#d97706;font-size:15px;margin-top:1px;flex-shrink:0;"></i>
+        <p style="font-size:12px;color:#92400e;margin:0;">
+          <strong>Privacy Protected:</strong> Exact pickup address and coordinates will be shared only after your booking is approved by the renter.
+        </p>
+      </div>
+    </div>
+    {% endif %}
+
     {% if car.availability %}
       {% if user.is_authenticated %}
-        <a href="/booking/{{ car.id }}/">
-          <button class="rent-btn">Rent a car</button>
+        <a href="/booking/{{ car.id }}/?plan=daily" id="rent-link">
+          <button class="rent-btn">
+            <i class="ri-car-line" style="margin-right:6px;"></i>
+            Book Now
+          </button>
         </a>
       {% else %}
         <a href="/login/?next=/booking/{{ car.id }}/">
@@ -154,7 +237,6 @@
 
 </section>
 
-<!-- Reviews Section -->
 {% if reviews %}
 <section class="car-reviews-section">
   <h2>Customer Reviews</h2>
@@ -178,7 +260,6 @@
 </section>
 {% endif %}
 
-<!-- Other Cars -->
 {% if other_cars %}
 <section class="other-cars">
   <div class="other-cars-header">
@@ -215,5 +296,65 @@
   </div>
 </section>
 {% endif %}
+
+<script>
+(function () {
+  var pd = document.getElementById('plan-data').dataset;
+  var PRICES   = { daily: parseInt(pd.daily, 10), weekly: parseInt(pd.weekly, 10), monthly: parseInt(pd.monthly, 10) };
+  var UNITS    = { daily: '/day', weekly: '/day (Weekly Plan)', monthly: '/day (Monthly Plan)' };
+  var LABELS   = { daily: 'Daily', weekly: 'Weekly', monthly: 'Monthly' };
+  var SUBLABEL = { daily: '', weekly: 'Per Day (Weekly Plan)', monthly: 'Per Day (Monthly Plan)' };
+  var carId    = pd.carId;
+  var active   = 'daily';
+
+  function selectPlan(plan) {
+    if (!PRICES[plan]) return;
+    active = plan;
+
+    ['daily', 'weekly', 'monthly'].forEach(function (p) {
+      var tab = document.getElementById('tab-' + p);
+      if (!tab) return;
+      var on = (p === plan);
+      tab.style.background  = on ? '#1572D3' : '#F8FAFC';
+      tab.style.color       = on ? '#ffffff'  : '#374151';
+      tab.style.borderColor = on ? '#1572D3'  : '#E2E8F0';
+    });
+
+    var el;
+    el = document.getElementById('price-val');
+    if (el) el.textContent = '₹' + PRICES[plan].toLocaleString('en-IN');
+
+    el = document.getElementById('price-unit');
+    if (el) el.textContent = UNITS[plan];
+
+    el = document.getElementById('plan-sublabel');
+    if (el) { el.style.display = plan === 'daily' ? 'none' : 'block'; el.textContent = SUBLABEL[plan]; }
+
+    el = document.getElementById('rent-link');
+    if (el) el.href = '/booking/' + carId + '/?plan=' + plan;
+
+    el = document.getElementById('btn-plan-label');
+    if (el) el.textContent = LABELS[plan];
+  }
+
+  window.selectPlan = selectPlan;
+
+  document.addEventListener('DOMContentLoaded', function () {
+    var plan = new URLSearchParams(window.location.search).get('plan') || 'daily';
+    selectPlan(plan);
+
+    ['daily', 'weekly', 'monthly'].forEach(function (p) {
+      var tab = document.getElementById('tab-' + p);
+      if (!tab) return;
+      tab.addEventListener('mouseenter', function () {
+        if (active !== p) { tab.style.background = '#EEF5FF'; tab.style.color = '#1572D3'; tab.style.borderColor = '#bfdbfe'; }
+      });
+      tab.addEventListener('mouseleave', function () {
+        if (active !== p) { tab.style.background = '#F8FAFC'; tab.style.color = '#374151'; tab.style.borderColor = '#E2E8F0'; }
+      });
+    });
+  });
+}());
+</script>
 
 {% endblock %}

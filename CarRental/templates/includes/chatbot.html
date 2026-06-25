@@ -1,14 +1,11 @@
 {% load static %}
 
-<!-- ── Chat Toggle Button ──────────────────────────────── -->
 <button class="chat-toggle-btn" id="chatToggleBtn" aria-label="Open chat assistant">
     <img src="{% static 'img/chatbot.svg' %}" alt="">
 </button>
 
-<!-- ── Chatbot Window ──────────────────────────────────── -->
 <div class="chatbot-container" id="chatbotContainer" role="dialog" aria-modal="true" aria-label="Rentiva AI Assistant">
 
-    <!-- Header -->
     <div class="chatbot-header">
         <div class="chatbot-profile">
             <div class="chatbot-avatar-wrap">
@@ -27,14 +24,12 @@
         </button>
     </div>
 
-    <!-- Message Body -->
     <div class="chatbot-body" id="chatBody">
         <div class="bot-message welcome-message">
             <p>Hi there! I'm Rentiva's AI assistant. Ask me about cars, bookings, pricing, or anything else — I'm here to help.</p>
         </div>
     </div>
 
-    <!-- Suggestions Panel — hidden until toggle button is clicked -->
     <div class="chatbot-suggestions-panel" id="suggestionsPanel">
         <div class="suggestions-panel-header">
             <span><i class="ri-flashlight-line"></i>Quick Actions</span>
@@ -98,7 +93,6 @@
         </div>
     </div>
 
-    <!-- Input Area -->
     <div class="chatbot-input">
         <button class="suggestions-trigger-btn" id="suggestionsToggle" aria-label="Quick actions" title="Quick actions">
             <i class="ri-apps-2-line"></i>

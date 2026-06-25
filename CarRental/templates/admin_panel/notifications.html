@@ -1,0 +1,62 @@
+{% extends 'admin_panel/base.html' %}
+{% block title %}Notifications — Rentiva Admin{% endblock %}
+{% block breadcrumb %}Notifications{% endblock %}
+
+{% block content %}
+<div class="page-hd">
+  <h1 class="page-title">Notifications &amp; Activity Feed</h1>
+  <p class="page-sub">{{ notifications|length }} total event{{ notifications|length|pluralize }} logged.</p>
+</div>
+
+<div class="admin-card">
+  {% if notifications %}
+  <div class="notif-list">
+    {% for n in notifications %}
+    <div class="notif-item {% if not n.is_read %}unread{% endif %}">
+      <!-- Icon by type -->
+      {% if n.notification_type == 'new_customer' %}
+      <div class="notif-icon ni-blue"><i class="ri-user-add-line"></i></div>
+      {% elif n.notification_type == 'new_renter' %}
+      <div class="notif-icon ni-purple"><i class="ri-steering-2-line"></i></div>
+      {% elif n.notification_type == 'vehicle_pending' %}
+      <div class="notif-icon ni-yellow"><i class="ri-car-line"></i></div>
+      {% elif n.notification_type == 'booking_cancelled' %}
+      <div class="notif-icon ni-red"><i class="ri-calendar-close-line"></i></div>
+      {% elif n.notification_type == 'complaint_raised' %}
+      <div class="notif-icon ni-red"><i class="ri-error-warning-line"></i></div>
+      {% elif n.notification_type == 'payment_failed' %}
+      <div class="notif-icon ni-red"><i class="ri-bank-card-2-line"></i></div>
+      {% elif n.notification_type == 'verification_update' %}
+      <div class="notif-icon ni-green"><i class="ri-shield-check-line"></i></div>
+      {% else %}
+      <div class="notif-icon ni-blue"><i class="ri-information-line"></i></div>
+      {% endif %}
+
+      <div class="notif-body">
+        <div class="notif-title">{{ n.title }}</div>
+        <div class="notif-msg">{{ n.message }}</div>
+        {% if n.related_user %}
+        <div class="notif-time">
+          <i class="ri-user-line"></i> {{ n.related_user.get_full_name }} &nbsp;·&nbsp;
+          {{ n.created_at|date:"M d, Y H:i" }} &nbsp;·&nbsp; {{ n.created_at|timesince }} ago
+        </div>
+        {% else %}
+        <div class="notif-time">{{ n.created_at|date:"M d, Y H:i" }} &nbsp;·&nbsp; {{ n.created_at|timesince }} ago</div>
+        {% endif %}
+      </div>
+
+      {% if not n.is_read %}
+      <div class="unread-dot"></div>
+      {% endif %}
+    </div>
+    {% endfor %}
+  </div>
+  {% else %}
+  <div class="empty-state" style="padding:70px 20px;">
+    <i class="ri-notification-off-line"></i>
+    <h3>No notifications yet</h3>
+    <p>Platform activity events will be logged here automatically.</p>
+  </div>
+  {% endif %}
+</div>
+{% endblock %}

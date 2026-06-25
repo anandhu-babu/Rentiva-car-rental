@@ -23,7 +23,6 @@
     <form method="POST" action="/my-cars/edit/{{ car.id }}/" enctype="multipart/form-data" class="add-car-form">
       {% csrf_token %}
 
-      <!-- ── Section 1: Basic Information ── -->
       <div class="form-section">
         <div class="form-section-header">
           <span class="section-num">1</span>
@@ -89,7 +88,6 @@
         </div>
       </div>
 
-      <!-- ── Section 2: Specifications ── -->
       <div class="form-section">
         <div class="form-section-header">
           <span class="section-num">2</span>
@@ -138,7 +136,6 @@
         </div>
       </div>
 
-      <!-- ── Section 3: Pricing & Media ── -->
       <div class="form-section">
         <div class="form-section-header">
           <span class="section-num">3</span>
@@ -190,7 +187,116 @@
         </div>
       </div>
 
-      <!-- Actions -->
+      <div class="form-section">
+        <div class="form-section-header">
+          <span class="section-num"><i class="ri-map-pin-line" style="font-size:16px;"></i></span>
+          <h3>Pickup &amp; Delivery Options</h3>
+        </div>
+
+        <div class="form-grid">
+          <div class="form-group">
+            <label class="form-label">Self Pickup</label>
+            <label class="toggle-switch" style="margin-top:8px;">
+              <input type="checkbox" name="self_pickup_available" id="id_self_pickup"
+                {% if form.self_pickup_available.value %}checked{% endif %}>
+              <span class="toggle-track"></span>
+              <span class="toggle-label">Customer collects vehicle from pickup point</span>
+            </label>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Home Delivery</label>
+            <label class="toggle-switch" style="margin-top:8px;">
+              <input type="checkbox" name="delivery_available" id="id_delivery"
+                {% if form.delivery_available.value %}checked{% endif %}>
+              <span class="toggle-track"></span>
+              <span class="toggle-label">You deliver vehicle to customer's address</span>
+            </label>
+          </div>
+        </div>
+
+        <div id="pickup-location-fields" style="display:none;">
+          <div class="form-group full-width" style="margin-top:8px;">
+            <label class="form-label">
+              <i class="ri-map-pin-line" style="color:#1572D3;margin-right:4px;"></i>
+              Pickup Point Name
+              <span style="font-size:11px;font-weight:400;color:#6b7280;margin-left:6px;">Shown publicly to customers</span>
+            </label>
+            <input type="text" name="pickup_point_name" id="id_pickup_point_name" class="form-control"
+                   placeholder="e.g. Technopark Gate 1, Lulu Mall Parking, Airport Zone B"
+                   value="{{ form.pickup_point_name.value|default:'' }}">
+            <p style="font-size:11px;color:#6b7280;margin-top:4px;">This landmark name is visible to customers before booking.</p>
+          </div>
+
+          <div class="form-group full-width" style="margin-top:8px;">
+            <label class="form-label">
+              <i class="ri-lock-2-line" style="color:#d97706;margin-right:4px;"></i>
+              Exact Pickup Address
+              <span style="font-size:11px;font-weight:400;color:#d97706;margin-left:6px;">Private — revealed only after booking approval</span>
+            </label>
+            <textarea name="pickup_address" id="id_pickup_address" class="form-control"
+                      rows="2" placeholder="Full address: Building, Street, Area, City, State, PIN">{{ form.pickup_address.value|default:'' }}</textarea>
+          </div>
+
+          <div class="form-group full-width" style="margin-top:4px;">
+            <label class="form-label">
+              <i class="ri-search-line" style="color:#1572D3;margin-right:4px;"></i>
+              Search on Map
+            </label>
+            <div style="display:flex;gap:8px;">
+              <input type="text" id="map-search-input" class="form-control"
+                     placeholder="Type address or landmark and press Search…" style="flex:1;">
+              <button type="button" class="btn-primary" id="map-search-btn"
+                      style="padding:10px 18px;white-space:nowrap;">
+                <i class="ri-search-line"></i> Search
+              </button>
+            </div>
+          </div>
+
+          <div class="form-group full-width" style="margin-top:4px;">
+            <div id="pickup-map" style="height:280px;border-radius:14px;border:1.5px solid #e5e7eb;overflow:hidden;"></div>
+            <p style="font-size:12px;color:#6b7280;margin-top:6px;">
+              <i class="ri-cursor-line"></i> Click on the map to pin the exact pickup location
+            </p>
+          </div>
+
+          <input type="hidden" name="pickup_latitude"  id="id_pickup_latitude"
+                 value="{{ form.pickup_latitude.value|default:'' }}">
+          <input type="hidden" name="pickup_longitude" id="id_pickup_longitude"
+                 value="{{ form.pickup_longitude.value|default:'' }}">
+
+          <div id="coord-display" style="display:none;padding:8px 14px;background:#EAF3FF;border-radius:8px;font-size:13px;color:#1572D3;margin-top:-8px;">
+            <i class="ri-map-pin-2-fill"></i>
+            <span id="coord-text"></span>
+          </div>
+        </div>
+
+        <div id="delivery-fields" style="display:none;margin-top:12px;">
+          <div class="form-grid">
+            <div class="form-group">
+              <label class="form-label">
+                <i class="ri-route-line" style="color:#10B981;margin-right:4px;"></i>
+                Delivery Radius (km)
+              </label>
+              <input type="number" name="delivery_radius" class="form-control"
+                     placeholder="e.g. 20" min="0" step="1"
+                     value="{{ form.delivery_radius.value|default:'' }}">
+            </div>
+            <div class="form-group">
+              <label class="form-label">
+                <i class="ri-money-rupee-circle-line" style="color:#10B981;margin-right:4px;"></i>
+                Delivery Charge (₹)
+              </label>
+              <div class="input-prefix-wrap">
+                <span class="input-prefix">₹</span>
+                <input type="number" name="delivery_charge" class="form-control"
+                       placeholder="e.g. 500" min="0" step="50"
+                       value="{{ form.delivery_charge.value|default:'' }}">
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
       <div class="form-actions">
         <a href="/dashboard/renter/" class="btn-cancel">Cancel</a>
         <button type="submit" class="btn-primary">
@@ -201,6 +307,9 @@
     </form>
   </div>
 </div>
+
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 
 <script>
 function previewImage(e) {
@@ -216,6 +325,83 @@ function previewImage(e) {
   };
   reader.readAsDataURL(file);
 }
+</script>
+
+<script>
+(function () {
+  const selfPickup  = document.getElementById('id_self_pickup');
+  const delivery    = document.getElementById('id_delivery');
+  const pickupBlock = document.getElementById('pickup-location-fields');
+  const delivBlock  = document.getElementById('delivery-fields');
+  const latInput    = document.getElementById('id_pickup_latitude');
+  const lngInput    = document.getElementById('id_pickup_longitude');
+  const coordDisp   = document.getElementById('coord-display');
+  const coordText   = document.getElementById('coord-text');
+
+  let map = null, marker = null;
+
+  function initMap() {
+    if (map) return;
+    const defaultLat = parseFloat(latInput.value) || 20.5937;
+    const defaultLng = parseFloat(lngInput.value) || 78.9629;
+    map = L.map('pickup-map').setView([defaultLat, defaultLng], latInput.value ? 14 : 5);
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      attribution: '© OpenStreetMap contributors'
+    }).addTo(map);
+    if (latInput.value && lngInput.value) {
+      marker = L.marker([defaultLat, defaultLng]).addTo(map);
+      showCoords(defaultLat, defaultLng);
+    }
+    map.on('click', function (e) {
+      setPin(e.latlng.lat.toFixed(6), e.latlng.lng.toFixed(6));
+    });
+    setTimeout(() => map.invalidateSize(), 150);
+  }
+
+  function setPin(lat, lng) {
+    latInput.value = lat; lngInput.value = lng;
+    if (marker) { marker.setLatLng([lat, lng]); }
+    else { marker = L.marker([lat, lng]).addTo(map); }
+    map.setView([lat, lng], 15);
+    showCoords(lat, lng);
+  }
+
+  function showCoords(lat, lng) {
+    coordDisp.style.display = 'block';
+    coordText.textContent   = `Lat: ${lat}, Lng: ${lng}`;
+  }
+
+  function syncVisibility() {
+    const show = selfPickup.checked || delivery.checked;
+    pickupBlock.style.display = show ? 'block' : 'none';
+    delivBlock.style.display  = delivery.checked ? 'block' : 'none';
+    if (show) setTimeout(initMap, 100);
+  }
+
+  selfPickup.addEventListener('change', syncVisibility);
+  delivery.addEventListener('change', syncVisibility);
+
+  document.getElementById('map-search-btn').addEventListener('click', function () {
+    const q = document.getElementById('map-search-input').value.trim();
+    if (!q) return;
+    fetch(`https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(q)}&format=json&limit=1`)
+      .then(r => r.json())
+      .then(data => {
+        if (data && data.length > 0) {
+          setPin(data[0].lat, data[0].lon);
+          const addr = document.getElementById('id_pickup_address');
+          if (!addr.value) addr.value = data[0].display_name;
+        } else { alert('Location not found.'); }
+      })
+      .catch(() => alert('Search failed.'));
+  });
+
+  document.getElementById('map-search-input').addEventListener('keypress', function (e) {
+    if (e.key === 'Enter') { e.preventDefault(); document.getElementById('map-search-btn').click(); }
+  });
+
+  syncVisibility();
+})();
 </script>
 
 {% endblock %}

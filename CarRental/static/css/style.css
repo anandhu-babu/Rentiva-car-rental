@@ -1,12 +1,4 @@
-﻿/* ================================================================
-   RENTIVA — CONSOLIDATED STYLESHEET
-   This file merges (in their original <link> loading order) the rules that
-   used to live in: base.css, style.css, pages.css, car_details.css,
-   profile.css, sign.css, testimonials.css and chatbot.css.
-   Section banners below mark where each original file's rules begin.
-   Below: contents of base.css (global reset, header, hero, footer, nav, etc.)
-   ================================================================ */
-html {
+﻿html {
   scroll-behavior: smooth;
 }
 
@@ -174,7 +166,6 @@ button {
   width: auto;
 }
 
-/* ── Hero Right Visual ────────────────────────── */
 /* .hero-img is the class used in home.html; .hero-right is an alias kept for
    the CSS visual rules. Both receive identical responsive treatment. */
 .hero-right,
@@ -297,6 +288,20 @@ button {
 .steps,
 .deals {
   text-align: center;
+}
+
+/* Override global 160px side-padding so 4-col grid fits at desktop.
+   Media queries at ≤1200px / ≤900px / ≤480px still cascade and win
+   (they appear later in the file), so responsive padding is preserved. */
+.deals {
+  padding-left: 40px;
+  padding-right: 40px;
+}
+
+.deals-container {
+  max-width: 1480px;
+  margin: 0 auto;
+  width: 100%;
 }
 
 .steps {
@@ -462,8 +467,9 @@ button {
 
 .car-list {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 28px;
+  grid-template-columns: repeat(4, minmax(240px, 340px));
+  justify-content: center;
+  gap: 24px;
 }
 
 /* Individual card styles live in style.css */
@@ -737,14 +743,12 @@ footer {
 }
 .mobile-nav-auth button { width: 100%; margin-top: 4px; }
 
-/* ── List container ── */
 .list-container {
   padding-left: 160px;
   padding-right: 160px;
   margin-bottom: 30px;
 }
 
-/* RESPONSIVE */
 
 @media (max-width: 1200px) {
   header, .hero, .steps,
@@ -766,6 +770,9 @@ footer {
   .hero-car   { right: -60px;  width: 550px; }
 
   .list-container { padding-left: 80px; padding-right: 80px; }
+
+  /* Deals: 2-col at large tablet */
+  .car-list { grid-template-columns: repeat(2, minmax(240px, 340px)); }
 }
 
 /* Tablet — hamburger kicks in */
@@ -860,7 +867,7 @@ footer {
   .feature-text { text-align: left; }
 
   /* Deals car list */
-  .car-list { grid-template-columns: repeat(2, 1fr); }
+  .car-list { grid-template-columns: repeat(2, minmax(240px, 340px)); }
 
   /* App section */
   .app {
@@ -949,8 +956,7 @@ footer {
 
   .list-container { padding-left: 16px; padding-right: 16px; }
 
-  /* ── Tag: scale down on small screens ── */
-  .tag {
+    .tag {
     padding: 7px 18px;
     font-size: 12px;
     height: auto;
@@ -958,19 +964,16 @@ footer {
     margin-bottom: 10px;
   }
 
-  /* ── How It Works: compact icons, tighter stack ── */
-  .step-box { gap: 20px; }
+    .step-box { gap: 20px; }
   .icon { width: 72px; height: 72px; border-radius: 10px; margin-bottom: 12px; }
   .icon img { width: 30px; height: 30px; }
   .step h3 { font-size: 14px; margin-bottom: 5px; }
   .step p  { font-size: 12px; }
 
-  /* ── Brands: fit max logos on one row ── */
-  .brands-container { gap: 4px 8px; }
+    .brands-container { gap: 4px 8px; }
   .brands-container img { max-width: 42px; }
 
-  /* ── Experience: tighten spacing ── */
-  .experience { padding-top: 28px; padding-bottom: 28px; }
+    .experience { padding-top: 28px; padding-bottom: 28px; }
   .exp-content h2 { font-size: 19px; margin-bottom: 14px; }
   .feature { gap: 12px; margin-bottom: 14px; }
   .feature .icon-container { width: 44px; height: 44px; border-radius: 10px; }
@@ -978,8 +981,7 @@ footer {
   .feature-text h3 { font-size: 14px; }
   .feature-text p { font-size: 12px; }
 
-  /* ── Footer: compact ── */
-  footer { padding-top: 28px; padding-bottom: 18px; }
+    footer { padding-top: 28px; padding-bottom: 18px; }
   .footer-top { grid-template-columns: repeat(2, 1fr); gap: 12px 16px; margin-bottom: 18px; }
   .footer-brand { grid-column: 1 / -1; margin-bottom: 4px; }
   .footer-logo { margin-bottom: 12px; }
@@ -1010,9 +1012,6 @@ footer {
   button, a { touch-action: manipulation; }
 }
 
-/* ============================================================
-   Below: contents of style.css (car card component)
-   ============================================================ */
 .car-card {
   background: #fff;
   border-radius: 16px;
@@ -1162,12 +1161,11 @@ footer {
   stroke-width: 2.5;
 }
 
-/* ── RESPONSIVE ── */
 
 /* Tablet (768–1023 px): 2 cards per row */
 @media (max-width: 1023px) {
   .car-list {
-    grid-template-columns: repeat(2, 1fr) !important;
+    grid-template-columns: repeat(2, minmax(240px, 340px)) !important;
   }
 }
 
@@ -1178,12 +1176,11 @@ footer {
   }
 }
 
-/* Small mobile (≤ 480 px): 2 cards per row with compact card styles.
-   Must come after the 767px block to win the cascade. */
+/* Small mobile (≤ 480 px): single column, compact gap */
 @media (max-width: 480px) {
   .car-list {
-    grid-template-columns: repeat(2, 1fr) !important;
-    gap: 8px;
+    grid-template-columns: 1fr !important;
+    gap: 16px;
   }
   .car-card {
     padding: 10px 8px;
@@ -1221,14 +1218,7 @@ footer {
   }
 }
 
-/* ============================================================
-   Below: contents of pages.css (shared page components)
-   ============================================================ */
-/* ============================================================
-   PAGES.CSS  —  Shared styles for all new Rentiva pages
-   ============================================================ */
 
-/* ── Utilities ─────────────────────────────────────────── */
 .page-wrapper {
   padding: 40px 160px;
   min-height: calc(100vh - 75px - 220px);
@@ -1476,9 +1466,6 @@ select.form-control { cursor: pointer; }
 .empty-state.small { padding: 30px 20px; }
 
 
-/* ============================================================
-   CAR LIST PAGE
-   ============================================================ */
 
 .cars-page { padding: 0; }
 
@@ -1531,15 +1518,15 @@ select.form-control { cursor: pointer; }
 
 .cars-main {
   display: flex;
-  gap: 36px;
+  gap: 32px;
   align-items: flex-start;
-  padding: 36px 160px;
+  padding: 36px 40px;
 }
 
 /* Filter sidebar */
 .filters-sidebar {
-  width: 250px;
-  flex-shrink: 0;
+  flex: 0 0 300px;
+  width: 300px;
   background: #fff;
   border: 1.5px solid #f0f0f0;
   border-radius: 16px;
@@ -1618,9 +1605,13 @@ select.form-control { cursor: pointer; }
 
 /* Car grid */
 .cars-grid-wrapper { flex: 1; min-width: 0; }
-.cars-grid { grid-template-columns: repeat(3, 1fr) !important; }
-.car-card-link { text-decoration: none; display: block; }
-.car-card-link .car-card { cursor: pointer; }
+.cars-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(240px, 1fr));
+  gap: 24px;
+}
+.car-card-link { text-decoration: none; display: flex; flex-direction: column; }
+.car-card-link .car-card { cursor: pointer; flex: 1; }
 .car-placeholder { opacity: 0.18; width: 55% !important; }
 
 .no-cars {
@@ -1633,7 +1624,165 @@ select.form-control { cursor: pointer; }
 .no-cars h3 { font-size: 20px; color: #555; margin-bottom: 8px; }
 .no-cars p  { color: #aaa; margin-bottom: 22px; }
 
-/* ── Filter drawer (mobile) ── */
+/* ── Car Listing Cards (scoped to .cars-grid only, home page unaffected) ── */
+
+.car-list .car-card {
+  border: 1px solid #e6e6e6;
+  border-radius: 20px;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.06);
+  padding: 16px;
+  gap: 0;
+}
+
+.car-list .car-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 24px rgba(0,0,0,0.12);
+  background: #fff;
+}
+
+/* Category label */
+.cc-category {
+  text-align: center;
+  font-size: 12px;
+  color: #888;
+  font-weight: 500;
+  letter-spacing: 0.2px;
+  margin-bottom: 10px;
+}
+
+/* Image container */
+.cc-img {
+  width: 100%;
+  height: 152px;
+  background: #f5f5f5;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  margin-bottom: 14px;
+}
+
+.cc-img img {
+  width: 86%;
+  height: 86%;
+  object-fit: contain;
+}
+
+/* Vehicle info */
+.cc-info {
+  padding-bottom: 12px;
+}
+
+.cc-brand {
+  font-size: 11px;
+  font-weight: 600;
+  color: #555;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-bottom: 3px;
+}
+
+.cc-name {
+  font-size: 16px;
+  font-weight: 700;
+  color: #111;
+  margin: 0 0 4px;
+  line-height: 1.25;
+}
+
+.cc-similar {
+  font-size: 12px;
+  color: #bbb;
+}
+
+/* Dividers */
+.cc-divider {
+  border: none;
+  border-top: 1px solid #f0f0f0;
+  margin: 0;
+}
+
+/* Availability */
+.cc-availability {
+  padding: 12px 0;
+}
+
+.cc-avail-now {
+  font-size: 14px;
+  font-weight: 700;
+  color: #1da462;
+}
+
+.cc-avail-label {
+  display: block;
+  font-size: 13px;
+  font-weight: 700;
+  color: #333;
+}
+
+.cc-avail-date {
+  display: block;
+  font-size: 12px;
+  color: #888;
+  margin-top: 2px;
+}
+
+/* Specs row */
+.cc-specs {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 11px 0;
+}
+
+.cc-spec {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 12px;
+  color: #555;
+}
+
+.cc-spec img {
+  width: 15px;
+  height: 15px;
+  opacity: 0.65;
+  flex-shrink: 0;
+}
+
+/* Pricing boxes */
+.cc-pricing {
+  display: flex;
+  gap: 6px;
+  margin-top: auto;
+  padding-top: 12px;
+}
+
+.cc-price-box {
+  flex: 1;
+  background: #1572D3;
+  border: 1px solid #e8e8e8;
+  border-radius: 10px;
+  padding: 9px 4px;
+  text-align: center;
+  overflow: hidden;
+}
+
+.cc-price-amt {
+  font-size: 11.5px;
+  font-weight: 700;
+  color: #FFF;
+  white-space: nowrap;
+  letter-spacing: -0.2px;
+}
+
+.cc-price-period {
+  font-size: 10.5px;
+  color: #FFF;
+  margin-top: 3px;
+}
+
 .filter-overlay {
   display: none;
   position: fixed;
@@ -1703,9 +1852,6 @@ select.form-control { cursor: pointer; }
 .filter-drawer-close:hover { background: #e0e0e0; }
 
 
-/* ============================================================
-   BOOKING PAGE
-   ============================================================ */
 
 .booking-layout {
   display: grid;
@@ -1826,9 +1972,6 @@ select.form-control { cursor: pointer; }
 .btn-book:hover { background: #1260b5; }
 
 
-/* ============================================================
-   PAYMENT PAGE
-   ============================================================ */
 
 .payment-layout {
   display: grid;
@@ -1956,9 +2099,6 @@ select.form-control { cursor: pointer; }
 .btn-pay:hover { background: #1260b5; }
 
 
-/* ============================================================
-   OWNER DASHBOARD PAGE
-   ============================================================ */
 
 .owner-dashboard {
   padding: 40px 160px;
@@ -1990,19 +2130,19 @@ select.form-control { cursor: pointer; }
   gap: 18px;
 }
 .stat-icon {
-  width: 52px;
-  height: 52px;
-  border-radius: 14px;
+  width: 60px;
+  height: 60px;
+  border-radius: 16px;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 22px;
+  font-size: 28px;
   flex-shrink: 0;
 }
-.stat-blue   { background: #e8f3ff; color: #1572D3; }
-.stat-orange { background: #fff7ed; color: #ea580c; }
-.stat-green  { background: #f0fdf4; color: #16a34a; }
-.stat-purple { background: #faf5ff; color: #9333ea; }
+.stat-blue   { background: #EAF3FF; color: #1572D3; }
+.stat-orange { background: #FFFBEB; color: #F59E0B; }
+.stat-green  { background: #ECFDF5; color: #22C55E; }
+.stat-purple { background: #F5F3FF; color: #8B5CF6; }
 .stat-info h3 { font-size: 26px; font-weight: 700; color: #111; margin-bottom: 3px; }
 .stat-info p  { font-size: 13px; color: #888; }
 
@@ -2086,9 +2226,6 @@ select.form-control { cursor: pointer; }
 .view-btn:hover { background: #1572D3; color: #fff; }
 
 
-/* ============================================================
-   ADD CAR PAGE
-   ============================================================ */
 
 .add-car-page {
   max-width: 820px;
@@ -2231,19 +2368,19 @@ select.form-control { cursor: pointer; }
 }
 
 
-/* ============================================================
-   RESPONSIVE
-   ============================================================ */
 
 /* Large tablet — narrow 160 px gutters to 80 px (matches base.css) */
 @media (max-width: 1200px) {
-  .cars-main,
   .owner-dashboard,
   .page-wrapper { padding-left: 80px; padding-right: 80px; }
+  /* cars-main keeps its own tighter padding; group rule above would push it to 80px */
+  .cars-main    { padding-left: 32px; padding-right: 32px; }
   .cars-header  { padding: 40px 80px; }
   .messages-bar { padding: 12px 80px; }
   /* Stats from 3-col → 2-col at large tablet */
   .stats-grid   { grid-template-columns: 1fr 1fr; }
+  /* Car grid: 2-col once sidebar + grid no longer fit 3 columns */
+  .cars-grid    { grid-template-columns: repeat(2, 1fr) !important; }
 }
 
 /* Tablet (768–1023 px) — 24 px gutters, 2-col car grid */
@@ -2276,10 +2413,9 @@ select.form-control { cursor: pointer; }
   .form-section { padding: 18px; }
 }
 
-/* Mobile (≤ 767 px) — 2-col car grid (matches home Popular Deals), iOS zoom prevention, touch targets */
+/* Mobile (≤ 767 px) — 1-col car grid on the cars listing page */
 @media (max-width: 767px) {
-  /* 2-col car grid on mobile to match home page Popular Deals layout */
-  .cars-grid { grid-template-columns: repeat(2, 1fr) !important; }
+  .cars-grid { grid-template-columns: 1fr !important; }
 
   /* Remove split gradient — looks bad at narrow widths */
   .cars-header { background: #fff; }
@@ -2358,11 +2494,12 @@ select.form-control { cursor: pointer; }
     text-align: center;
   }
 
-  /* Car list: tighter 2-col grid with compact gap */
-  .cars-grid { grid-template-columns: repeat(2, 1fr) !important; gap: 8px; }
+  /* Car list: single column on small mobile */
+  .cars-grid { grid-template-columns: 1fr !important; gap: 12px; }
+  .cc-img { height: 130px; }
+  .cc-price-amt { font-size: 11px; }
 }
 
-/* ── Filter drawer: mobile bottom-sheet behavior ── */
 @media (max-width: 900px) {
   /* Show the mobile filter trigger bar above the car grid */
   .filter-mobile-bar {
@@ -2410,9 +2547,6 @@ select.form-control { cursor: pointer; }
   .filters-sidebar .filter-group { margin-bottom: 16px; }
 }
 
-/* ============================================================
-   Below: contents of car_details.css (car details page)
-   ============================================================ */
 /* CONFLICT RESOLVED: this was a generic `body { font-family: "Poppins", sans-serif; background: #f5f5f5; }`
    rule in car_details.css. base.css (loaded on every page) also defines `body`, and since this merged
    file is now loaded on every page, a plain `body` rule here would overwrite the base styling
@@ -2424,7 +2558,6 @@ body:has(.car-details) {
   background: #f5f5f5;
 }
 
-/* ── SHARED SECTION PADDING ── */
 .car-details,
 .other-cars {
   padding-left: 160px;
@@ -2441,7 +2574,6 @@ body:has(.car-details) {
 }
 
 
-/* ── LEFT ── */
 
 .left-side {
   flex: 1;
@@ -2523,7 +2655,6 @@ body:has(.car-details) {
 }
 
 
-/* ── RIGHT ── */
 
 .right-side {
   flex: 1;
@@ -2580,7 +2711,6 @@ body:has(.car-details) {
 }
 
 
-/* ── RENT BUTTON ── */
 
 .rent-btn {
   width: 100%;
@@ -2603,7 +2733,6 @@ body:has(.car-details) {
 }
 
 
-/* ── EQUIPMENT ── */
 
 .equipment-grid {
   display: grid;
@@ -2629,9 +2758,6 @@ body:has(.car-details) {
 }
 
 
-/* ══════════════════════════════
-   OTHER CARS
-══════════════════════════════ */
 
 .other-cars {
   padding-top: 64px;
@@ -2665,7 +2791,6 @@ body:has(.car-details) {
   color: #1572D3;
 }
 
-/* ── Breadcrumb bar ── */
 .car-page-breadcrumb {
   padding: 18px 160px 0;
   display: flex;
@@ -2678,7 +2803,6 @@ body:has(.car-details) {
 .car-page-breadcrumb a { color: #1572D3; text-decoration: none; }
 .car-page-breadcrumb a:hover { text-decoration: underline; }
 
-/* ── Customer Reviews section ── */
 .car-reviews-section {
   padding: 40px 160px;
 }
@@ -2695,9 +2819,6 @@ body:has(.car-details) {
   gap: 20px;
 }
 
-/* ────────────────────────────────────────
-   RESPONSIVE
-──────────────────────────────────────── */
 
 @media (max-width: 1200px) {
   .car-details,
@@ -2816,10 +2937,6 @@ body:has(.car-details) {
   .price span   { font-size: 26px; }
 }
 
-/* ============================================================
-   Below: contents of profile.css (user dashboard / edit profile pages)
-   ============================================================ */
-/* ── Dashboard Page ── */
 
 .dashboard-wrapper {
   background: #f7f7f7;
@@ -2856,7 +2973,6 @@ body:has(.car-details) {
 }
 
 
-/* ── Left Column ── */
 .dashboard-left {
   flex: 0 0 280px;
   display: flex;
@@ -2969,7 +3085,6 @@ body:has(.car-details) {
   margin: 16px 0 0;
 }
 
-/* ── Right Column ── */
 .dashboard-right {
   flex: 1;
   padding-top: 52px;
@@ -3039,9 +3154,6 @@ body:has(.car-details) {
 }
 
 
-/* ══════════════════════════════════════
-   Edit Profile Page
-══════════════════════════════════════ */
 
 .ep-wrapper {
   background: #f7f7f7;
@@ -3120,7 +3232,6 @@ body:has(.car-details) {
   background: #f0f7ff;
 }
 
-/* ── Left Column ── */
 .ep-left {
   flex: 0 0 300px;
   max-width: 300px;
@@ -3411,10 +3522,10 @@ body:has(.car-details) {
 }
 
 .car-icon {
-    width: 24px;
-    height: 24px;
+    width: 28px;
+    height: 28px;
 
-    background-color: #1572D3; 
+    background-color: #1572D3;
 
     -webkit-mask: url('/static/img/car.svg') no-repeat center;
     mask: url('/static/img/car.svg') no-repeat center;
@@ -3424,10 +3535,10 @@ body:has(.car-details) {
 }
 
 .calendar-icon {
-    width: 24px;
-    height: 24px;
+    width: 28px;
+    height: 28px;
 
-    background-color:orangered; 
+    background-color: #F59E0B;
 
     -webkit-mask: url('/static/img/calendar.svg') no-repeat center;
     mask: url('/static/img/calendar.svg') no-repeat center;
@@ -3530,9 +3641,6 @@ body:has(.car-details) {
   .ep-actions { flex-wrap: wrap; gap: 8px; }
 }
 
-/* ============================================================
-   Below: contents of sign.css (login & register pages)
-   ============================================================ */
 /* DUPLICATE REMOVED: sign.css repeated `* { margin:0; padding:0; box-sizing:border-box; }`,
    which is already fully covered by the `*` rule at the top of this file (from base.css) —
    removing it changes nothing visually. */
@@ -3637,7 +3745,6 @@ body:has(.car-details) {
 }
 
 
-/* INPUTS */
 
 .input-box{
     margin-bottom: 25px;
@@ -3655,27 +3762,32 @@ body:has(.car-details) {
 }
 
 .input-field{
-    height: 40px;
+    height: 48px;
     border: 1px solid #dcdcdc;
     border-radius: 14px;
     display: flex;
     align-items: center;
-    padding: 0 18px;
-    transition: 0.3s;
+    gap: 12px;
+    padding: 0 16px;
+    transition: border-color .2s, background .2s, box-shadow .2s;
 }
 
 .input-field:focus-within{
     border-color: #1572D3;
-
-    box-shadow:
-    0 0 0 4px rgba(21,114,211,0.1);
+    background: #F8FBFF;
+    box-shadow: 0 0 0 4px rgba(21,114,211,0.1);
 }
+.input-field:focus-within i { color: #1572D3; }
 
 .input-field i{
-    font-size: 20px;
-    color: #888;
-
-    margin-right: 12px;
+    font-size: 22px;
+    color: #64748B;
+    width: 24px;
+    height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
 }
 
 .input-field input{
@@ -3764,7 +3876,6 @@ body:has(.car-details) {
 }
 
 
-/* GOOGLE BUTTON */
 
 .google-btn{
     width: 100%;
@@ -3797,7 +3908,6 @@ body:has(.car-details) {
 }
 
 
-/* SIGNUP */
 
 .signup-text{
     text-align: center;
@@ -3815,7 +3925,6 @@ body:has(.car-details) {
 }
 
 
-/* RESPONSIVE */
 
 @media(max-width: 950px){
 
@@ -3856,7 +3965,6 @@ body:has(.signup-page){
 }
 
 
-/* PAGE */
 
 .signup-page{
     width: 100%;
@@ -3935,7 +4043,6 @@ body:has(.signup-page){
 }
 
 
-/* RIGHT */
 
 .right{
     width: 50%;
@@ -3975,7 +4082,6 @@ body:has(.signup-page){
 }
 
 
-/* INPUTS */
 
 .input-box{
     margin-bottom: 22px;
@@ -3994,16 +4100,20 @@ body:has(.signup-page){
 
 .input-field:focus-within{
     border-color: #1572D3;
-
-    box-shadow:
-    0 0 0 4px rgba(21,114,211,0.1);
+    background: #F8FBFF;
+    box-shadow: 0 0 0 4px rgba(21,114,211,0.1);
 }
+.input-field:focus-within i { color: #1572D3; }
 
 .input-field i{
-    font-size: 20px;
-    color: #888;
-
-    margin-right: 12px;
+    font-size: 22px;
+    color: #64748B;
+    width: 24px;
+    height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
 }
 
 .input-field input{
@@ -4018,7 +4128,6 @@ body:has(.signup-page){
 }
 
 
-/* TERMS */
 
 .terms{
     display: flex;
@@ -4040,14 +4149,12 @@ body:has(.signup-page){
 }
 
 
-/* BUTTON */
 
 .signup-btn:hover{
     background: #0f5fb5;
 }
 
 
-/* DIVIDER */
 
 .divider{
     position: relative;
@@ -4081,7 +4188,6 @@ body:has(.signup-page){
 }
 
 
-/* GOOGLE BUTTON */
 
 .google-btn{
     width: 100%;
@@ -4114,7 +4220,6 @@ body:has(.signup-page){
 }
 
 
-/* SIGNIN */
 
 .signin-text{
     text-align: center;
@@ -4132,7 +4237,6 @@ body:has(.signup-page){
 }
 
 
-/* RESPONSIVE */
 
 @media(max-width: 950px){
 
@@ -4168,7 +4272,6 @@ body:has(.signup-page){
     height:20px;
 }
 
-/* ── Mid mobile (481–767 px): tighten form, no image panel needed ── */
 @media (max-width: 767px) {
   /* Reduce image-panel height so form reaches screen faster */
   .left { min-height: 260px; }
@@ -4179,7 +4282,6 @@ body:has(.signup-page){
   .google-btn { touch-action: manipulation; }
 }
 
-/* ── Small mobile ── */
 @media (max-width: 480px) {
   .left {
     padding: 0 24px;
@@ -4197,9 +4299,6 @@ body:has(.signup-page){
   .form-container h2 { font-size: 32px; }
 }
 
-/* ============================================================
-   Below: contents of testimonials.css (home page testimonials carousel)
-   ============================================================ */
 
 .testimonials {
   position: relative;
@@ -4622,7 +4721,6 @@ body:has(.signup-page){
 }
 
 
-/* ── Toggle Button ──────────────────────────────── */
 .chat-toggle-btn {
   position: fixed;
   right: 28px;
@@ -4650,7 +4748,6 @@ body:has(.signup-page){
 
 .chat-toggle-btn img { width: 28px; height: 28px; }
 
-/* ── Chatbot Container ──────────────────────────── */
 .chatbot-container {
   display: none;
   flex-direction: column;
@@ -4677,7 +4774,6 @@ body:has(.signup-page){
   to   { opacity: 1; transform: translateY(0) scale(1); }
 }
 
-/* ── Header ─────────────────────────────────────── */
 .chatbot-header {
   background: linear-gradient(135deg, #1572D3 0%, #0e5cb3 100%);
   padding: 13px 15px;
@@ -4769,7 +4865,6 @@ body:has(.signup-page){
 
 .chatbot-close-btn:hover { background: rgba(255, 255, 255, 0.26); }
 
-/* ── Message Body ────────────────────────────────── */
 .chatbot-body {
   flex: 1;
   padding: 14px;
@@ -4785,7 +4880,6 @@ body:has(.signup-page){
 .chatbot-body::-webkit-scrollbar-track { background: transparent; }
 .chatbot-body::-webkit-scrollbar-thumb { background: #dde3ea; border-radius: 2px; }
 
-/* ── Messages ─────────────────────────────────────── */
 .bot-message,
 .user-message {
   display: flex;
@@ -4829,7 +4923,6 @@ body:has(.signup-page){
   border-color: #cce0ff;
 }
 
-/* ── Suggestions Panel ─────────────────────────── */
 .chatbot-suggestions-panel {
   flex-shrink: 0;
   max-height: 0;
@@ -4944,7 +5037,6 @@ body:has(.signup-page){
 
 .suggestion-grid button i { font-size: 13px; flex-shrink: 0; }
 
-/* ── Input Area ─────────────────────────────────── */
 .chatbot-input {
   display: flex;
   align-items: center;
@@ -5024,7 +5116,6 @@ body:has(.signup-page){
 .send-btn:active { transform: scale(0.95); }
 .send-btn:disabled { background: #a0c4ea; cursor: not-allowed; transform: none; }
 
-/* ── Typing indicator ────────────────────────────── */
 .typing-dots {
   display: inline-flex;
   gap: 4px;
@@ -5049,7 +5140,6 @@ body:has(.signup-page){
   30%            { transform: translateY(-5px); opacity: 1;   }
 }
 
-/* ── Links inside bot messages ────────────────────── */
 .bot-message p a {
   color: #1572D3;
   text-decoration: underline;
@@ -5058,7 +5148,6 @@ body:has(.signup-page){
 
 .bot-message p a:hover { opacity: 0.75; }
 
-/* ── Mobile ────────────────────────────────────────── */
 @media (max-width: 600px) {
   .chatbot-container {
     width: 95vw;
@@ -5084,5 +5173,492 @@ body:has(.signup-page){
 
   .suggestions-trigger-btn,
   .send-btn { touch-action: manipulation; }
+}
+
+
+body:has(.reg-choose-page) {
+  font-family: "Poppins", sans-serif;
+  background: #f0f5ff;
+}
+
+.reg-choose-page {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 60px 20px;
+}
+
+.reg-choose-inner {
+  max-width: 860px;
+  width: 100%;
+  text-align: center;
+}
+
+.reg-brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  text-decoration: none;
+  margin-bottom: 40px;
+}
+.reg-brand img  { height: 30px; }
+.reg-brand span { font-size: 22px; font-weight: 700; color: #111; }
+
+.reg-choose-title {
+  font-size: 40px;
+  font-weight: 700;
+  color: #111;
+  margin-bottom: 10px;
+}
+
+.reg-choose-sub {
+  font-size: 16px;
+  color: #666;
+  margin-bottom: 44px;
+}
+
+.reg-choose-cards {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+  margin-bottom: 32px;
+  text-align: left;
+}
+
+.reg-role-card {
+  background: #fff;
+  border: 2px solid #e8e8e8;
+  border-radius: 24px;
+  padding: 36px 30px;
+  text-decoration: none;
+  display: flex;
+  flex-direction: column;
+  transition: border-color .25s, box-shadow .25s, transform .25s;
+}
+.reg-role-card:hover {
+  border-color: #1572D3;
+  box-shadow: 0 16px 48px rgba(21,114,211,.12);
+  transform: translateY(-4px);
+}
+.reg-role-card--renter:hover {
+  border-color: #059669;
+  box-shadow: 0 16px 48px rgba(5,150,105,.12);
+}
+
+.reg-role-icon {
+  width: 56px;
+  height: 56px;
+  border-radius: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 18px;
+}
+.reg-role-icon i { font-size: 26px; }
+
+.reg-role-icon--customer { background: #EAF3FF; }
+.reg-role-icon--customer i { color: #1572D3; }
+.reg-role-icon--renter   { background: #EAFBF3; }
+.reg-role-icon--renter i { color: #10B981; }
+
+.reg-role-card h3 {
+  font-size: 20px;
+  font-weight: 700;
+  color: #111;
+  margin-bottom: 8px;
+}
+
+.reg-role-card > p {
+  font-size: 14px;
+  color: #666;
+  line-height: 1.6;
+  margin-bottom: 20px;
+}
+
+.reg-role-list {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+  flex: 1;
+}
+.reg-role-list li {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13.5px;
+  color: #444;
+}
+.reg-role-list li i { font-size: 15px; color: #1572D3; }
+.reg-role-card--renter .reg-role-list li i { color: #059669; }
+
+.reg-role-cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 14px;
+  font-weight: 600;
+  padding: 10px 20px;
+  border-radius: 10px;
+  color: #fff;
+  align-self: flex-start;
+  transition: opacity .2s;
+}
+.reg-role-cta:hover { opacity: .85; }
+.reg-role-cta--customer { background: #1572D3; }
+.reg-role-cta--renter   { background: #059669; }
+
+.reg-choose-login { font-size: 14px; color: #666; }
+.reg-choose-login a { color: #1572D3; font-weight: 600; text-decoration: none; }
+
+@media (max-width: 680px) {
+  .reg-choose-cards  { grid-template-columns: 1fr; }
+  .reg-choose-title  { font-size: 28px; }
+}
+
+
+
+/* Keep the right panel scrollable for long forms */
+.auth-reg-right {
+  overflow-y: auto;
+  max-height: 100vh;
+  align-items: flex-start;
+  padding-top: 40px;
+  padding-bottom: 40px;
+}
+
+/* Slightly wider form card */
+.auth-reg-form {
+  max-width: 560px !important;
+}
+
+/* Left panel: taller min-height so it covers the long form */
+.auth-reg-left {
+  min-height: 100vh;
+  position: sticky;
+  top: 0;
+}
+
+/* Renter left panel: green-toned overlay */
+.auth-reg-left--renter .overlay {
+  background: linear-gradient(rgba(5,77,50,.72), rgba(2,44,28,.65));
+}
+
+/* Content tweaks for auth pages */
+.auth-reg-content .logo i { color: #fff; }
+
+/* Trust badges under the headline */
+.auth-trust-badges {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  margin-top: 36px;
+}
+
+.auth-trust-badge {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: rgba(255,255,255,.12);
+  border: 1px solid rgba(255,255,255,.18);
+  border-radius: 12px;
+  padding: 12px 16px;
+  color: #fff;
+  font-size: 14px;
+  font-weight: 500;
+}
+.auth-trust-badge i { font-size: 20px; flex-shrink: 0; }
+
+/* Back link */
+.auth-reg-back {
+  margin-bottom: 20px;
+}
+.auth-reg-back a {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 14px;
+  color: #1572D3;
+  text-decoration: none;
+  font-weight: 500;
+}
+.auth-reg-back a:hover { text-decoration: underline; }
+
+
+.form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+/* Section divider with icon */
+.form-section-divider {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 28px 0 20px;
+  font-size: 13px;
+  font-weight: 700;
+  color: #1572D3;
+  letter-spacing: .4px;
+  text-transform: uppercase;
+}
+.form-section-divider::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: #e5e9f0;
+}
+.form-section-divider i { font-size: 18px; flex-shrink: 0; }
+
+/* Tall input-field for textarea */
+.input-field--tall {
+  height: auto !important;
+  align-items: flex-start;
+  padding-top: 11px;
+  padding-bottom: 11px;
+}
+.input-field--tall i { font-size: 22px; color: #64748B; width: 24px; height: 24px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; margin-top: 3px; }
+.input-field--tall textarea {
+  width: 100%;
+  border: none;
+  outline: none;
+  font-size: 15px;
+  background: transparent;
+  resize: vertical;
+  min-height: 72px;
+  font-family: "Poppins", sans-serif;
+  line-height: 1.55;
+}
+
+/* Error state */
+.input-field--error {
+  border-color: #ef4444 !important;
+  background: #fff5f5;
+}
+
+
+.file-upload-zone {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  border: 2px dashed #d1d5db;
+  border-radius: 14px;
+  padding: 22px 16px;
+  cursor: pointer;
+  background: #fafafa;
+  transition: border-color .2s, background .2s;
+  text-align: center;
+  width: 100%;
+}
+.file-upload-zone:hover {
+  border-color: #1572D3;
+  background: #eff6ff;
+}
+.file-upload-zone i {
+  font-size: 32px;
+  color: #1572D3;
+}
+.file-upload-text {
+  font-size: 13.5px;
+  color: #555;
+  font-weight: 500;
+}
+.file-upload-name {
+  font-size: 12px;
+  color: #999;
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.file-upload-zone--active {
+  border-color: #22c55e;
+  background: #f0fdf4;
+}
+.file-upload-zone--active i { color: #22c55e; }
+.file-upload-zone--error { border-color: #ef4444; background: #fff5f5; }
+
+.reg-info-box {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  background: #eff6ff;
+  border: 1px solid #bfdbfe;
+  border-radius: 10px;
+  padding: 10px 14px;
+  margin-bottom: 14px;
+  font-size: 13px;
+  color: #1e40af;
+}
+.reg-info-box i { font-size: 15px; color: #1572D3; flex-shrink: 0; margin-top: 1px; }
+
+
+.auth-errors {
+  background: #fff1f2;
+  border: 1px solid #fecdd3;
+  border-radius: 12px;
+  padding: 14px 16px;
+  margin-bottom: 22px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.auth-error-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  font-size: 13.5px;
+  color: #dc2626;
+  line-height: 1.45;
+}
+.auth-error-item i { font-size: 15px; flex-shrink: 0; margin-top: 1px; }
+
+
+.field-hint {
+  font-size: 12px;
+  color: #888;
+  font-weight: 400;
+}
+
+
+.signup-btn--renter {
+  background: #059669;
+}
+.signup-btn--renter:hover { background: #047857; }
+
+
+.auth-reg-alt-links {
+  margin-top: 14px;
+}
+.auth-reg-alt-links .signin-text { margin-top: 8px; }
+
+
+@media (max-width: 950px) {
+  .auth-reg-left  { min-height: 300px; position: static; }
+  .auth-reg-right { max-height: none; overflow-y: visible; padding-top: 40px; }
+}
+
+@media (max-width: 680px) {
+  .form-row { grid-template-columns: 1fr; gap: 0; }
+}
+
+@media (max-width: 480px) {
+  .auth-reg-form { padding: 28px 20px !important; }
+}
+
+/* ══════════════════════════════════════════════════════════════
+   DATA TABLE → RESPONSIVE CARDS  (≤ 640 px)
+   Requires data-label="…" on every <td> in .data-table
+══════════════════════════════════════════════════════════════ */
+@media (max-width: 640px) {
+
+  .table-wrapper {
+    overflow-x: visible;
+    border: none;
+    background: transparent;
+    border-radius: 0;
+  }
+
+  .data-table thead { display: none; }
+
+  .data-table tbody tr {
+    display: block;
+    background: #fff;
+    border: 1.5px solid #E5E7EB;
+    border-radius: 14px;
+    margin-bottom: 12px;
+    overflow: hidden;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.04);
+  }
+
+  .data-table tbody tr:last-child { margin-bottom: 0; }
+
+  .data-table tbody td {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 16px;
+    border-bottom: 1px solid #F3F4F6;
+    font-size: 13px;
+    white-space: normal;
+    gap: 8px;
+    text-align: right;
+  }
+
+  .data-table tbody td:last-child { border-bottom: none; }
+
+  .data-table tbody td::before {
+    content: attr(data-label);
+    font-weight: 700;
+    font-size: 11px;
+    color: #6B7280;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    flex-shrink: 0;
+    text-align: left;
+  }
+
+  .data-table tbody td[data-label="Action"] {
+    justify-content: flex-end;
+    flex-wrap: wrap;
+    gap: 8px;
+    padding: 12px 16px;
+  }
+
+  .data-table tbody td[data-label="Action"]::before { display: none; }
+}
+
+
+/* Renter dashboard: pending confirmation cards wrap on small screens */
+@media (max-width: 480px) {
+  .od-section[style*="border:2px solid #fde68a"] > div { margin-top: 12px; }
+  /* KYC banner flex column on tiny screens */
+  .od-header > div[style*="background:#fffbeb"],
+  .od-header > div[style*="padding:10px 18px"] {
+    width: 100%;
+    text-align: left;
+  }
+}
+
+/* Booking item right column: prevent overflow on very small screens */
+@media (max-width: 380px) {
+  .booking-item { flex-wrap: wrap; }
+  .booking-item-right { text-align: left; flex-shrink: 1; width: 100%; }
+}
+
+/* Home page: experience content fixed width already has responsive rule at 900px,
+   ensure it also resets at 640px */
+@media (max-width: 640px) {
+  .exp-content { width: 100% !important; }
+}
+
+/* Payment methods grid: stack on small mobile */
+@media (max-width: 480px) {
+  .payment-methods { flex-direction: column; }
+  .payment-method-option { flex: none; width: 100%; }
+}
+
+/* Car details: spec-grid 2-col on mobile instead of 3-col */
+@media (max-width: 480px) {
+  .spec-grid { grid-template-columns: repeat(2, 1fr); gap: 10px; }
+}
+
+/* Renter confirm page: pending card info wrap on mobile */
+@media (max-width: 480px) {
+  .od-section div[style*="display:flex;align-items:flex-start;gap:16px"] {
+    flex-wrap: wrap;
+  }
+}
+
+/* Ensure no element causes horizontal overflow at any breakpoint */
+@media (max-width: 767px) {
+  img { max-width: 100%; }
+  .od-section { overflow: hidden; }
 }
 

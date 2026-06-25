@@ -1,0 +1,107 @@
+{% extends 'admin_panel/base.html' %}
+{% block title %}Payments — Rentiva Admin{% endblock %}
+{% block breadcrumb %}Payment Management{% endblock %}
+
+{% block content %}
+<div class="page-hd">
+  <h1 class="page-title">Payment Management</h1>
+  <p class="page-sub">Monitor and manage all platform transactions.</p>
+</div>
+
+<!-- Summary Cards -->
+<div class="row g-3 mb-4">
+  <div class="col-md-3">
+    <div class="stat-card" style="padding:16px;">
+      <div class="stat-icon si-green" style="width:40px;height:40px;font-size:18px;"><i class="ri-money-rupee-circle-line"></i></div>
+      <div class="stat-body">
+        <div class="stat-label">Total Collected</div>
+        <div class="stat-value" style="font-size:20px;">₹{{ total_paid|floatformat:0 }}</div>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-3">
+    <div class="stat-card" style="padding:16px;">
+      <div class="stat-icon si-teal" style="width:40px;height:40px;font-size:18px;"><i class="ri-refund-2-line"></i></div>
+      <div class="stat-body">
+        <div class="stat-label">Total Refunded</div>
+        <div class="stat-value" style="font-size:20px;">₹{{ total_refund|floatformat:0 }}</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Filters -->
+<div class="status-tabs">
+  <a href="?status="          class="stab {% if not status_filter %}active{% endif %}">All</a>
+  <a href="?status=paid"      class="stab {% if status_filter == 'paid'     %}active{% endif %}">Paid</a>
+  <a href="?status=pending"   class="stab {% if status_filter == 'pending'  %}active{% endif %}">Pending</a>
+  <a href="?status=failed"    class="stab {% if status_filter == 'failed'   %}active{% endif %}">Failed</a>
+  <a href="?status=refunded"  class="stab {% if status_filter == 'refunded' %}active{% endif %}">Refunded</a>
+</div>
+
+<form method="get" class="filter-bar" style="margin-bottom:16px;">
+  {% if status_filter %}<input type="hidden" name="status" value="{{ status_filter }}">{% endif %}
+  <div class="search-wrap">
+    <i class="ri-search-line"></i>
+    <input type="text" name="search" class="search-inp" placeholder="Search transaction ID or email…" value="{{ search }}">
+  </div>
+  <button type="submit" class="filter-btn"><i class="ri-search-line"></i> Search</button>
+  {% if search %}<a href="?status={{ status_filter }}" class="btn-a btn-reject" style="padding:8px 14px;"><i class="ri-close-line"></i> Clear</a>{% endif %}
+</form>
+
+<div class="admin-card">
+  <div class="tbl-wrap">
+    <table class="admin-tbl">
+      <thead>
+        <tr>
+          <th>Transaction ID</th><th>Booking</th><th>Customer</th>
+          <th>Vehicle</th><th>Amount</th>
+          <th>Method</th><th>Date</th><th>Status</th><th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for pmt in payments %}
+        <tr>
+          <td style="font-family:monospace;font-size:12.5px;">{{ pmt.transaction_id }}</td>
+          <td><strong>#{{ pmt.booking.id }}</strong></td>
+          <td>
+            <div class="u-name">{{ pmt.booking.user.get_full_name }}</div>
+            <div class="u-email">{{ pmt.booking.user.email }}</div>
+          </td>
+          <td style="font-size:13px;">{{ pmt.booking.car.car_name }}</td>
+          <td><span class="amount">₹{{ pmt.booking.total_amount|floatformat:0 }}</span></td>
+          <td>
+            <span class="badge b-active">{{ pmt.get_payment_method_display }}</span>
+          </td>
+          <td style="font-size:12px;color:var(--text-2);">{{ pmt.payment_date|date:"M d, Y H:i" }}</td>
+          <td><span class="badge b-{{ pmt.payment_status }}">{{ pmt.get_payment_status_display }}</span></td>
+          <td>
+            {% if pmt.payment_status == 'paid' and not pmt.refund_status %}
+            <form method="post" action="/admin-panel/payments/{{ pmt.id }}/refund/" class="inline-form"
+                  onsubmit="return confirm('Issue refund for transaction {{ pmt.transaction_id }}?')">
+              {% csrf_token %}
+              <button type="submit" class="btn-a btn-refund"><i class="ri-refund-2-line"></i> Refund</button>
+            </form>
+            {% elif pmt.refund_status %}
+            <span style="font-size:12px;color:var(--info);"><i class="ri-check-line"></i> Refunded</span>
+            {% else %}
+            <span style="font-size:12px;color:var(--text-3);">—</span>
+            {% endif %}
+          </td>
+        </tr>
+        {% empty %}
+        <tr>
+          <td colspan="9">
+            <div class="empty-state">
+              <i class="ri-money-rupee-circle-line"></i>
+              <h3>No payment records found</h3>
+              <p>Transactions will appear here as bookings are paid.</p>
+            </div>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

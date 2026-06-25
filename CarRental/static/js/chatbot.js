@@ -8,7 +8,6 @@ const suggestionsToggle = document.getElementById("suggestionsToggle");
 const suggestionsPanel  = document.getElementById("suggestionsPanel");
 const closeSuggestions  = document.getElementById("closeSuggestions");
 
-// ── Open / close chat window ──────────────────────────────
 chatToggleBtn.addEventListener("click", () => {
     chatbotContainer.classList.add("open");
     scrollToBottom();
@@ -20,7 +19,6 @@ closeChatbot.addEventListener("click", () => {
     closeSuggestionsPanel();
 });
 
-// ── Suggestions panel toggle ──────────────────────────────
 suggestionsToggle.addEventListener("click", () => {
     if (suggestionsPanel.classList.contains("open")) {
         closeSuggestionsPanel();
@@ -41,12 +39,10 @@ function closeSuggestionsPanel() {
     suggestionsToggle.classList.remove("active");
 }
 
-// ── Enter key sends message ───────────────────────────────
 userInput.addEventListener("keydown", e => {
     if (e.key === "Enter" && !e.shiftKey) sendMessage();
 });
 
-// ── Helpers ──────────────────────────────────────────────
 function getCsrfToken() {
     const match = document.cookie.match(/csrftoken=([^;]+)/);
     return match ? match[1] : "";
@@ -82,7 +78,6 @@ async function sendMessage() {
     appendMessage("user", message);
     userInput.value = "";
 
-    // Disable input while waiting for response
     userInput.disabled = true;
     sendBtn.disabled = true;
 

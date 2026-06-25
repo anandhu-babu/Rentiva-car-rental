@@ -1,0 +1,206 @@
+{% extends 'admin_panel/base.html' %}
+{% block title %}Reports — Rentiva Admin{% endblock %}
+{% block breadcrumb %}Reports &amp; Analytics{% endblock %}
+
+{% block extra_css %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+{% endblock %}
+
+{% block content %}
+<div class="page-hd">
+  <h1 class="page-title">Reports &amp; Analytics</h1>
+  <p class="page-sub">Full-spectrum platform performance data.</p>
+</div>
+
+<!-- Verification Stats -->
+<div class="row g-3 mb-4">
+  <div class="col-12">
+    <div class="admin-card">
+      <div class="card-head">
+        <div class="card-head-title"><i class="ri-shield-check-line"></i> Verification Status Summary</div>
+      </div>
+      <div class="card-body">
+        <div class="row g-3">
+          <div class="col-md-4">
+            <div style="background:#f8fafc;border-radius:10px;padding:16px;">
+              <div style="font-size:12px;color:var(--text-2);font-weight:600;text-transform:uppercase;letter-spacing:.5px;margin-bottom:10px;">Customer KYC</div>
+              <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
+                <span style="font-size:13px;">Pending</span>
+                <span class="badge b-pending">{{ verification_stats.cust_pending }}</span>
+              </div>
+              <div style="display:flex;justify-content:space-between;align-items:center;">
+                <span style="font-size:13px;">Approved</span>
+                <span class="badge b-approved">{{ verification_stats.cust_approved }}</span>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div style="background:#f8fafc;border-radius:10px;padding:16px;">
+              <div style="font-size:12px;color:var(--text-2);font-weight:600;text-transform:uppercase;letter-spacing:.5px;margin-bottom:10px;">Renter KYC</div>
+              <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
+                <span style="font-size:13px;">Pending</span>
+                <span class="badge b-pending">{{ verification_stats.rent_pending }}</span>
+              </div>
+              <div style="display:flex;justify-content:space-between;align-items:center;">
+                <span style="font-size:13px;">Approved</span>
+                <span class="badge b-approved">{{ verification_stats.rent_approved }}</span>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div style="background:#f8fafc;border-radius:10px;padding:16px;">
+              <div style="font-size:12px;color:var(--text-2);font-weight:600;text-transform:uppercase;letter-spacing:.5px;margin-bottom:10px;">Vehicle Documents</div>
+              <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
+                <span style="font-size:13px;">Pending</span>
+                <span class="badge b-pending">{{ verification_stats.veh_pending }}</span>
+              </div>
+              <div style="display:flex;justify-content:space-between;align-items:center;">
+                <span style="font-size:13px;">Approved</span>
+                <span class="badge b-approved">{{ verification_stats.veh_approved }}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Charts Row -->
+<div class="row g-4 mb-4">
+  <!-- Monthly Revenue -->
+  <div class="col-xl-8">
+    <div class="admin-card">
+      <div class="card-head">
+        <div class="card-head-title"><i class="ri-bar-chart-2-line"></i> Monthly Revenue (Last 12 Months)</div>
+      </div>
+      <div class="card-body">
+        <div class="chart-wrap"><canvas id="revenueChart"></canvas></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Booking Distribution -->
+  <div class="col-xl-4">
+    <div class="admin-card">
+      <div class="card-head">
+        <div class="card-head-title"><i class="ri-pie-chart-2-line"></i> Booking Distribution</div>
+      </div>
+      <div class="card-body">
+        <div class="chart-wrap-sm"><canvas id="bookingChart"></canvas></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Top Cars + Complaints -->
+<div class="row g-4">
+  <!-- Top 5 Cars -->
+  <div class="col-xl-7">
+    <div class="admin-card">
+      <div class="card-head">
+        <div class="card-head-title"><i class="ri-car-line"></i> Top 5 Most Booked Vehicles</div>
+      </div>
+      <div class="tbl-wrap">
+        <table class="admin-tbl">
+          <thead><tr><th>#</th><th>Vehicle</th><th>Owner</th><th>Bookings</th><th>Rent/Day</th></tr></thead>
+          <tbody>
+            {% for car in top_cars %}
+            <tr>
+              <td style="font-weight:700;color:var(--primary);">{{ forloop.counter }}</td>
+              <td>
+                <div class="u-name">{{ car.car_name }}</div>
+                <div class="u-email">{{ car.brand }}</div>
+              </td>
+              <td style="font-size:13px;">{{ car.owner.user.get_full_name }}</td>
+              <td><span class="badge b-active">{{ car.booking_count }}</span></td>
+              <td><span class="amount">₹{{ car.rent_per_day|floatformat:0 }}/day</span></td>
+            </tr>
+            {% empty %}
+            <tr><td colspan="5"><div class="empty-state" style="padding:30px;"><i class="ri-car-line"></i><p>No booking data yet</p></div></td></tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- Complaint Analytics -->
+  <div class="col-xl-5">
+    <div class="admin-card">
+      <div class="card-head">
+        <div class="card-head-title"><i class="ri-error-warning-line"></i> Complaint Analytics</div>
+      </div>
+      <div class="card-body">
+        <div class="chart-wrap-sm"><canvas id="complaintChart"></canvas></div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// Revenue Chart
+const revLabels = {{ monthly_labels|safe }};
+const revData   = {{ monthly_revenue|safe }};
+new Chart(document.getElementById('revenueChart'), {
+  type: 'bar',
+  data: {
+    labels: revLabels,
+    datasets: [{
+      label: 'Revenue (₹)', data: revData,
+      backgroundColor: 'rgba(37,99,235,0.15)',
+      borderColor: '#2563eb', borderWidth: 2,
+      borderRadius: 6, borderSkipped: false,
+    }]
+  },
+  options: {
+    responsive: true, maintainAspectRatio: false,
+    plugins: { legend: { display: false }, tooltip: { callbacks: { label: c => '₹' + c.parsed.y.toLocaleString('en-IN') } } },
+    scales: {
+      y: { beginAtZero: true, grid: { color: 'rgba(0,0,0,0.04)' }, ticks: { callback: v => '₹' + (v/1000 > 0 ? (v/1000)+'k' : v) } },
+      x: { grid: { display: false } }
+    }
+  }
+});
+
+// Booking Distribution
+const bs = {{ booking_stats|safe }};
+new Chart(document.getElementById('bookingChart'), {
+  type: 'doughnut',
+  data: {
+    labels: ['Pending','Approved','Completed','Cancelled'],
+    datasets: [{
+      data: [bs.pending, bs.approved, bs.completed, bs.cancelled],
+      backgroundColor: ['#f59e0b','#3b82f6','#10b981','#ef4444'],
+      borderWidth: 0, hoverOffset: 6
+    }]
+  },
+  options: {
+    responsive: true, maintainAspectRatio: false,
+    cutout: '65%',
+    plugins: { legend: { position: 'bottom', labels: { padding: 14, font: { size: 12 } } } }
+  }
+});
+
+// Complaint Chart
+const cs = {{ complaint_stats|safe }};
+new Chart(document.getElementById('complaintChart'), {
+  type: 'doughnut',
+  data: {
+    labels: ['Open','Resolved','Rejected','Escalated'],
+    datasets: [{
+      data: [cs.open, cs.resolved, cs.rejected, cs.escalated],
+      backgroundColor: ['#f97316','#10b981','#ef4444','#8b5cf6'],
+      borderWidth: 0, hoverOffset: 6
+    }]
+  },
+  options: {
+    responsive: true, maintainAspectRatio: false,
+    cutout: '65%',
+    plugins: { legend: { position: 'bottom', labels: { padding: 14, font: { size: 12 } } } }
+  }
+});
+</script>
+{% endblock %}

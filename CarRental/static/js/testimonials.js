@@ -11,19 +11,16 @@ document.addEventListener('DOMContentLoaded', function () {
     initialSlide: 2,
     spaceBetween: 16,
 
-    /* Pagination dots */
     pagination: {
       el: '.testi-pagination',
       clickable: true,
     },
 
-    /* Prev / Next arrows */
     navigation: {
       prevEl: '.testi-prev',
       nextEl: '.testi-next',
     },
 
-    /* Autoplay */
     autoplay: {
       delay: 4500,
       disableOnInteraction: false,
@@ -36,7 +33,6 @@ document.addEventListener('DOMContentLoaded', function () {
       onlyInViewport: true,
     },
 
-    /* Accessibility */
     a11y: {
       enabled: true,
       prevSlideMessage: 'Previous testimonial',

@@ -1,0 +1,124 @@
+{% extends 'admin_panel/base.html' %}
+{% block title %}Complaints — Rentiva Admin{% endblock %}
+{% block breadcrumb %}Complaints &amp; Disputes{% endblock %}
+
+{% block content %}
+<div class="page-hd">
+  <h1 class="page-title">Complaints &amp; Dispute Resolution</h1>
+  <p class="page-sub">{{ complaints|length }} complaint record{{ complaints|length|pluralize }}. Resolve issues to maintain platform trust.</p>
+</div>
+
+<div class="status-tabs">
+  <a href="?status="          class="stab {% if not status_filter %}active{% endif %}">All</a>
+  <a href="?status=open"      class="stab {% if status_filter == 'open'      %}active{% endif %}">Open</a>
+  <a href="?status=resolved"  class="stab {% if status_filter == 'resolved'  %}active{% endif %}">Resolved</a>
+  <a href="?status=rejected"  class="stab {% if status_filter == 'rejected'  %}active{% endif %}">Rejected</a>
+  <a href="?status=escalated" class="stab {% if status_filter == 'escalated' %}active{% endif %}">Escalated</a>
+</div>
+
+<div class="admin-card">
+  <div class="tbl-wrap">
+    <table class="admin-tbl">
+      <thead>
+        <tr>
+          <th>ID</th><th>Raised By</th><th>Type</th>
+          <th>Booking</th><th>Description</th>
+          <th>Status</th><th>Date</th><th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for c in complaints %}
+        <tr>
+          <td><strong>#{{ c.id }}</strong></td>
+          <td>
+            <div class="u-name">{{ c.raised_by.get_full_name }}</div>
+            <div class="u-email">{{ c.raised_by.email }}</div>
+          </td>
+          <td>
+            <span class="badge b-open" style="font-size:11px;">{{ c.get_complaint_type_display }}</span>
+          </td>
+          <td>
+            {% if c.booking %}
+            <a href="/admin-panel/bookings/" style="color:var(--primary);font-weight:600;font-size:13px;">#{{ c.booking.id }}</a>
+            {% else %}<span style="color:var(--text-3);">—</span>{% endif %}
+          </td>
+          <td style="max-width:220px;font-size:13px;">{{ c.description|truncatechars:80 }}</td>
+          <td><span class="badge b-{{ c.status }}">{{ c.get_status_display }}</span></td>
+          <td style="font-size:12px;color:var(--text-2);">{{ c.created_at|date:"M d, Y" }}</td>
+          <td>
+            {% if c.status == 'open' or c.status == 'escalated' %}
+            <div class="actions">
+              <!-- Resolve (with note modal) -->
+              <button type="button" class="btn-a btn-resolve"
+                      onclick="openResolve({{ c.id }})">
+                <i class="ri-check-double-line"></i> Resolve
+              </button>
+              <form method="post" action="/admin-panel/complaints/{{ c.id }}/reject/" class="inline-form"
+                    onsubmit="return confirm('Reject complaint #{{ c.id }}?')">
+                {% csrf_token %}
+                <button type="submit" class="btn-a btn-reject"><i class="ri-close-circle-line"></i> Reject</button>
+              </form>
+              {% if c.status != 'escalated' %}
+              <form method="post" action="/admin-panel/complaints/{{ c.id }}/escalate/" class="inline-form">
+                {% csrf_token %}
+                <button type="submit" class="btn-a btn-escalate"><i class="ri-arrow-up-circle-line"></i> Escalate</button>
+              </form>
+              {% endif %}
+            </div>
+            {% else %}
+            <span style="font-size:12px;color:var(--text-3);">
+              {{ c.get_status_display }} on {{ c.resolved_at|date:"M d" }}
+            </span>
+            {% endif %}
+          </td>
+        </tr>
+        {% empty %}
+        <tr>
+          <td colspan="8">
+            <div class="empty-state">
+              <i class="ri-error-warning-line"></i>
+              <h3>No complaints found</h3>
+              <p>Platform complaints and disputes appear here.</p>
+            </div>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- Resolve Modal (pure HTML/CSS) -->
+<div id="resolveModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:2000;align-items:center;justify-content:center;">
+  <div style="background:#fff;border-radius:14px;padding:28px;width:460px;max-width:90vw;box-shadow:0 20px 60px rgba(0,0,0,.2);">
+    <h3 style="font-size:16px;font-weight:700;margin-bottom:14px;color:var(--text);">
+      <i class="ri-check-double-line" style="color:var(--success);margin-right:6px;"></i>Resolve Complaint
+    </h3>
+    <p style="font-size:13.5px;color:var(--text-2);margin-bottom:14px;">Add a resolution note (optional) before marking this complaint as resolved.</p>
+    <form id="resolveForm" method="post">
+      {% csrf_token %}
+      <textarea name="resolution_note" class="modal-note" rows="4" placeholder="Describe how this complaint was resolved…"></textarea>
+      <div style="display:flex;justify-content:flex-end;gap:10px;margin-top:14px;">
+        <button type="button" onclick="closeResolve()" class="btn-a btn-suspend" style="padding:8px 16px;">Cancel</button>
+        <button type="submit" class="btn-a btn-approve" style="padding:8px 18px;"><i class="ri-check-line"></i> Confirm Resolve</button>
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+function openResolve(id) {
+  document.getElementById('resolveForm').action = '/admin-panel/complaints/' + id + '/resolve/';
+  const m = document.getElementById('resolveModal');
+  m.style.display = 'flex';
+}
+function closeResolve() {
+  document.getElementById('resolveModal').style.display = 'none';
+}
+document.getElementById('resolveModal').addEventListener('click', function(e) {
+  if (e.target === this) closeResolve();
+});
+</script>
+{% endblock %}

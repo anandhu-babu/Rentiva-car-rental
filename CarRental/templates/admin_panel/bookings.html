@@ -1,0 +1,96 @@
+{% extends 'admin_panel/base.html' %}
+{% block title %}Bookings — Rentiva Admin{% endblock %}
+{% block breadcrumb %}Booking Management{% endblock %}
+
+{% block content %}
+<div class="page-hd">
+  <h1 class="page-title">Booking Management</h1>
+  <p class="page-sub">{{ bookings|length }} booking record{{ bookings|length|pluralize }} found.</p>
+</div>
+
+<!-- Status Tabs -->
+<div class="status-tabs">
+  <a href="?status=" class="stab {% if not status_filter %}active{% endif %}">All</a>
+  <a href="?status=pending"   class="stab {% if status_filter == 'pending'   %}active{% endif %}">Pending</a>
+  <a href="?status=approved"  class="stab {% if status_filter == 'approved'  %}active{% endif %}">Approved</a>
+  <a href="?status=active"    class="stab {% if status_filter == 'active'    %}active{% endif %}">Active</a>
+  <a href="?status=completed" class="stab {% if status_filter == 'completed' %}active{% endif %}">Completed</a>
+  <a href="?status=cancelled" class="stab {% if status_filter == 'cancelled' %}active{% endif %}">Cancelled</a>
+</div>
+
+<form method="get" class="filter-bar" style="margin-bottom:16px;">
+  {% if status_filter %}<input type="hidden" name="status" value="{{ status_filter }}">{% endif %}
+  <div class="search-wrap">
+    <i class="ri-search-line"></i>
+    <input type="text" name="search" class="search-inp" placeholder="Search customer or vehicle…" value="{{ search }}">
+  </div>
+  <button type="submit" class="filter-btn"><i class="ri-search-line"></i> Search</button>
+  {% if search %}<a href="?status={{ status_filter }}" class="btn-a btn-reject" style="padding:8px 14px;"><i class="ri-close-line"></i> Clear</a>{% endif %}
+</form>
+
+<div class="admin-card">
+  <div class="tbl-wrap">
+    <table class="admin-tbl">
+      <thead>
+        <tr>
+          <th>Booking ID</th><th>Customer</th><th>Vehicle</th>
+          <th>Pickup Date</th><th>Return Date</th>
+          <th>Amount</th><th>Status</th><th>Booked</th><th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for b in bookings %}
+        <tr>
+          <td><strong>#{{ b.id }}</strong></td>
+          <td>
+            <div class="user-cell">
+              <div class="u-avatar">{{ b.user.first_name|first|upper }}</div>
+              <div>
+                <div class="u-name">{{ b.user.get_full_name }}</div>
+                <div class="u-email">{{ b.user.email }}</div>
+              </div>
+            </div>
+          </td>
+          <td>
+            <div class="u-name">{{ b.car.car_name }}</div>
+            <div class="u-email">{{ b.car.brand }}</div>
+          </td>
+          <td style="font-size:13px;">{{ b.pickup_date|date:"M d, Y" }}</td>
+          <td style="font-size:13px;">{{ b.return_date|date:"M d, Y" }}</td>
+          <td><span class="amount">₹{{ b.total_amount|floatformat:0 }}</span></td>
+          <td><span class="badge b-{{ b.booking_status }}">{{ b.get_booking_status_display }}</span></td>
+          <td style="font-size:12px;color:var(--text-2);">{{ b.booked_at|date:"M d, Y" }}</td>
+          <td>
+            <div class="actions">
+              {% if b.booking_status != "completed" and b.booking_status != "cancelled" %}
+              <form method="post" action="/admin-panel/bookings/{{ b.id }}/complete/" class="inline-form">
+                {% csrf_token %}
+                <button type="submit" class="btn-a btn-approve"><i class="ri-check-double-line"></i> Complete</button>
+              </form>
+              <form method="post" action="/admin-panel/bookings/{{ b.id }}/cancel/" class="inline-form"
+                    onsubmit="return confirm('Cancel booking #{{ b.id }}?')">
+                {% csrf_token %}
+                <button type="submit" class="btn-a btn-reject"><i class="ri-close-circle-line"></i> Cancel</button>
+              </form>
+              {% else %}
+              <span style="font-size:12px;color:var(--text-3);">No actions</span>
+              {% endif %}
+            </div>
+          </td>
+        </tr>
+        {% empty %}
+        <tr>
+          <td colspan="9">
+            <div class="empty-state">
+              <i class="ri-calendar-check-line"></i>
+              <h3>No bookings found</h3>
+              <p>Try a different filter or search query.</p>
+            </div>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

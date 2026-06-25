@@ -19,10 +19,31 @@
       <h1>Renter Dashboard</h1>
       <p>Welcome back, {{ user.first_name|default:user.username }}</p>
     </div>
-    <a href="/add-car/" class="btn-primary">
-      <i class="ri-add-line"></i> Add New Car
-    </a>
+    {% if user.profile.verification_status == 'approved' %}
+      <a href="/add-car/" class="btn-primary">
+        <i class="ri-add-line"></i> Add New Car
+      </a>
+    {% else %}
+      <div style="padding:10px 18px;background:#fffbeb;border:1px solid #fde68a;border-radius:10px;font-size:13px;color:#92400e;display:flex;align-items:center;gap:8px;">
+        <i class="ri-time-line"></i>
+        KYC pending — vehicle listing unlocked after admin approval
+      </div>
+    {% endif %}
   </div>
+
+  {% if user.profile.verification_status != 'approved' %}
+  <div style="background:{% if user.profile.verification_status == 'rejected' %}#fff1f2{% else %}#fffbeb{% endif %};border:1px solid {% if user.profile.verification_status == 'rejected' %}#fecaca{% else %}#fde68a{% endif %};border-radius:12px;padding:16px 20px;margin-bottom:24px;display:flex;align-items:center;gap:14px;">
+    <i class="ri-{% if user.profile.verification_status == 'rejected' %}close-circle-line{% else %}shield-check-line{% endif %}" style="font-size:24px;color:{% if user.profile.verification_status == 'rejected' %}#dc2626{% else %}#d97706{% endif %};flex-shrink:0;"></i>
+    <div>
+      <p style="font-weight:600;font-size:14px;color:{% if user.profile.verification_status == 'rejected' %}#b91c1c{% else %}#92400e{% endif %};margin-bottom:2px;">
+        {% if user.profile.verification_status == 'rejected' %}KYC Verification Rejected{% else %}KYC Verification Pending{% endif %}
+      </p>
+      <p style="font-size:13px;color:{% if user.profile.verification_status == 'rejected' %}#991b1b{% else %}#78350f{% endif %};margin:0;">
+        {% if user.profile.verification_status == 'rejected' %}Your KYC was rejected. Please contact support for assistance.{% else %}Your documents are under review. Vehicle listing will be unlocked after admin approval.{% endif %}
+      </p>
+    </div>
+  </div>
+  {% endif %}
 
   <div class="stats-grid">
     <div class="stat-card">
@@ -54,15 +75,123 @@
         <p>Total Revenue</p>
       </div>
     </div>
+
+    {% if pending_confirmations %}
+    <div class="stat-card" style="border-top:3px solid #f59e0b;">
+      <div class="stat-icon" style="background:#FFFBEB;color:#F59E0B;">
+        <i class="ri-alarm-warning-line"></i>
+      </div>
+      <div class="stat-info">
+        <h3 style="color:#d97706;">{{ pending_confirmations|length }}</h3>
+        <p>Awaiting Your Action</p>
+      </div>
+    </div>
+    {% endif %}
   </div>
 
-  <!-- ── My Cars ── -->
+  {% if pending_confirmations %}
+  <div class="od-section" style="border:2px solid #fde68a;background:#fffbeb;">
+    <div class="od-section-header">
+      <h2 style="color:#92400e;">
+        <i class="ri-alarm-warning-line" style="margin-right:6px;"></i>
+        Bookings Awaiting Your Confirmation
+      </h2>
+      <span style="font-size:13px;color:#78350f;">Confirm or reject within 24 hours — unconfirmed bookings are auto-refunded</span>
+    </div>
+
+    <div style="display:flex;flex-direction:column;gap:16px;margin-top:16px;">
+      {% for booking in pending_confirmations %}
+      <div style="background:#fff;border:1.5px solid #fde68a;border-radius:12px;padding:18px 20px;">
+        <div style="display:flex;align-items:flex-start;gap:16px;flex-wrap:wrap;">
+          <div style="width:64px;height:48px;background:#f5f5f5;border-radius:8px;overflow:hidden;flex-shrink:0;display:flex;align-items:center;justify-content:center;">
+            {% if booking.car.image %}
+              <img src="{{ booking.car.image.url }}" style="width:100%;height:100%;object-fit:contain;">
+            {% else %}
+              <i class="ri-car-line" style="color:#ccc;font-size:22px;"></i>
+            {% endif %}
+          </div>
+
+          <div style="flex:1;min-width:200px;">
+            <p style="font-weight:700;font-size:15px;color:#111;margin-bottom:4px;">
+              {{ booking.car.car_name }}
+              <span style="font-size:13px;font-weight:500;color:#6b7280;margin-left:6px;">#{{ booking.id }}</span>
+            </p>
+            <p style="font-size:13px;color:#374151;margin-bottom:4px;">
+              <i class="ri-user-line" style="margin-right:4px;"></i>
+              {{ booking.user.get_full_name|default:booking.user.username }}
+            </p>
+            <p style="font-size:13px;color:#374151;margin-bottom:4px;">
+              <i class="ri-calendar-line" style="margin-right:4px;"></i>
+              {{ booking.pickup_date|date:"d M Y" }} → {{ booking.return_date|date:"d M Y" }}
+            </p>
+            {% if booking.delivery_method == 'home_delivery' %}
+            <p style="font-size:13px;color:#374151;display:flex;align-items:flex-start;gap:6px;">
+              <i class="ri-truck-line" style="color:#10B981;margin-top:1px;flex-shrink:0;"></i>
+              <span>
+                <strong style="color:#059669;">Home Delivery</strong>
+                {% if booking.delivery_address %}
+                  — {{ booking.delivery_address|truncatechars:60 }}
+                {% endif %}
+              </span>
+            </p>
+            {% else %}
+            <p style="font-size:13px;color:#374151;display:flex;align-items:flex-start;gap:6px;">
+              <i class="ri-map-pin-2-line" style="color:#1572D3;margin-top:1px;flex-shrink:0;"></i>
+              <span>
+                <strong style="color:#1572D3;">Self Pickup</strong>
+                {% if booking.car.pickup_address %}
+                  — {{ booking.car.pickup_address|truncatechars:60 }}
+                {% endif %}
+              </span>
+            </p>
+            {% endif %}
+          </div>
+
+          <div style="text-align:right;flex-shrink:0;">
+            <p style="font-size:18px;font-weight:700;color:#1572D3;">₹{{ booking.total_amount|floatformat:0 }}</p>
+            <p style="font-size:12px;color:#6b7280;">Advance: ₹{{ booking.advance_amount|floatformat:0 }}</p>
+            {% if booking.renter_confirmation_deadline %}
+              <p style="font-size:12px;color:#d97706;margin-top:4px;">
+                <i class="ri-time-line"></i>
+                Deadline: {{ booking.renter_confirmation_deadline|date:"d M, H:i" }}
+              </p>
+            {% endif %}
+          </div>
+        </div>
+
+        <div style="display:flex;gap:10px;margin-top:14px;padding-top:14px;border-top:1px solid #fde68a;">
+          <form method="POST" action="/booking/{{ booking.id }}/renter-action/" style="flex:1;">
+            {% csrf_token %}
+            <input type="hidden" name="action" value="confirm">
+            <button type="submit"
+                    style="width:100%;padding:10px;background:#1572D3;color:#fff;border:none;border-radius:8px;font-size:14px;font-weight:600;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px;">
+              <i class="ri-checkbox-circle-line"></i> Confirm Booking
+            </button>
+          </form>
+          <form method="POST" action="/booking/{{ booking.id }}/renter-action/" style="flex:1;">
+            {% csrf_token %}
+            <input type="hidden" name="action" value="reject">
+            <button type="submit"
+                    onclick="return confirm('Reject this booking? The customer advance payment will be refunded.');"
+                    style="width:100%;padding:10px;background:#fff;color:#dc2626;border:1.5px solid #fecaca;border-radius:8px;font-size:14px;font-weight:600;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px;">
+              <i class="ri-close-circle-line"></i> Reject
+            </button>
+          </form>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+  {% endif %}
+
   <div class="od-section">
     <div class="od-section-header">
       <h2>My Cars</h2>
-      <a href="/add-car/" class="btn-outline">
-        <i class="ri-add-line"></i> Add Car
-      </a>
+      {% if user.profile.verification_status == 'approved' %}
+        <a href="/add-car/" class="btn-outline">
+          <i class="ri-add-line"></i> Add Car
+        </a>
+      {% endif %}
     </div>
 
     {% if cars %}
@@ -76,47 +205,58 @@
               <th>Price / Day</th>
               <th>Bookings</th>
               <th>Status</th>
+              <th>Verification</th>
               <th>Action</th>
             </tr>
           </thead>
-
-        <tbody>
-          {% for car in cars %}
-          <tr>
-              <td style="font-weight:600;">{{ car.car_name }}</td>
-              <td>{{ car.brand|default:"—" }}</td>
-              <td>{{ car.category|default:"—" }}</td>
-              <td>₹{{ car.rent_per_day|floatformat:0 }}/day</td>
-              <td>{{ car.booking_count }}</td>
-              <td>
-                  <span class="status-badge {% if car.availability %}status-approved{% else %}status-cancelled{% endif %}">
-                      {% if car.availability %}Available{% else %}Unavailable{% endif %}
-                  </span>
+          <tbody>
+            {% for car in cars %}
+            <tr>
+              <td data-label="Car" style="font-weight:600;">{{ car.car_name }}</td>
+              <td data-label="Brand">{{ car.brand|default:"—" }}</td>
+              <td data-label="Category">{{ car.category|default:"—" }}</td>
+              <td data-label="Price / Day">₹{{ car.rent_per_day|floatformat:0 }}/day</td>
+              <td data-label="Bookings">{{ car.booking_count }}</td>
+              <td data-label="Status">
+                <span class="status-badge
+                  {% if car.car_status == 'available' %}status-approved
+                  {% elif car.car_status == 'booked' %}status-pending
+                  {% else %}status-cancelled{% endif %}">
+                  {{ car.get_car_status_display }}
+                </span>
               </td>
-              <td>
-                  <a href="/cars/{{ car.id }}/"
-                     class="action-btn"
-                     style="background:#dbeafe;color:#1d4ed8;border:1px solid #93c5fd;">
-                      View
-                  </a>
-                  <a href="/my-cars/edit/{{ car.id }}/"
-                     class="action-btn"
-                     style="background:#fef9c3;color:#854d0e;border:1px solid #fde047;">
-                      Edit
-                  </a>
-                  <form method="post" action="/my-cars/delete/{{ car.id }}/" style="display:inline;"
-                        onsubmit="return confirm('Delete {{ car.car_name }}? This cannot be undone.');">
-                      {% csrf_token %}
-                      <button type="submit"
-                              class="action-btn"
-                              style="background:#fee2e2;color:#991b1b;border:1px solid #fecaca;cursor:pointer;">
-                          Delete
-                      </button>
-                  </form>
+              <td data-label="Verification">
+                <span class="status-badge
+                  {% if car.verification_status == 'approved' %}status-approved
+                  {% elif car.verification_status == 'rejected' %}status-cancelled
+                  {% else %}status-pending{% endif %}">
+                  {{ car.verification_status|title }}
+                </span>
               </td>
-          </tr>
-          {% endfor %}
-        </tbody>
+              <td data-label="Action">
+                <a href="/cars/{{ car.id }}/"
+                   class="action-btn"
+                   style="background:#dbeafe;color:#1d4ed8;border:1px solid #93c5fd;">
+                  View
+                </a>
+                <a href="/my-cars/edit/{{ car.id }}/"
+                   class="action-btn"
+                   style="background:#fef9c3;color:#854d0e;border:1px solid #fde047;">
+                  Edit
+                </a>
+                <form method="post" action="/my-cars/delete/{{ car.id }}/" style="display:inline;"
+                      onsubmit="return confirm('Delete {{ car.car_name }}? This cannot be undone.');">
+                  {% csrf_token %}
+                  <button type="submit"
+                          class="action-btn"
+                          style="background:#fee2e2;color:#991b1b;border:1px solid #fecaca;cursor:pointer;">
+                    Delete
+                  </button>
+                </form>
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
         </table>
       </div>
 
@@ -124,13 +264,45 @@
       <div class="empty-state">
         <i class="ri-car-line"></i>
         <h3>No cars listed yet</h3>
-        <p>Start earning by listing your first car on Rentiva.</p>
-        <a href="/add-car/" class="btn-primary">List Your Car</a>
+        {% if user.profile.verification_status == 'approved' %}
+          <p>Start earning by listing your first car on Rentiva.</p>
+          <a href="/add-car/" class="btn-primary">List Your Car</a>
+        {% else %}
+          <p>Vehicle listing is available after your KYC is approved.</p>
+        {% endif %}
       </div>
     {% endif %}
   </div>
 
-  <!-- ── Recent Bookings ── -->
+  {% if notifications %}
+  <div class="od-section">
+    <div class="od-section-header">
+      <h2>
+        Notifications
+        {% if unread_count > 0 %}
+          <span style="background:#1572D3;color:#fff;font-size:11px;padding:2px 8px;border-radius:20px;margin-left:6px;font-weight:500;">{{ unread_count }}</span>
+        {% endif %}
+      </h2>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:8px;">
+      {% for notif in notifications %}
+      <div style="padding:12px 16px;border-radius:10px;
+        {% if not notif.is_read %}background:#eff6ff;border:1px solid #bfdbfe;
+        {% else %}background:#f9fafb;border:1px solid #f0f0f0;{% endif %}
+        display:flex;align-items:flex-start;gap:10px;">
+        <i class="ri-{% if notif.notif_type == 'booking_request' %}calendar-check-line{% elif notif.notif_type == 'vehicle_approved' or notif.notif_type == 'kyc_approved' %}shield-check-line{% elif notif.notif_type == 'booking_cancelled' %}close-circle-line{% else %}notification-3-line{% endif %}"
+           style="font-size:16px;color:{% if notif.notif_type == 'booking_request' %}#F59E0B{% elif notif.notif_type == 'vehicle_approved' or notif.notif_type == 'kyc_approved' %}#22C55E{% elif notif.notif_type == 'booking_cancelled' %}#EF4444{% else %}#8B5CF6{% endif %};margin-top:2px;flex-shrink:0;"></i>
+        <div style="flex:1;">
+          <p style="font-size:13px;font-weight:600;color:#111;margin-bottom:2px;">{{ notif.title }}</p>
+          <p style="font-size:12px;color:#6b7280;margin:0;">{{ notif.message }}</p>
+          <p style="font-size:11px;color:#9ca3af;margin-top:4px;">{{ notif.created_at|timesince }} ago</p>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+  {% endif %}
+
   <div class="od-section">
     <div class="od-section-header">
       <h2>Recent Bookings</h2>
@@ -146,23 +318,38 @@
               <th>Customer</th>
               <th>Pickup</th>
               <th>Return</th>
-              <th>Amount</th>
+              <th>Total</th>
               <th>Status</th>
+              <th>Action</th>
             </tr>
           </thead>
           <tbody>
             {% for booking in recent_bookings %}
             <tr>
-              <td style="font-weight:600;color:#1572D3;">#{{ booking.id }}</td>
-              <td>{{ booking.car.car_name }}</td>
-              <td>{{ booking.user.get_full_name|default:booking.user.username }}</td>
-              <td>{{ booking.pickup_date|date:"d M Y" }}</td>
-              <td>{{ booking.return_date|date:"d M Y" }}</td>
-              <td>₹{{ booking.total_amount|floatformat:0 }}</td>
-              <td>
-                <span class="status-badge status-{{ booking.booking_status }}">
+              <td data-label="ID" style="font-weight:600;color:#1572D3;">#{{ booking.id }}</td>
+              <td data-label="Car">{{ booking.car.car_name }}</td>
+              <td data-label="Customer">{{ booking.user.get_full_name|default:booking.user.username }}</td>
+              <td data-label="Pickup">{{ booking.pickup_date|date:"d M Y" }}</td>
+              <td data-label="Return">{{ booking.return_date|date:"d M Y" }}</td>
+              <td data-label="Total">₹{{ booking.total_amount|floatformat:0 }}</td>
+              <td data-label="Status">
+                <span class="status-badge
+                  {% if booking.booking_status == 'confirmed' or booking.booking_status == 'approved' or booking.booking_status == 'completed' %}status-approved
+                  {% elif booking.booking_status == 'cancelled' or booking.booking_status == 'rejected' or booking.booking_status == 'refunded' %}status-cancelled
+                  {% else %}status-pending{% endif %}">
                   {{ booking.get_booking_status_display }}
                 </span>
+              </td>
+              <td data-label="Action">
+                {% if booking.booking_status == 'confirmed' %}
+                  <form method="POST" action="/booking/{{ booking.id }}/complete/" style="display:inline;">
+                    {% csrf_token %}
+                    <button type="submit" class="action-btn"
+                            style="background:#dcfce7;color:#166534;border:1px solid #86efac;cursor:pointer;">
+                      Complete
+                    </button>
+                  </form>
+                {% endif %}
               </td>
             </tr>
             {% endfor %}

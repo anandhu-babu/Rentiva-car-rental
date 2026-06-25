@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Login — Rentiva</title>
+  <link href="https://cdn.jsdelivr.net/npm/remixicon@4.2.0/fonts/remixicon.css" rel="stylesheet">
+  {% load static %}
+  <link rel="stylesheet" href="{% static 'css/admin.css' %}">
+  <style>
+    body { background: #0B1120; }
+    .login-page { min-height: 100vh; display: flex; }
+  </style>
+</head>
+<body class="admin-body">
+
+<div class="login-page">
+
+  <div class="login-panel-left">
+
+    <div class="login-brand">
+      <div class="login-brand-icon">R</div>
+      <div class="login-brand-text">
+        <span class="login-brand-name">Rentiva</span>
+        <span class="login-brand-tag">Admin Control Center</span>
+      </div>
+    </div>
+
+    <div class="login-hero">
+      <div class="login-hero-tag">
+        <i class="ri-shield-check-fill"></i>
+        Secure Administration Portal
+      </div>
+      <h1 class="login-hero-title">
+        Manage Your<br>
+        <span>Car Rental</span><br>
+        Platform
+      </h1>
+      <p class="login-hero-sub">
+        A unified command center to oversee users, vehicles, bookings,
+        payments, and analytics — all in one place.
+      </p>
+
+      <div class="login-stats">
+        <div class="login-stat">
+          <div class="login-stat-val">3-Role</div>
+          <div class="login-stat-lbl">Access Control</div>
+        </div>
+        <div class="login-stat" style="padding-left: 28px;">
+          <div class="login-stat-val">Real-time</div>
+          <div class="login-stat-lbl">Analytics</div>
+        </div>
+        <div class="login-stat" style="padding-left: 28px;">
+          <div class="login-stat-val">AI-Powered</div>
+          <div class="login-stat-lbl">Platform</div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="login-panel-right">
+
+    <div class="login-form-head">
+      <h2 class="login-form-title">Admin Sign In</h2>
+      <p class="login-form-sub">Enter your administrator credentials to access the control center.</p>
+    </div>
+
+    {% if messages %}
+      {% for msg in messages %}
+        <div class="login-alert login-alert-{% if msg.tags == 'success' %}success{% else %}error{% endif %}">
+          <i class="ri-{% if msg.tags == 'success' %}check-double-line{% else %}error-warning-line{% endif %}"></i>
+          {{ msg }}
+        </div>
+      {% endfor %}
+    {% endif %}
+
+    <form method="post" action="/admin-panel/login/">
+      {% csrf_token %}
+
+      <div class="login-form-group">
+        <label class="login-label" for="email">Email Address</label>
+        <div class="login-input-wrap">
+          <i class="ri-mail-line li-icon"></i>
+          <input
+            type="email"
+            id="email"
+            name="email"
+            class="login-input"
+            placeholder="admin@rentiva.com"
+            required
+            autocomplete="email"
+          >
+        </div>
+      </div>
+
+      <div class="login-form-group">
+        <label class="login-label" for="password">Password</label>
+        <div class="login-input-wrap">
+          <i class="ri-lock-line li-icon"></i>
+          <input
+            type="password"
+            id="password"
+            name="password"
+            class="login-input"
+            placeholder="Enter your password"
+            required
+            autocomplete="current-password"
+          >
+          <button type="button" class="login-toggle-pw" onclick="togglePassword()" title="Show/Hide password">
+            <i class="ri-eye-line" id="eyeIcon"></i>
+          </button>
+        </div>
+      </div>
+
+      <div class="login-row">
+        <label class="login-remember">
+          <input type="checkbox" name="remember_me" value="1">
+          <span>Keep me signed in</span>
+        </label>
+        <a href="/login/" class="login-forgot">Forgot password?</a>
+      </div>
+
+      <button type="submit" class="btn-login">
+        <i class="ri-shield-user-line"></i>
+        Sign In to Admin Panel
+      </button>
+
+      <div class="login-secure">
+        <i class="ri-lock-fill"></i>
+        Protected by role-based access control
+      </div>
+
+      <a href="/" class="login-back">
+        <i class="ri-arrow-left-line"></i>
+        Back to Rentiva
+      </a>
+
+    </form>
+
+  </div>
+
+</div>
+
+<script>
+  function togglePassword() {
+    const pw  = document.getElementById('password');
+    const ico = document.getElementById('eyeIcon');
+    if (pw.type === 'password') {
+      pw.type  = 'text';
+      ico.className = 'ri-eye-off-line';
+    } else {
+      pw.type  = 'password';
+      ico.className = 'ri-eye-line';
+    }
+  }
+</script>
+</body>
+</html>

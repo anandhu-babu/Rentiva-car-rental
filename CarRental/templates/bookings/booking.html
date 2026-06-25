@@ -26,8 +26,7 @@
         {% if car.image %}
           <img src="{{ car.image.url }}" alt="{{ car.car_name }}">
         {% else %}
-          <img src="{% static 'img/car-fill.svg' %}" alt="{{ car.car_name }}"
-               class="placeholder-img">
+          <img src="{% static 'img/car-fill.svg' %}" alt="{{ car.car_name }}" class="placeholder-img">
         {% endif %}
       </div>
 
@@ -51,25 +50,74 @@
         </div>
 
         <div class="booking-price-tag">
-          <span class="price-amount">₹{{ car.rent_per_day|floatformat:0 }}</span>
+          <span class="price-amount">₹{{ price_per_day|floatformat:0 }}</span>
           <span class="price-unit">/day</span>
+        </div>
+        <div style="display:inline-flex;align-items:center;gap:6px;padding:4px 12px;border-radius:20px;margin-top:4px;
+          {% if plan == 'daily' %}background:#EAF3FF;{% elif plan == 'weekly' %}background:#EAFBF3;{% else %}background:#F5F3FF;{% endif %}">
+          <i class="ri-{% if plan == 'daily' %}sun-line{% elif plan == 'weekly' %}calendar-2-line{% else %}calendar-todo-line{% endif %}"
+             style="font-size:13px;color:{% if plan == 'daily' %}#1572D3{% elif plan == 'weekly' %}#059669{% else %}#7c3aed{% endif %};"></i>
+          <span style="font-size:12px;font-weight:600;color:{% if plan == 'daily' %}#1572D3{% elif plan == 'weekly' %}#059669{% else %}#7c3aed{% endif %};">
+            {{ plan_label }} Plan
+          </span>
         </div>
       </div>
 
-      <!-- Live price breakdown -->
+      <div style="display:flex;flex-direction:column;gap:6px;margin-bottom:16px;">
+        {% if car.self_pickup_available %}
+        <div style="display:flex;align-items:center;gap:8px;padding:8px 12px;background:#EAF3FF;border-radius:8px;">
+          <i class="ri-map-pin-2-line" style="color:#1572D3;font-size:15px;"></i>
+          <span style="font-size:12px;font-weight:600;color:#1572D3;">Self Pickup Available</span>
+        </div>
+        {% endif %}
+        {% if car.delivery_available %}
+        <div style="display:flex;align-items:center;gap:8px;padding:8px 12px;background:#EAFBF3;border-radius:8px;">
+          <i class="ri-truck-line" style="color:#10B981;font-size:15px;"></i>
+          <span style="font-size:12px;font-weight:600;color:#059669;">Home Delivery
+            {% if car.delivery_charge %}· ₹{{ car.delivery_charge|floatformat:0 }}{% endif %}
+            {% if car.delivery_radius %}within {{ car.delivery_radius|floatformat:0 }} km{% endif %}
+          </span>
+        </div>
+        {% endif %}
+      </div>
+
       <div class="price-breakdown">
         <div class="breakdown-row">
-          <span>Daily rate</span>
-          <span>₹{{ car.rent_per_day|floatformat:0 }}</span>
+          <span>
+            {% if plan == 'daily' %}Daily rate
+            {% elif plan == 'weekly' %}Rate/day <small style="color:#059669;">(Weekly)</small>
+            {% else %}Rate/day <small style="color:#7c3aed;">(Monthly)</small>
+            {% endif %}
+          </span>
+          <span>₹{{ price_per_day|floatformat:0 }}</span>
         </div>
         <div class="breakdown-row">
           <span>Rental days</span>
           <span id="rental-days">—</span>
         </div>
+        <div class="breakdown-row" id="delivery-fee-row" style="display:none;">
+          <span><i class="ri-truck-line" style="margin-right:4px;color:#10B981;"></i>Delivery charge</span>
+          <span id="delivery-fee-amt">₹0</span>
+        </div>
         <div class="breakdown-row breakdown-total">
           <span>Estimated Total</span>
           <span id="total-amount">₹—</span>
         </div>
+        <div style="border-top:1.5px dashed #e5e7eb;margin-top:10px;padding-top:10px;">
+          <div class="breakdown-row" style="color:#d97706;font-weight:600;">
+            <span><i class="ri-secure-payment-line" style="margin-right:4px;"></i>Advance (30%) — Pay Now</span>
+            <span id="advance-amount">₹—</span>
+          </div>
+          <div class="breakdown-row" style="color:#6b7280;font-size:13px;">
+            <span>Remaining (70%) — Pay on Delivery/Pickup</span>
+            <span id="remaining-amount">₹—</span>
+          </div>
+        </div>
+      </div>
+
+      <div style="background:#f0fdf4;border:1px solid #86efac;border-radius:10px;padding:10px 14px;margin-top:12px;display:flex;align-items:flex-start;gap:8px;">
+        <i class="ri-information-line" style="color:#16a34a;font-size:15px;margin-top:1px;flex-shrink:0;"></i>
+        <p style="font-size:12px;color:#15803d;margin:0;">The renter will confirm your booking within 24 hours. If not confirmed, your advance is automatically refunded.</p>
       </div>
     </div>
 
@@ -78,90 +126,216 @@
 
       <form method="POST" action="/booking/{{ car.id }}/">
         {% csrf_token %}
+        <input type="hidden" name="plan" value="{{ plan }}">
 
-        <div class="form-group">
-          <label class="form-label">
-            <img src="{% static 'img/location.svg' %}" style="width:14px;"> Pickup Location
+        <div class="form-group" style="margin-bottom:22px;">
+          <label class="form-label" style="font-weight:700;font-size:14px;color:#111;margin-bottom:12px;display:block;">
+            <i class="ri-truck-line" style="color:#1572D3;margin-right:6px;"></i>
+            Choose Collection Method
           </label>
-          <select name="pickup_location" class="form-control" required>
-            <option value="">Select pickup location</option>
-            
-            {% for loc in locations %}
-              <option value="{{ loc.id }}">{{ loc.city }}, {{ loc.state }}</option>
-            {% empty %}
-              <option value="" disabled>No locations available</option>
-            {% endfor %}
-          </select>
+
+          <div style="display:flex;flex-direction:column;gap:10px;">
+
+            {% if car.self_pickup_available %}
+            <label id="opt-self-pickup" class="delivery-method-option delivery-method-option--selected"
+                   style="display:flex;align-items:flex-start;gap:14px;padding:14px 16px;border:2px solid #1572D3;border-radius:12px;cursor:pointer;background:#EAF3FF;transition:.2s;">
+              <input type="radio" name="delivery_method" value="self_pickup"
+                     id="radio_self_pickup" checked onchange="onMethodChange()"
+                     style="margin-top:3px;accent-color:#1572D3;">
+              <div>
+                <p style="font-weight:600;font-size:14px;color:#1572D3;margin:0 0 3px;">
+                  <i class="ri-map-pin-2-line" style="margin-right:5px;"></i>Self Pickup
+                </p>
+                <p style="font-size:12px;color:#374151;margin:0 0 2px;">
+                  <i class="ri-map-pin-line" style="font-size:11px;margin-right:2px;"></i>
+                  {% if car.pickup_point_name %}{{ car.pickup_point_name }}{% if car.location %}, {{ car.location }}{% endif %}{% elif car.location %}{{ car.location }}{% else %}Renter's pickup point{% endif %}
+                </p>
+                <p style="font-size:11px;color:#6b7280;margin:0;">
+                  <i class="ri-lock-2-line" style="font-size:10px;margin-right:2px;"></i>
+                  Exact address revealed after renter approves
+                </p>
+              </div>
+            </label>
+            {% endif %}
+
+            {% if car.delivery_available %}
+            <label id="opt-home-delivery" class="delivery-method-option{% if not car.self_pickup_available %} delivery-method-option--selected{% endif %}"
+                   style="display:flex;align-items:flex-start;gap:14px;padding:14px 16px;border:2px solid {% if not car.self_pickup_available %}#10B981{% else %}#e5e7eb{% endif %};border-radius:12px;cursor:pointer;background:{% if not car.self_pickup_available %}#EAFBF3{% else %}#fff{% endif %};transition:.2s;">
+              <input type="radio" name="delivery_method" value="home_delivery"
+                     id="radio_home_delivery"
+                     {% if not car.self_pickup_available %}checked{% endif %}
+                     onchange="onMethodChange()"
+                     style="margin-top:3px;accent-color:#10B981;">
+              <div>
+                <p style="font-weight:600;font-size:14px;color:#059669;margin:0 0 3px;">
+                  <i class="ri-truck-line" style="margin-right:5px;"></i>Home Delivery
+                  {% if car.delivery_charge %}
+                  <span style="font-size:12px;font-weight:500;color:#6b7280;"> · ₹{{ car.delivery_charge|floatformat:0 }} charge</span>
+                  {% endif %}
+                </p>
+                <p style="font-size:12px;color:#6b7280;margin:0;">
+                  We deliver to your address
+                  {% if car.delivery_radius %} (within {{ car.delivery_radius|floatformat:0 }} km){% endif %}
+                </p>
+              </div>
+            </label>
+            {% endif %}
+
+          </div>
         </div>
 
-        <div class="form-group">
-          <label class="form-label">
-            <img src="{% static 'img/location.svg' %}" style="width:14px;"> Drop Location
-          </label>
-          <select name="drop_location" class="form-control" required>
-            <option value="">Select drop location</option>
-            {% for loc in locations %}
-              <option value="{{ loc.id }}">{{ loc.city }}, {{ loc.state }}</option>
-            {% endfor %}
-          </select>
+        {% if car.self_pickup_available %}
+        <div id="self-pickup-panel" style="margin-bottom:18px;padding:14px 16px;background:#f8faff;border:1.5px solid #bfdbfe;border-radius:12px;">
+          <p style="font-size:13px;font-weight:600;color:#1572D3;margin-bottom:10px;">
+            <i class="ri-map-pin-2-line" style="margin-right:5px;"></i>Pickup Area
+          </p>
+          <div style="display:flex;align-items:center;gap:10px;padding:10px 12px;background:#EAF3FF;border-radius:8px;margin-bottom:10px;">
+            <i class="ri-map-pin-line" style="color:#1572D3;font-size:18px;flex-shrink:0;"></i>
+            <div>
+              <p style="font-size:13px;font-weight:600;color:#1e40af;margin:0;">
+                {% if car.pickup_point_name %}{{ car.pickup_point_name }}{% else %}Renter Pickup Point{% endif %}
+              </p>
+              {% if car.location %}
+              <p style="font-size:12px;color:#374151;margin:2px 0 0;">{{ car.location }}</p>
+              {% endif %}
+            </div>
+          </div>
+          {% if car.pickup_latitude and car.pickup_longitude %}
+          <div style="position:relative;margin-bottom:10px;">
+            <div id="booking-map" style="height:150px;border-radius:8px;overflow:hidden;border:1px solid #dbeafe;filter:blur(2px);pointer-events:none;"></div>
+            <div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(255,255,255,0.5);border-radius:8px;">
+              <div style="background:#1572D3;color:#fff;padding:6px 14px;border-radius:20px;font-size:12px;font-weight:600;display:flex;align-items:center;gap:5px;">
+                <i class="ri-map-pin-2-line"></i> Approximate Area
+              </div>
+            </div>
+          </div>
+          <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+          <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+          <script>
+          (function(){
+            var lat = {{ car.pickup_latitude }}, lng = {{ car.pickup_longitude }};
+            var bm = L.map('booking-map',{zoomControl:false,scrollWheelZoom:false,dragging:false,attributionControl:false}).setView([lat,lng],12);
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(bm);
+          })();
+          </script>
+          {% endif %}
+          <div style="display:flex;align-items:flex-start;gap:7px;padding:8px 10px;background:#fffbeb;border:1px solid #fde68a;border-radius:8px;">
+            <i class="ri-lock-2-line" style="color:#d97706;font-size:14px;margin-top:1px;flex-shrink:0;"></i>
+            <p style="font-size:11px;color:#92400e;margin:0;">Exact pickup address, map coordinates, and renter contact will be unlocked after your booking is confirmed.</p>
+          </div>
+        </div>
+        {% endif %}
+
+        <div id="delivery-address-panel" style="display:{% if not car.self_pickup_available and car.delivery_available %}block{% else %}none{% endif %};margin-bottom:18px;">
+          <div class="form-group" style="margin-bottom:0;">
+            <label class="form-label" style="font-size:13px;font-weight:600;color:#374151;">
+              <i class="ri-home-3-line" style="color:#10B981;margin-right:5px;"></i>
+              Your Delivery Address <span style="color:#ef4444;">*</span>
+            </label>
+            <textarea name="delivery_address" id="delivery_address" class="form-control"
+                      rows="3" placeholder="House No, Street, Area, City, State, PIN Code"
+                      style="margin-top:6px;resize:vertical;"></textarea>
+          </div>
         </div>
 
         <div class="form-row">
           <div class="form-group">
             <label class="form-label">
-              <img src="{% static 'img/calendar.svg' %}" style="width:14px;"> Pickup Date
+              <i class="ri-calendar-line" style="color:#1572D3;margin-right:4px;"></i> Pickup Date
             </label>
-            <input type="date" name="pickup_date" id="pickup_date"
-                   class="form-control" required>
+            <input type="date" name="pickup_date" id="pickup_date" class="form-control" required>
           </div>
           <div class="form-group">
             <label class="form-label">
-              <img src="{% static 'img/calendar.svg' %}" style="width:14px;">Return Date
+              <i class="ri-calendar-check-line" style="color:#1572D3;margin-right:4px;"></i> Return Date
             </label>
-            <input type="date" name="return_date" id="return_date"
-                   class="form-control" required>
+            <input type="date" name="return_date" id="return_date" class="form-control" required>
           </div>
         </div>
 
         <div class="booking-terms">
           <i class="ri-shield-check-line"></i>
-          <p>Free cancellation up to 24 hours before pickup. Full refund guaranteed.</p>
+          <p>30% advance secures your booking. Remaining 70% paid on pickup/delivery. Auto-refund if renter doesn't confirm within 24 hours.</p>
         </div>
 
         <button type="submit" class="btn-book">
-          <i class="ri-calendar-check-line"></i>
-          Proceed to Payment
+          <i class="ri-secure-payment-line"></i>
+          Pay Advance &amp; Request Booking
         </button>
       </form>
     </div>
 
-  </div><!-- /booking-layout -->
-</div><!-- /page-wrapper -->
+  </div>
+</div>
 
 <script>
-const pricePerDay = parseFloat('{{ car.rent_per_day }}');
-const pickupInput = document.getElementById('pickup_date');
-const returnInput = document.getElementById('return_date');
-const today = new Date().toISOString().split('T')[0];
+const pricePerDay    = parseFloat('{{ price_per_day }}');
+const deliveryCharge = parseFloat('{{ car.delivery_charge|default:"0" }}');
+const pickupInput    = document.getElementById('pickup_date');
+const returnInput    = document.getElementById('return_date');
+const today          = new Date().toISOString().split('T')[0];
 pickupInput.min = today;
 returnInput.min = today;
 
+function fmt(n) { return '₹' + n.toLocaleString('en-IN', {maximumFractionDigits: 0}); }
+
+function isHomeDelivery() {
+  const r = document.getElementById('radio_home_delivery');
+  return r && r.checked;
+}
+
 function calcPrice() {
-  const p = pickupInput.value;
-  const r = returnInput.value;
+  const p = pickupInput.value, r = returnInput.value;
   if (!p || !r) return;
   const days = Math.ceil((new Date(r) - new Date(p)) / 86400000);
   if (days < 1) {
-    document.getElementById('rental-days').textContent = '—';
-    document.getElementById('total-amount').textContent = '₹—';
+    ['rental-days','total-amount','advance-amount','remaining-amount'].forEach(id => {
+      document.getElementById(id).textContent = '—';
+    });
+    document.getElementById('delivery-fee-row').style.display = 'none';
     return;
   }
-  document.getElementById('rental-days').textContent =
-    days + ' day' + (days > 1 ? 's' : '');
-  document.getElementById('total-amount').textContent =
-    '₹' + (days * pricePerDay).toLocaleString('en-IN');
-  returnInput.min = new Date(new Date(p).getTime() + 86400000)
-    .toISOString().split('T')[0];
+  const fee    = isHomeDelivery() ? deliveryCharge : 0;
+  const total  = days * pricePerDay + fee;
+  const adv    = Math.round(total * 0.30);
+  const rem    = total - adv;
+  document.getElementById('rental-days').textContent       = days + ' day' + (days > 1 ? 's' : '');
+  document.getElementById('total-amount').textContent      = fmt(total);
+  document.getElementById('advance-amount').textContent    = fmt(adv);
+  document.getElementById('remaining-amount').textContent  = fmt(rem);
+  const feeRow = document.getElementById('delivery-fee-row');
+  if (fee > 0) {
+    feeRow.style.display = 'flex';
+    document.getElementById('delivery-fee-amt').textContent = fmt(fee);
+  } else {
+    feeRow.style.display = 'none';
+  }
+  returnInput.min = new Date(new Date(p).getTime() + 86400000).toISOString().split('T')[0];
+}
+
+function onMethodChange() {
+  const hdPanel    = document.getElementById('delivery-address-panel');
+  const spPanel    = document.getElementById('self-pickup-panel');
+  const optSP      = document.getElementById('opt-self-pickup');
+  const optHD      = document.getElementById('opt-home-delivery');
+  const hd         = isHomeDelivery();
+
+  if (hdPanel) hdPanel.style.display  = hd ? 'block' : 'none';
+  if (spPanel) spPanel.style.display  = hd ? 'none'  : 'block';
+
+  if (optSP) {
+    optSP.style.borderColor  = hd ? '#e5e7eb' : '#1572D3';
+    optSP.style.background   = hd ? '#fff'    : '#EAF3FF';
+  }
+  if (optHD) {
+    optHD.style.borderColor  = hd ? '#10B981' : '#e5e7eb';
+    optHD.style.background   = hd ? '#EAFBF3' : '#fff';
+  }
+
+  const addrField = document.getElementById('delivery_address');
+  if (addrField) addrField.required = hd;
+
+  calcPrice();
 }
 
 pickupInput.addEventListener('change', calcPrice);

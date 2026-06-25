@@ -1,0 +1,167 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="page-wrapper" style="max-width:640px;margin:0 auto;padding:48px 20px;">
+
+  <div class="breadcrumb">
+    <a href="/dashboard/renter/">Dashboard</a>
+    <i class="ri-arrow-right-s-line"></i>
+    <span>Review Booking #{{ booking.id }}</span>
+  </div>
+
+  <h1 class="page-title" style="margin-bottom:8px;">Review Booking Request</h1>
+  <p style="color:#6b7280;font-size:15px;margin-bottom:32px;">Confirm or reject this booking. The customer has already paid the advance.</p>
+
+  <!-- Booking Card -->
+  <div style="background:#fff;border:1.5px solid #e5e7eb;border-radius:16px;overflow:hidden;margin-bottom:24px;">
+
+    <!-- Header -->
+    <div style="background:#f8fafc;padding:16px 20px;border-bottom:1px solid #e5e7eb;display:flex;align-items:center;justify-content:space-between;">
+      <p style="font-weight:700;font-size:15px;color:#111;">Booking #{{ booking.id }}</p>
+      <span style="background:#fffbeb;color:#d97706;font-size:12px;font-weight:600;padding:4px 12px;border-radius:20px;">
+        Awaiting Your Confirmation
+      </span>
+    </div>
+
+    <!-- Car + Customer -->
+    <div style="padding:20px;border-bottom:1px solid #f0f0f0;">
+      <div style="display:flex;gap:14px;align-items:center;margin-bottom:16px;">
+        <div style="width:72px;height:54px;background:#f5f5f5;border-radius:8px;overflow:hidden;flex-shrink:0;display:flex;align-items:center;justify-content:center;">
+          {% if booking.car.image %}
+            <img src="{{ booking.car.image.url }}" style="width:100%;height:100%;object-fit:contain;">
+          {% else %}
+            <i class="ri-car-line" style="font-size:24px;color:#ccc;"></i>
+          {% endif %}
+        </div>
+        <div>
+          <p style="font-weight:700;font-size:16px;color:#111;margin-bottom:2px;">{{ booking.car.car_name }}</p>
+          <p style="font-size:13px;color:#6b7280;">{{ booking.car.brand|default:"" }}</p>
+        </div>
+      </div>
+
+      <div style="display:flex;align-items:center;gap:10px;padding:12px;background:#f9fafb;border-radius:10px;">
+        <div style="width:36px;height:36px;background:#1572D3;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+          <i class="ri-user-line" style="color:#fff;font-size:16px;"></i>
+        </div>
+        <div>
+          <p style="font-weight:600;font-size:14px;color:#111;margin-bottom:1px;">{{ booking.user.get_full_name|default:booking.user.username }}</p>
+          <p style="font-size:12px;color:#6b7280;">{{ booking.user.email }}</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Trip Details -->
+    <div style="padding:20px;border-bottom:1px solid #f0f0f0;">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:12px;">
+        <div>
+          <p style="font-size:12px;color:#9ca3af;margin-bottom:4px;">Pickup Date</p>
+          <p style="font-weight:600;font-size:14px;color:#111;">{{ booking.pickup_date|date:"d M Y" }}</p>
+        </div>
+        <div>
+          <p style="font-size:12px;color:#9ca3af;margin-bottom:4px;">Return Date</p>
+          <p style="font-weight:600;font-size:14px;color:#111;">{{ booking.return_date|date:"d M Y" }}</p>
+        </div>
+      </div>
+      {% if booking.delivery_method == 'home_delivery' %}
+      <div style="display:flex;align-items:flex-start;gap:10px;padding:10px 14px;background:#EAFBF3;border-radius:10px;">
+        <i class="ri-truck-line" style="color:#10B981;font-size:17px;flex-shrink:0;margin-top:2px;"></i>
+        <div>
+          <p style="font-size:13px;font-weight:600;color:#059669;margin:0 0 2px;">Home Delivery</p>
+          {% if booking.delivery_address %}
+          <p style="font-size:13px;color:#374151;margin:0;">{{ booking.delivery_address }}</p>
+          {% endif %}
+        </div>
+      </div>
+      {% else %}
+      <div style="display:flex;align-items:flex-start;gap:10px;padding:10px 14px;background:#EAF3FF;border-radius:10px;">
+        <i class="ri-map-pin-2-line" style="color:#1572D3;font-size:17px;flex-shrink:0;margin-top:2px;"></i>
+        <div>
+          <p style="font-size:13px;font-weight:600;color:#1572D3;margin:0 0 2px;">Self Pickup</p>
+          {% if booking.car.pickup_address %}
+          <p style="font-size:13px;color:#374151;margin:0;">{{ booking.car.pickup_address }}</p>
+          {% else %}
+          <p style="font-size:13px;color:#6b7280;margin:0;">Customer will collect from your pickup point.</p>
+          {% endif %}
+        </div>
+      </div>
+      {% endif %}
+    </div>
+
+    <!-- Financials -->
+    <div style="padding:20px;">
+      <div style="display:flex;justify-content:space-between;margin-bottom:8px;">
+        <span style="font-size:13px;color:#6b7280;">Total Trip Amount</span>
+        <span style="font-size:14px;font-weight:700;color:#1572D3;">₹{{ booking.total_amount|floatformat:0 }}</span>
+      </div>
+      <div style="display:flex;justify-content:space-between;margin-bottom:8px;">
+        <span style="font-size:13px;color:#16a34a;font-weight:600;">
+          <i class="ri-checkbox-circle-fill" style="margin-right:4px;"></i>Advance Paid by Customer
+        </span>
+        <span style="font-size:13px;font-weight:600;color:#16a34a;">₹{{ booking.advance_amount|floatformat:0 }}</span>
+      </div>
+      <div style="display:flex;justify-content:space-between;">
+        <span style="font-size:13px;color:#6b7280;">Remaining (collected on pickup)</span>
+        <span style="font-size:13px;font-weight:600;color:#111;">₹{{ booking.remaining_amount|floatformat:0 }}</span>
+      </div>
+
+      {% if booking.renter_confirmation_deadline %}
+      <div style="margin-top:12px;padding:10px 12px;background:#fffbeb;border:1px solid #fde68a;border-radius:8px;display:flex;align-items:center;gap:8px;">
+        <i class="ri-alarm-warning-line" style="color:#d97706;font-size:16px;"></i>
+        <span style="font-size:13px;color:#92400e;">
+          Respond by <strong>{{ booking.renter_confirmation_deadline|date:"d M Y, H:i" }}</strong> — unresponded bookings are auto-refunded.
+        </span>
+      </div>
+      {% endif %}
+    </div>
+  </div>
+
+  <!-- Pickup Instructions (revealed to customer after confirm) -->
+  <div style="background:#fff;border:1.5px solid #dbeafe;border-radius:14px;padding:18px 20px;margin-bottom:20px;">
+    <p style="font-size:13px;font-weight:700;color:#1e40af;margin-bottom:4px;">
+      <i class="ri-information-line" style="margin-right:5px;"></i>Pickup Instructions <span style="font-size:11px;font-weight:400;color:#6b7280;">(optional — shown to customer only after you confirm)</span>
+    </p>
+    <p style="font-size:12px;color:#6b7280;margin-bottom:10px;">
+      Add gate number, parking spot, landmarks, or any special instructions. This will be unlocked for the customer after booking confirmation.
+    </p>
+    <textarea id="pickup-instructions-preview" rows="3" class="form-control"
+              placeholder="e.g. Enter through Gate 2, park in Bay B-12, call me when you arrive…"
+              oninput="syncInstructions(this.value)"
+              style="width:100%;resize:vertical;border:1.5px solid #e5e7eb;border-radius:8px;padding:10px 12px;font-size:13px;color:#374151;box-sizing:border-box;"></textarea>
+  </div>
+
+  <!-- Action Buttons -->
+  <div style="display:flex;gap:12px;flex-wrap:wrap;">
+    <form method="POST" action="/booking/{{ booking.id }}/renter-action/" style="flex:1;min-width:160px;" id="confirm-form">
+      {% csrf_token %}
+      <input type="hidden" name="action" value="confirm">
+      <input type="hidden" name="pickup_instructions" id="pickup_instructions_input">
+      <button type="submit"
+              style="width:100%;padding:14px;background:#1572D3;color:#fff;border:none;border-radius:12px;font-size:15px;font-weight:600;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;">
+        <i class="ri-checkbox-circle-line"></i> Confirm Booking
+      </button>
+    </form>
+    <form method="POST" action="/booking/{{ booking.id }}/renter-action/" style="flex:1;min-width:160px;">
+      {% csrf_token %}
+      <input type="hidden" name="action" value="reject">
+      <button type="submit"
+              onclick="return confirm('Reject this booking? The customer advance will be refunded.');"
+              style="width:100%;padding:14px;background:#fff;color:#dc2626;border:1.5px solid #fecaca;border-radius:12px;font-size:15px;font-weight:600;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;">
+        <i class="ri-close-circle-line"></i> Reject Booking
+      </button>
+    </form>
+  </div>
+  <script>
+  function syncInstructions(val) {
+    document.getElementById('pickup_instructions_input').value = val;
+  }
+  </script>
+
+  <div style="margin-top:16px;text-align:center;">
+    <a href="/dashboard/renter/" style="font-size:14px;color:#6b7280;text-decoration:none;">
+      <i class="ri-arrow-left-line"></i> Back to Dashboard
+    </a>
+  </div>
+
+</div>
+{% endblock %}

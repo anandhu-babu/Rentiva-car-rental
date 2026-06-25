@@ -1,0 +1,657 @@
+{% extends 'admin_panel/base.html' %}
+{% block title %}Analytics Dashboard — Rentiva Admin{% endblock %}
+{% block breadcrumb %}Analytics Dashboard{% endblock %}
+
+{% block content %}
+
+<div class="page-hd">
+  <div>
+    <h1 class="page-title">Analytics Dashboard</h1>
+    <p class="page-sub">Welcome back, {{ request.user.first_name }}. Here's your platform overview for today.</p>
+  </div>
+  <div style="display:flex;gap:8px;align-items:center;">
+    <a href="/admin-panel/reports/" class="btn-a btn-view" style="padding:9px 16px;font-size:13px;">
+      <i class="ri-bar-chart-2-line"></i> Full Reports
+    </a>
+    <a href="/admin-panel/verification/customers/" class="btn-a btn-approve" style="padding:9px 16px;font-size:13px;">
+      <i class="ri-shield-check-line"></i> Verifications
+    </a>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════════
+     ROW 1 — STATS (4 cards)
+══════════════════════════════════════════════════════════ -->
+<div class="stats-grid" style="grid-template-columns:repeat(4,1fr);">
+
+  <div class="stat-card sc-blue">
+    <div class="stat-icon si-blue"><i class="ri-user-3-line"></i></div>
+    <div class="stat-body">
+      <div class="stat-label">Total Customers</div>
+      <div class="stat-value">{{ stats.customers }}</div>
+      <div class="stat-meta up"><i class="ri-user-add-line"></i> Registered users</div>
+    </div>
+  </div>
+
+  <div class="stat-card sc-purple">
+    <div class="stat-icon si-purple"><i class="ri-steering-2-line"></i></div>
+    <div class="stat-body">
+      <div class="stat-label">Total Renters</div>
+      <div class="stat-value">{{ stats.renters }}</div>
+      <div class="stat-meta"><i class="ri-car-fill"></i> Fleet owners</div>
+    </div>
+  </div>
+
+  <div class="stat-card sc-teal">
+    <div class="stat-icon si-teal"><i class="ri-car-line"></i></div>
+    <div class="stat-body">
+      <div class="stat-label">Total Vehicles</div>
+      <div class="stat-value">{{ stats.vehicles }}</div>
+      <div class="stat-meta"><i class="ri-map-pin-line"></i> Listed on platform</div>
+    </div>
+  </div>
+
+  <div class="stat-card sc-orange">
+    <div class="stat-icon si-orange"><i class="ri-calendar-check-line"></i></div>
+    <div class="stat-body">
+      <div class="stat-label">Active Bookings</div>
+      <div class="stat-value">{{ stats.active_bookings }}</div>
+      <div class="stat-meta up"><i class="ri-time-line"></i> Pending + Approved</div>
+    </div>
+  </div>
+
+</div>
+
+<!-- ══════════════════════════════════════════════════════════
+     ROW 2 — STATS (4 more cards)
+══════════════════════════════════════════════════════════ -->
+<div class="stats-grid" style="grid-template-columns:repeat(4,1fr);">
+
+  <div class="stat-card sc-yellow">
+    <div class="stat-icon si-yellow"><i class="ri-shield-check-line"></i></div>
+    <div class="stat-body">
+      <div class="stat-label">Pending Verifications</div>
+      <div class="stat-value">{{ stats.pending_verifications }}</div>
+      <div class="stat-meta warn"><i class="ri-alert-line"></i> Needs review</div>
+    </div>
+  </div>
+
+  <div class="stat-card sc-green">
+    <div class="stat-icon si-green"><i class="ri-money-rupee-circle-line"></i></div>
+    <div class="stat-body">
+      <div class="stat-label">Today's Revenue</div>
+      <div class="stat-value">₹{{ stats.today_revenue|floatformat:0 }}</div>
+      <div class="stat-meta up"><i class="ri-arrow-up-line"></i> Paid today</div>
+    </div>
+  </div>
+
+  <div class="stat-card sc-indigo">
+    <div class="stat-icon si-indigo"><i class="ri-funds-line"></i></div>
+    <div class="stat-body">
+      <div class="stat-label">Total Revenue</div>
+      <div class="stat-value">₹{{ stats.total_revenue|floatformat:0 }}</div>
+      <div class="stat-meta up"><i class="ri-arrow-up-line"></i> All-time earnings</div>
+    </div>
+  </div>
+
+  <div class="stat-card sc-red">
+    <div class="stat-icon si-red"><i class="ri-error-warning-line"></i></div>
+    <div class="stat-body">
+      <div class="stat-label">Open Complaints</div>
+      <div class="stat-value">{{ stats.open_complaints }}</div>
+      <div class="stat-meta warn"><i class="ri-alert-line"></i> Unresolved</div>
+    </div>
+  </div>
+
+</div>
+
+<!-- ══════════════════════════════════════════════════════════
+     ROW 3 — REVENUE LINE CHART + BOOKING BAR CHART
+══════════════════════════════════════════════════════════ -->
+<div class="dash-row dash-row-82 mb-4">
+
+  <!-- Revenue Line Chart -->
+  <div class="admin-card">
+    <div class="card-head">
+      <div>
+        <div class="card-head-title"><i class="ri-line-chart-line"></i> Revenue Overview</div>
+        <div class="card-head-sub">Last 6 months · completed bookings</div>
+      </div>
+      <a href="/admin-panel/reports/" class="card-link"><i class="ri-external-link-line"></i> Full Report</a>
+    </div>
+    <div class="card-body">
+      <div class="chart-wrap">
+        <canvas id="revenueChart"></canvas>
+      </div>
+    </div>
+  </div>
+
+  <!-- Booking Status Bar Chart -->
+  <div class="admin-card">
+    <div class="card-head">
+      <div class="card-head-title"><i class="ri-bar-chart-grouped-line"></i> Booking Status</div>
+    </div>
+    <div class="card-body">
+      <div class="chart-wrap">
+        <canvas id="bookingChart"></canvas>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- ══════════════════════════════════════════════════════════
+     ROW 4 — VEHICLE DOUGHNUT + PAYMENT PIE + LOCATION
+══════════════════════════════════════════════════════════ -->
+<div class="dash-row dash-row-333 mb-4">
+
+  <!-- Vehicle Breakdown -->
+  <div class="admin-card">
+    <div class="card-head">
+      <div class="card-head-title"><i class="ri-donut-chart-line"></i> Vehicle Breakdown</div>
+    </div>
+    <div class="card-body">
+      <div class="chart-wrap-sm">
+        <canvas id="vehicleChart"></canvas>
+      </div>
+    </div>
+  </div>
+
+  <!-- Payment Distribution -->
+  <div class="admin-card">
+    <div class="card-head">
+      <div class="card-head-title"><i class="ri-pie-chart-2-line"></i> Payment Status</div>
+    </div>
+    <div class="card-body">
+      <div class="chart-wrap-sm">
+        <canvas id="paymentChart"></canvas>
+      </div>
+    </div>
+  </div>
+
+  <!-- Location Analytics -->
+  <div class="admin-card">
+    <div class="card-head">
+      <div class="card-head-title"><i class="ri-map-pin-line"></i> Top Booking Locations</div>
+    </div>
+    <div class="location-list">
+      {% for loc in location_stats %}
+      <div class="location-item">
+        <div class="location-rank">{{ forloop.counter }}</div>
+        <div class="location-info">
+          <div class="location-city">{{ loc.city|default:"Unknown" }}</div>
+          <div class="location-bar-wrap">
+            <div class="location-bar" style="width:{{ loc.pct }}%"></div>
+          </div>
+        </div>
+        <div class="location-count">{{ loc.count }}</div>
+      </div>
+      {% empty %}
+      <div class="empty-state" style="padding:32px 16px;">
+        <i class="ri-map-pin-line"></i>
+        <p>No booking data yet</p>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+
+</div>
+
+<!-- ══════════════════════════════════════════════════════════
+     ROW 5 — PENDING VERIFICATIONS + ACTIVITY FEED
+══════════════════════════════════════════════════════════ -->
+<div class="dash-row dash-row-55 mb-4">
+
+  <!-- Pending Verifications Widget -->
+  <div class="admin-card">
+    <div class="card-head">
+      <div>
+        <div class="card-head-title"><i class="ri-shield-user-line"></i> Pending Verifications</div>
+        <div class="card-head-sub">Customers · Renters awaiting KYC</div>
+      </div>
+      <a href="/admin-panel/verification/customers/" class="card-link">View All</a>
+    </div>
+
+    {% if pending_customers %}
+      <div style="padding:8px 20px 4px;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.6px;color:var(--text-400);">Customers</div>
+      {% for p in pending_customers %}
+      <div class="pv-item">
+        <div class="pv-avatar">{{ p.user.first_name|first|upper }}{{ p.user.last_name|first|upper }}</div>
+        <div style="flex:1;min-width:0;">
+          <div class="pv-name">{{ p.user.get_full_name }}</div>
+          <div class="pv-email">{{ p.user.email }}</div>
+        </div>
+        <div class="pv-actions">
+          <form method="post" action="/admin-panel/verification/customers/{{ p.id }}/approve/">
+            {% csrf_token %}
+            <button type="submit" class="btn-a btn-approve" title="Approve"><i class="ri-check-line"></i></button>
+          </form>
+          <form method="post" action="/admin-panel/verification/customers/{{ p.id }}/reject/">
+            {% csrf_token %}
+            <button type="submit" class="btn-a btn-reject" title="Reject"><i class="ri-close-line"></i></button>
+          </form>
+        </div>
+      </div>
+      {% endfor %}
+    {% endif %}
+
+    {% if pending_renters %}
+      <div style="padding:8px 20px 4px;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.6px;color:var(--text-400);border-top:1px solid var(--border-light);">Renters</div>
+      {% for p in pending_renters %}
+      <div class="pv-item">
+        <div class="pv-avatar" style="background:var(--purple-bg);color:var(--purple-text);">{{ p.user.first_name|first|upper }}{{ p.user.last_name|first|upper }}</div>
+        <div style="flex:1;min-width:0;">
+          <div class="pv-name">{{ p.user.get_full_name }}</div>
+          <div class="pv-email">{{ p.user.email }}</div>
+        </div>
+        <div class="pv-actions">
+          <form method="post" action="/admin-panel/verification/renters/{{ p.id }}/approve/">
+            {% csrf_token %}
+            <button type="submit" class="btn-a btn-approve" title="Approve"><i class="ri-check-line"></i></button>
+          </form>
+          <form method="post" action="/admin-panel/verification/renters/{{ p.id }}/reject/">
+            {% csrf_token %}
+            <button type="submit" class="btn-a btn-reject" title="Reject"><i class="ri-close-line"></i></button>
+          </form>
+        </div>
+      </div>
+      {% endfor %}
+    {% endif %}
+
+    {% if not pending_customers and not pending_renters %}
+    <div class="empty-state" style="padding:36px 20px;">
+      <i class="ri-shield-check-line"></i>
+      <p>All verifications are up to date</p>
+    </div>
+    {% endif %}
+  </div>
+
+  <!-- Live Activity Feed -->
+  <div class="admin-card">
+    <div class="card-head">
+      <div class="card-head-title"><i class="ri-pulse-line"></i> Live Activity Feed</div>
+      <a href="/admin-panel/notifications/" class="card-link">View All</a>
+    </div>
+    <div class="notif-list" style="max-height:400px;overflow-y:auto;">
+      {% for n in recent_notifications %}
+      <div class="notif-item {% if not n.is_read %}unread{% endif %}">
+        <div class="notif-icon
+          {% if n.notification_type == 'new_customer' %}ni-blue
+          {% elif n.notification_type == 'new_renter' %}ni-purple
+          {% elif n.notification_type == 'vehicle_pending' %}ni-orange
+          {% elif n.notification_type == 'complaint_raised' %}ni-red
+          {% elif n.notification_type == 'payment_failed' %}ni-red
+          {% elif n.notification_type == 'verification_update' %}ni-green
+          {% elif n.notification_type == 'booking_cancelled' %}ni-yellow
+          {% else %}ni-blue{% endif %}">
+          <i class="ri-
+            {% if n.notification_type == 'new_customer' %}user-add-line
+            {% elif n.notification_type == 'new_renter' %}steering-2-line
+            {% elif n.notification_type == 'vehicle_pending' %}car-line
+            {% elif n.notification_type == 'complaint_raised' %}alert-line
+            {% elif n.notification_type == 'payment_failed' %}bank-card-line
+            {% elif n.notification_type == 'verification_update' %}shield-check-line
+            {% elif n.notification_type == 'booking_cancelled' %}calendar-close-line
+            {% else %}information-line{% endif %}"></i>
+        </div>
+        <div class="notif-body">
+          <div class="notif-title">{{ n.title }}</div>
+          <div class="notif-msg">{{ n.message|truncatechars:60 }}</div>
+          <div class="notif-time">{{ n.created_at|timesince }} ago</div>
+        </div>
+        {% if not n.is_read %}<div class="unread-dot"></div>{% endif %}
+      </div>
+      {% empty %}
+      <div class="empty-state" style="padding:36px 20px;">
+        <i class="ri-notification-off-line"></i>
+        <p>No recent activity</p>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+
+</div>
+
+<!-- ══════════════════════════════════════════════════════════
+     ROW 6 — RECENT BOOKINGS TABLE
+══════════════════════════════════════════════════════════ -->
+<div class="admin-card mb-4">
+  <div class="card-head">
+    <div class="card-head-title"><i class="ri-calendar-line"></i> Recent Bookings</div>
+    <a href="/admin-panel/bookings/" class="card-link"><i class="ri-external-link-line"></i> View All</a>
+  </div>
+  <div class="tbl-wrap">
+    <table class="admin-tbl">
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>Customer</th>
+          <th>Vehicle</th>
+          <th>Pickup</th>
+          <th>Return</th>
+          <th>Amount</th>
+          <th>Status</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for b in recent_bookings %}
+        <tr>
+          <td><strong style="color:var(--text-500);">#{{ b.id }}</strong></td>
+          <td>
+            <div class="user-cell">
+              <div class="u-avatar">{{ b.user.first_name|first|upper }}</div>
+              <div>
+                <div class="u-name">{{ b.user.get_full_name }}</div>
+                <div class="u-email">{{ b.user.email }}</div>
+              </div>
+            </div>
+          </td>
+          <td>
+            <div style="font-weight:600;color:var(--text-900);">{{ b.car.car_name }}</div>
+            <div style="font-size:11.5px;color:var(--text-500);">{{ b.car.brand }}</div>
+          </td>
+          <td style="white-space:nowrap;">{{ b.pickup_date|date:"M d, Y" }}</td>
+          <td style="white-space:nowrap;">{{ b.return_date|date:"M d, Y" }}</td>
+          <td><span class="amount">₹{{ b.total_amount|floatformat:0 }}</span></td>
+          <td><span class="badge b-{{ b.booking_status }}">{{ b.get_booking_status_display }}</span></td>
+        </tr>
+        {% empty %}
+        <tr>
+          <td colspan="7">
+            <div class="empty-state" style="padding:36px;">
+              <i class="ri-calendar-line"></i>
+              <p>No bookings yet</p>
+            </div>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════════
+     ROW 7 — VEHICLE APPROVAL PANEL + OPEN COMPLAINTS
+══════════════════════════════════════════════════════════ -->
+<div class="dash-row dash-row-55">
+
+  <!-- Vehicle Approval Panel -->
+  <div class="admin-card">
+    <div class="card-head">
+      <div class="card-head-title"><i class="ri-car-fill"></i> Pending Vehicle Approval</div>
+      <a href="/admin-panel/verification/vehicles/" class="card-link">View All</a>
+    </div>
+    <div class="tbl-wrap">
+      <table class="admin-tbl">
+        <thead>
+          <tr><th>Vehicle</th><th>Owner</th><th>Status</th><th>Action</th></tr>
+        </thead>
+        <tbody>
+          {% for car in pending_vehicles %}
+          <tr>
+            <td>
+              <div style="display:flex;align-items:center;gap:10px;">
+                {% if car.image %}
+                  <img src="{{ car.image.url }}" class="veh-img" alt="{{ car.car_name }}">
+                {% else %}
+                  <div class="veh-img-ph"><i class="ri-car-line"></i></div>
+                {% endif %}
+                <div>
+                  <div style="font-weight:600;font-size:13px;color:var(--text-900);">{{ car.car_name }}</div>
+                  <div style="font-size:11.5px;color:var(--text-500);">{{ car.brand }} · {{ car.year }}</div>
+                </div>
+              </div>
+            </td>
+            <td>
+              <div style="font-size:13px;font-weight:500;color:var(--text-900);">{{ car.owner.user.get_full_name }}</div>
+              <div style="font-size:11.5px;color:var(--text-500);">{{ car.owner.user.email }}</div>
+            </td>
+            <td><span class="badge b-pending">Pending</span></td>
+            <td>
+              <div style="display:flex;gap:5px;">
+                <form method="post" action="/admin-panel/verification/vehicles/{{ car.id }}/approve/" style="display:inline;">
+                  {% csrf_token %}
+                  <button class="btn-a btn-approve"><i class="ri-check-line"></i></button>
+                </form>
+                <form method="post" action="/admin-panel/verification/vehicles/{{ car.id }}/reject/" style="display:inline;">
+                  {% csrf_token %}
+                  <button class="btn-a btn-reject"><i class="ri-close-line"></i></button>
+                </form>
+              </div>
+            </td>
+          </tr>
+          {% empty %}
+          <tr><td colspan="4">
+            <div class="empty-state" style="padding:28px;">
+              <i class="ri-car-line"></i>
+              <p>No vehicles pending approval</p>
+            </div>
+          </td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Open Complaints Panel -->
+  <div class="admin-card">
+    <div class="card-head">
+      <div class="card-head-title"><i class="ri-error-warning-line"></i> Open Complaints</div>
+      <a href="/admin-panel/complaints/" class="card-link">View All</a>
+    </div>
+    <div class="tbl-wrap">
+      <table class="admin-tbl">
+        <thead>
+          <tr><th>Raised By</th><th>Type</th><th>Status</th><th>Action</th></tr>
+        </thead>
+        <tbody>
+          {% for c in recent_complaints %}
+          <tr>
+            <td>
+              <div style="font-weight:600;font-size:13px;color:var(--text-900);">{{ c.raised_by.get_full_name }}</div>
+              <div style="font-size:11.5px;color:var(--text-500);">{{ c.created_at|date:"M d, Y" }}</div>
+            </td>
+            <td>
+              <span class="complaint-type">{{ c.get_complaint_type_display }}</span>
+            </td>
+            <td><span class="badge b-{{ c.status }}">{{ c.get_status_display }}</span></td>
+            <td>
+              <form method="post" action="/admin-panel/complaints/{{ c.id }}/resolve/" style="display:inline;">
+                {% csrf_token %}
+                <input type="hidden" name="resolution_note" value="Resolved via dashboard quick action.">
+                <button class="btn-a btn-resolve"><i class="ri-check-double-line"></i> Resolve</button>
+              </form>
+            </td>
+          </tr>
+          {% empty %}
+          <tr><td colspan="4">
+            <div class="empty-state" style="padding:28px;">
+              <i class="ri-check-double-line"></i>
+              <p>No open complaints</p>
+            </div>
+          </td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+</div>
+
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+/* ── Data from Django ── */
+const MD  = {{ months_data|safe }};
+const BS  = {{ booking_stats|safe }};
+const VC  = {{ vehicle_by_category|safe }};
+const PM  = {{ payment_stats|safe }};
+
+const PRI    = '#1572D3';
+const PRI_D  = '#0F5DB8';
+const PRI_L  = '#2F80ED';
+
+/* ── Shared chart defaults ── */
+Chart.defaults.font.family = "'Inter', -apple-system, sans-serif";
+Chart.defaults.font.size   = 12;
+Chart.defaults.color       = '#6B7280';
+
+/* ── 1. Revenue Line Chart ── */
+new Chart(document.getElementById('revenueChart'), {
+  type: 'line',
+  data: {
+    labels: MD.map(d => d.month),
+    datasets: [{
+      label: 'Revenue (₹)',
+      data: MD.map(d => d.revenue),
+      borderColor: PRI,
+      backgroundColor: (ctx) => {
+        const g = ctx.chart.ctx.createLinearGradient(0, 0, 0, 280);
+        g.addColorStop(0, 'rgba(21,114,211,0.18)');
+        g.addColorStop(1, 'rgba(21,114,211,0.01)');
+        return g;
+      },
+      borderWidth: 2.5,
+      pointRadius: 5,
+      pointBackgroundColor: PRI,
+      pointBorderColor: '#fff',
+      pointBorderWidth: 2.5,
+      tension: 0.42,
+      fill: true,
+    }]
+  },
+  options: {
+    responsive: true, maintainAspectRatio: false,
+    plugins: {
+      legend: { display: false },
+      tooltip: {
+        callbacks: { label: c => '  ₹' + c.parsed.y.toLocaleString('en-IN') },
+        backgroundColor: '#0B1120',
+        titleColor: '#94A3B8',
+        bodyColor: '#fff',
+        padding: 10,
+        cornerRadius: 8,
+      }
+    },
+    scales: {
+      y: {
+        beginAtZero: true,
+        grid: { color: 'rgba(0,0,0,0.05)' },
+        ticks: { callback: v => '₹' + (v >= 1000 ? (v/1000).toFixed(0)+'K' : v) }
+      },
+      x: { grid: { display: false } }
+    }
+  }
+});
+
+/* ── 2. Booking Bar Chart ── */
+new Chart(document.getElementById('bookingChart'), {
+  type: 'bar',
+  data: {
+    labels: ['Pending', 'Approved', 'Active', 'Completed', 'Cancelled'],
+    datasets: [{
+      label: 'Bookings',
+      data: [BS.pending, BS.approved, BS.active, BS.completed, BS.cancelled],
+      backgroundColor: [
+        'rgba(245,158,11,0.85)',
+        'rgba(21,114,211,0.85)',
+        'rgba(34,197,94,0.85)',
+        'rgba(99,102,241,0.85)',
+        'rgba(239,68,68,0.85)',
+      ],
+      borderRadius: 8,
+      borderSkipped: false,
+    }]
+  },
+  options: {
+    responsive: true, maintainAspectRatio: false,
+    plugins: {
+      legend: { display: false },
+      tooltip: {
+        backgroundColor: '#0B1120',
+        titleColor: '#94A3B8',
+        bodyColor: '#fff',
+        padding: 10,
+        cornerRadius: 8,
+      }
+    },
+    scales: {
+      y: { beginAtZero: true, grid: { color: 'rgba(0,0,0,0.05)' }, ticks: { precision: 0 } },
+      x: { grid: { display: false } }
+    }
+  }
+});
+
+/* ── 3. Vehicle Doughnut Chart ── */
+new Chart(document.getElementById('vehicleChart'), {
+  type: 'doughnut',
+  data: {
+    labels: VC.map(v => v.name),
+    datasets: [{
+      data: VC.map(v => v.count),
+      backgroundColor: [
+        'rgba(21,114,211,0.85)',
+        'rgba(139,92,246,0.85)',
+        'rgba(20,184,166,0.85)',
+        'rgba(249,115,22,0.85)',
+        'rgba(34,197,94,0.85)',
+        'rgba(239,68,68,0.85)',
+      ],
+      borderWidth: 3,
+      borderColor: '#fff',
+      hoverOffset: 6,
+    }]
+  },
+  options: {
+    responsive: true, maintainAspectRatio: false,
+    cutout: '65%',
+    plugins: {
+      legend: { position: 'bottom', labels: { padding: 12, boxWidth: 12, usePointStyle: true } },
+      tooltip: {
+        backgroundColor: '#0B1120',
+        titleColor: '#94A3B8',
+        bodyColor: '#fff',
+        padding: 10,
+        cornerRadius: 8,
+      }
+    }
+  }
+});
+
+/* ── 4. Payment Pie Chart ── */
+new Chart(document.getElementById('paymentChart'), {
+  type: 'doughnut',
+  data: {
+    labels: ['Paid', 'Pending', 'Refunded', 'Failed'],
+    datasets: [{
+      data: [PM.paid, PM.pending, PM.refunded, PM.failed],
+      backgroundColor: [
+        'rgba(34,197,94,0.85)',
+        'rgba(245,158,11,0.85)',
+        'rgba(6,182,212,0.85)',
+        'rgba(239,68,68,0.85)',
+      ],
+      borderWidth: 3,
+      borderColor: '#fff',
+      hoverOffset: 6,
+    }]
+  },
+  options: {
+    responsive: true, maintainAspectRatio: false,
+    cutout: '65%',
+    plugins: {
+      legend: { position: 'bottom', labels: { padding: 12, boxWidth: 12, usePointStyle: true } },
+      tooltip: {
+        backgroundColor: '#0B1120',
+        titleColor: '#94A3B8',
+        bodyColor: '#fff',
+        padding: 10,
+        cornerRadius: 8,
+      }
+    }
+  }
+});
+</script>
+{% endblock %}

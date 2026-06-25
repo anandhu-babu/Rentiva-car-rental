@@ -5,133 +5,69 @@
 
 {% block content %}
 
-<section class="signup-page">
+<style>
+  
+ .profile-icon {
+    width: 24px;
+    height: 24px;
+    filter: invert(42%) sepia(98%) saturate(1828%) hue-rotate(202deg)
+            brightness(97%) contrast(90%);
+}
 
-    <!-- LEFT -->
+.car-icon {
+    width: 24px;
+    height: 24px;
+    filter: invert(37%) sepia(88%) saturate(1020%) hue-rotate(132deg)
+            brightness(90%) contrast(96%);
+}
 
-    <div class="left">
-      <div class="overlay"></div>
-      <div class="content">
-        
-        <h1> Start Your <br> Journey Today </h1>
-        <p> Create your account and experience seamless car rentals with premium comfort. </p>
-
-      </div>
-    </div>
-
-
-    <!-- RIGHT -->
-
-    <div class="right">
-      <div class="form-container">
-
-        <h2>Create Account</h2>
-        <p class="subtitle"> Fill in your details to get started </p>
-
-        {% if messages %}
-          {% for msg in messages %}
-            <div class="alert alert-{{ msg.tags }}" style="margin-bottom:18px;border-radius:10px;padding:12px 16px;font-size:14px;">
-              {{ msg }}
-            </div>
-          {% endfor %}
-        {% endif %}
-
-        <form method="POST" action="/register/">
-          {% csrf_token %}
-
-          <div class="input-box">
-            <label>First Name</label>
-            <div class="input-field">
-              <img class="icons" src="{% static 'img/user.svg' %}" alt="name">
-              <input type="text" name="first_name" placeholder="Enter your first name" required>
-            </div>
-          </div>
-
-          <div class="input-box">
-            <label>Last Name</label>
-            <div class="input-field">
-              <img class="icons" src="{% static 'img/user.svg' %}" alt="name">
-              <input type="text" name="last_name" placeholder="Enter your Last name" required>
-            </div>
-          </div>
-
-          <div class="input-box">
-            <label>Email Address</label>
-            <div class="input-field">
-              <img class="icons" src="{% static 'img/sms.svg' %}" alt="email">
-              <input type="email" name="email" placeholder="Enter your email" required>
-            </div>
-          </div>
-
-          <div class="input-box">
-            <label>Phone Number</label>
-            <div class="input-field">
-              <img class="icons" src="{% static 'img/call.svg' %}" alt="phone">
-              <input type="tel" name="phone" placeholder="Enter your phone number"
-                     maxlength="10" required>
-            </div>
-          </div>
-
-          <div class="input-box">
-            <label>Password</label>
-            <div class="input-field">
-              <img class="icons" src="{% static 'img/lock.svg' %}" alt="password">
-              <input type="password" name="password1" placeholder="Create password" required>
-            </div>
-          </div>
+</style>
 
 
-          <div class="input-box">
-            <label>Confirm Password</label>
-            <div class="input-field">
-              <img class="icons" src="{% static 'img/lock-password.svg' %}" alt="confirm">
-              <input type="password" name="password2" placeholder="Confirm password" required>
-            </div>
-          </div>
+<section class="reg-choose-page">
+  <div class="reg-choose-inner">
+ 
+    <h1 class="reg-choose-title">Join Rentiva</h1>
+    <p class="reg-choose-sub">Choose how you'd like to get started</p>
 
-          <!-- TERMS -->
-          <div class="terms">
-            <input type="checkbox" required>
-            <p>I agree to the <a href="#">Terms &amp; Conditions</a></p>
-          </div>
+    <div class="reg-choose-cards">
 
-          <!-- BUTTON -->
-          <button type="submit" class="signup-btn">Create Account</button>
-        </form>
-
-
-        <div class="divider">
-          <span>OR</span>
+      <a href="/register/customer/" class="reg-role-card">
+        <div class="reg-role-icon reg-role-icon--customer">
+          <img class="profile-icon" src="{% static 'img/profile-line.svg' %}">
         </div>
+        <h3>Register as Customer</h3>
+        <p>Browse and rent premium cars from our trusted network of vehicle owners.</p>
+        <ul class="reg-role-list">
+          <li><i class="ri-check-line"></i>Access thousands of cars</li>
+          <li><i class="ri-check-line"></i>Easy booking &amp; cancellation</li>
+          <li><i class="ri-check-line"></i>Transparent pricing</li>
+        </ul>
+        <div class="reg-role-cta reg-role-cta--customer">
+          Get Started <i class="ri-arrow-right-line"></i>
+        </div>
+      </a>
 
+      <a href="/register/renter/" class="reg-role-card reg-role-card--renter">
+        <div class="reg-role-icon reg-role-icon--renter">
+          <img class="car-icon" src="{% static 'img/car.svg' %}">
+        </div>
+        <h3>Register as Renter</h3>
+        <p>List your car and earn passive income from verified, insured customers.</p>
+        <ul class="reg-role-list">
+          <li><i class="ri-check-line"></i>Earn passive income</li>
+          <li><i class="ri-check-line"></i>Full booking management</li>
+          <li><i class="ri-check-line"></i>Secure bank payouts</li>
+        </ul>
+        <div class="reg-role-cta reg-role-cta--renter">
+          Start Earning <i class="ri-arrow-right-line"></i>
+        </div>
+      </a>
 
-        <!-- GOOGLE -->
-
-        <button class="google-btn">
-
-          <img
-            src="https://cdn-icons-png.flaticon.com/512/2991/2991148.png"
-            alt=""
-          >
-
-          Continue with Google
-
-        </button>
-
-
-        <!-- SIGN IN -->
-
-        <p class="signin-text">
-
-          Already have an account?
-
-          <a href="/login/">
-            Sign In
-          </a>
-        </p>
-      </div>
     </div>
 
-  </section>
+    <p class="reg-choose-login">Already have an account? <a href="/login/">Sign In</a></p>
 
-  {% endblock %}
+  </div>
+</section>
+{% endblock %}

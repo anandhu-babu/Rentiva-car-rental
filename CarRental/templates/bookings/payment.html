@@ -5,7 +5,6 @@
 
 <div class="page-wrapper">
 
-  <!-- Breadcrumb -->
   <div class="breadcrumb">
     <a href="/">Home</a>
     <i class="ri-arrow-right-s-line"></i>
@@ -18,7 +17,6 @@
 
   <div class="payment-layout">
 
-    <!-- ── Booking Summary ── -->
     <div class="payment-summary-card">
       <h3>Booking Summary</h3>
 
@@ -34,18 +32,19 @@
         {% endif %}
         <div>
           <h4>{{ booking.car.car_name }}</h4>
-          <p>{{ booking.car.brand.name|default:"" }}</p>
+          <p>{{ booking.car.brand|default:"" }}</p>
         </div>
       </div>
 
       <div class="summary-details">
         <div class="summary-row">
-          <span><i class="ri-map-pin-line"></i> Pickup</span>
-          <span>{{ booking.pickup_location.city }}, {{ booking.pickup_location.state }}</span>
-        </div>
-        <div class="summary-row">
-          <span><i class="ri-map-pin-2-line"></i> Drop</span>
-          <span>{{ booking.drop_location.city }}, {{ booking.drop_location.state }}</span>
+          {% if booking.delivery_method == 'home_delivery' %}
+          <span><i class="ri-truck-line" style="color:#10B981;"></i> Delivery</span>
+          <span style="color:#059669;font-weight:600;">Home Delivery</span>
+          {% else %}
+          <span><i class="ri-map-pin-2-line" style="color:#1572D3;"></i> Collection</span>
+          <span style="color:#1572D3;font-weight:600;">Self Pickup</span>
+          {% endif %}
         </div>
         <div class="summary-row">
           <span><i class="ri-calendar-line"></i> Pickup Date</span>
@@ -67,14 +66,12 @@
       </div>
     </div>
 
-    <!-- ── Payment Form ── -->
     <div class="payment-form-card">
       <h3>Payment Method</h3>
 
       <form method="POST" action="/payment/{{ booking.id }}/" id="payment-form">
         {% csrf_token %}
 
-        <!-- Method Selector -->
         <div class="payment-methods">
 
           <label class="payment-method-option active" id="opt-upi">
@@ -109,7 +106,6 @@
 
         </div>
 
-        <!-- UPI Fields -->
         <div id="fields-upi" class="payment-fields">
           <div class="form-group">
             <label class="form-label">UPI ID</label>
@@ -120,11 +116,9 @@
             <i class="ri-information-line"></i>
             Enter your UPI ID. A payment request will be sent to your UPI app.
           </p>
-          <!-- hidden field carries txn id -->
           <input type="hidden" name="transaction_id" id="txn-upi">
         </div>
 
-        <!-- Card Fields -->
         <div id="fields-card" class="payment-fields" style="display:none;">
           <div class="form-group">
             <label class="form-label">Card Number</label>
@@ -145,7 +139,6 @@
                  value="CARD-{{ booking.id }}">
         </div>
 
-        <!-- Cash Fields -->
         <div id="fields-cash" class="payment-fields" style="display:none;">
           <div class="cash-note">
             <i class="ri-information-line"></i>
@@ -158,7 +151,6 @@
           <input type="hidden" name="transaction_id" value="CASH-{{ booking.id }}">
         </div>
 
-        <!-- Security badge -->
         <div class="payment-secure">
           <i class="ri-lock-line"></i>
           <span>Secured with 256-bit SSL encryption</span>
@@ -175,7 +167,6 @@
 </div><!-- /page-wrapper -->
 
 <script>
-// Format card number with spaces
 const cardNum = document.getElementById('card-num');
 if (cardNum) {
   cardNum.addEventListener('input', function () {
@@ -184,7 +175,6 @@ if (cardNum) {
   });
 }
 
-// UPI ID sync to hidden txn field
 const upiInput = document.getElementById('upi-id-input');
 const txnUpi   = document.getElementById('txn-upi');
 if (upiInput) {

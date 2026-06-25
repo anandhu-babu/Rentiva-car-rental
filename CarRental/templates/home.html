@@ -101,10 +101,7 @@
 
 <section class="experience" id="experience">
 
-  <div class="exp-img">
-    <!-- <img src="{% static 'img/exp-frame.png' %}" class="exp-frame" alt="">
-    <img src="{% static 'img/exp-car.png' %}" class="exp-car" alt="Car"> -->
-  </div>
+  <div class="exp-img"></div>
 
   <div class="exp-content">
     <span class="tag">WHY CHOOSE US</span>
@@ -156,47 +153,74 @@
   <span class="tag">POPULAR RENTAL DEALS</span>
   <h2>Most popular cars rental deals</h2>
 
+  <div class="deals-container">
   {% if cars %}
     <div class="car-list">
       {% for car in cars %}
-        <a href="/cars/{{ car.id }}/" style="text-decoration:none;display:block;">
+        <a href="/cars/{{ car.id }}/" class="car-card-link">
           <div class="car-card">
-            <div class="car-card-img">
+
+            <div class="cc-category">{{ car.category }}</div>
+
+            <div class="cc-img">
               {% if car.image %}
                 <img src="{{ car.image.url }}" alt="{{ car.car_name }}">
               {% else %}
-                <img src="{% static 'img/car-fill.svg' %}" alt="{{ car.car_name }}" class="car-placeholder" style="opacity:0.18;width:55%;">
+                <img src="{% static 'img/car-fill.svg' %}" alt="{{ car.car_name }}" class="car-placeholder">
               {% endif %}
             </div>
-            <h3 class="car-card-name">{{ car.car_name }}</h3>
-            <div class="car-card-rating">
-              <span class="rating-star">&#9733;</span>
-              <span>{{ car.brand|default:"—" }}</span>
+
+            <div class="cc-info">
+              <div class="cc-brand">{{ car.brand }}</div>
+              <h3 class="cc-name">{{ car.car_name }}</h3>
+              <div class="cc-similar">Or Similar*</div>
             </div>
-            <div class="car-card-features">
-              <div class="car-feature-item">
-                <img src="{% static 'img/car-features/user.svg' %}">
-                <span>{{ car.seats }} Seats</span>
+
+            <hr class="cc-divider">
+
+            <div class="cc-availability">
+              {% if car.availability %}
+                <div class="cc-avail-now">Available now</div>
+              {% else %}
+                <div class="cc-avail-next">
+                  <span class="cc-avail-label">Next available:</span>
+                  <span class="cc-avail-date">Check details</span>
+                </div>
+              {% endif %}
+            </div>
+
+            <hr class="cc-divider">
+
+            <div class="cc-specs">
+              <div class="cc-spec">
+                <img src="{% static 'img/car-features/user.svg' %}" alt="">
+                <span>{{ car.seats }} seater</span>
               </div>
-              <div class="car-feature-item">
-                <img src="{% static 'img/car-features/transmission.svg' %}">
-                <span>{{ car.get_transmission_display }}</span>
-              </div>
-              <div class="car-feature-item">
-                <img src="{% static 'img/car-features/gas-station-fill.svg' %}">
+              <div class="cc-spec">
+                <img src="{% static 'img/car-features/gas-station-fill.svg' %}" alt="">
                 <span>{{ car.get_fuel_display }}</span>
               </div>
-              <div class="car-feature-item">
-                <img src="{% static 'img/car-features/temp.svg' %}">
-                <span>Air Conditioning</span>
+              <div class="cc-spec">
+                <img src="{% static 'img/car-features/transmission.svg' %}" alt="">
+                <span>{{ car.get_transmission_display }}</span>
               </div>
             </div>
-            <hr class="car-card-divider">
-            <div class="car-card-price-row">
-              <span class="car-price-label" style="color:#595959">Price</span>
-              <span class="car-price-value">₹{{ car.rent_per_day|floatformat:0 }} <small>/day</small></span>
+
+            <div class="cc-pricing">
+              <div class="cc-price-box">
+                <div class="cc-price-amt">₹{{ car.rent_per_day|floatformat:0 }}/day</div>
+                <div class="cc-price-period">Daily</div>
+              </div>
+              <div class="cc-price-box">
+                <div class="cc-price-amt">₹{% widthratio car.rent_per_day 100 84 %}/day</div>
+                <div class="cc-price-period">Weekly</div>
+              </div>
+              <div class="cc-price-box">
+                <div class="cc-price-amt">₹{% widthratio car.rent_per_day 100 54 %}/day</div>
+                <div class="cc-price-period">Monthly</div>
+              </div>
             </div>
-            <button class="car-rent-btn">Rent Now <i class="ri-arrow-right-line"></i></button>
+
           </div>
         </a>
       {% endfor %}
@@ -207,6 +231,7 @@
   {% endif %}
 
   <a class="show-all" href="car/list/">Show all vehicles →</a>
+  </div><!-- /.deals-container -->
 </section>
 
 {% include 'includes/testimonials.html' %}

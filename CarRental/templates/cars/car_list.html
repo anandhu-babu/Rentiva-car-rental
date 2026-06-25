@@ -3,10 +3,8 @@
 
 {% block content %}
 
-<!-- Filter drawer overlay (mobile) -->
 <div class="filter-overlay" id="filterOverlay"></div>
 
-<!-- Page Header -->
 <div class="cars-header">
   <div class="cars-header-content">
     <h1>Browse Our Fleet</h1>
@@ -23,13 +21,10 @@
   </form>
 </div>
 
-<!-- Main content: sidebar + grid -->
 <div class="cars-main">
 
-  <!-- ── Filters Sidebar / Mobile Drawer ── -->
   <aside class="filters-sidebar">
 
-    <!-- Close button: shown only on mobile -->
     <button type="button" class="filter-drawer-close" id="filterCloseBtn" aria-label="Close filters">
       <i class="ri-close-line"></i>
     </button>
@@ -42,7 +37,6 @@
 
       <h3 class="filter-title">Filters</h3>
 
-      <!-- Brand -->
       <div class="filter-group">
         <label class="filter-label">Brand</label>
         <select name="brand" class="filter-select">
@@ -56,7 +50,6 @@
         </select>
       </div>
 
-      <!-- Fuel -->
       <div class="filter-group">
         <label class="filter-label">Fuel Type</label>
         <div class="filter-radio-group">
@@ -73,7 +66,6 @@
         </div>
       </div>
 
-      <!-- Transmission -->
       <div class="filter-group">
         <label class="filter-label">Transmission</label>
         <div class="filter-radio-group">
@@ -90,7 +82,6 @@
         </div>
       </div>
 
-      <!-- Max Price -->
       <div class="filter-group">
         <label class="filter-label">Max Price / Day</label>
         <div class="price-range">
@@ -109,7 +100,6 @@
     </form>
   </aside>
 
-  <!-- ── Mobile filter trigger bar (hidden on desktop) ── -->
   <div class="filter-mobile-bar">
     <button type="button" class="filter-open-btn" id="filterOpenBtn">
       <i class="ri-equalizer-line"></i> Filters
@@ -120,7 +110,6 @@
     <span class="filter-results-count">{{ cars|length }} car{{ cars|length|pluralize }}</span>
   </div>
 
-  <!-- ── Car Grid ── -->
   <div class="cars-grid-wrapper">
     {% if cars %}
       <div class="car-list cars-grid">
@@ -128,7 +117,9 @@
           <a href="/cars/{{ car.id }}/" class="car-card-link">
             <div class="car-card">
 
-              <div class="car-card-img">
+              <div class="cc-category">{{ car.category }}</div>
+
+              <div class="cc-img">
                 {% if car.image %}
                   <img src="{{ car.image.url }}" alt="{{ car.car_name }}">
                 {% else %}
@@ -136,44 +127,56 @@
                 {% endif %}
               </div>
 
-              <h3 class="car-card-name">{{ car.car_name }}</h3>
-
-              <div class="car-card-rating">
-                <span class="rating-star">&#9733;</span>
-                <span>{{ car.brand|default:"—" }} &middot; {{ car.get_fuel_display }}</span>
+              <div class="cc-info">
+                <div class="cc-brand">{{ car.brand }}</div>
+                <h3 class="cc-name">{{ car.car_name }}</h3>
+                <div class="cc-similar">Or Similar*</div>
               </div>
 
-              <div class="car-card-features">
-                <div class="car-feature-item">
-                  <img src="{% static 'img/car-features/user.svg' %}">
-                  <span>{{ car.seats }} Seats</span>
+              <hr class="cc-divider">
+
+              <div class="cc-availability">
+                {% if car.availability %}
+                  <div class="cc-avail-now">Available now</div>
+                {% else %}
+                  <div class="cc-avail-next">
+                    <span class="cc-avail-label">Next available:</span>
+                    <span class="cc-avail-date">Check details</span>
+                  </div>
+                {% endif %}
+              </div>
+
+              <hr class="cc-divider">
+
+              <div class="cc-specs">
+                <div class="cc-spec">
+                  <img src="{% static 'img/car-features/user.svg' %}" alt="">
+                  <span>{{ car.seats }} seater</span>
                 </div>
-                <div class="car-feature-item">
-                  <img src="{% static 'img/car-features/transmission.svg' %}">
-                  <span>{{ car.get_transmission_display }}</span>
-                </div>
-                <div class="car-feature-item">
-                  <img src="{% static 'img/car-features/gas-station-fill.svg' %}">
+                <div class="cc-spec">
+                  <img src="{% static 'img/car-features/gas-station-fill.svg' %}" alt="">
                   <span>{{ car.get_fuel_display }}</span>
                 </div>
-                <div class="car-feature-item">
-                  <img src="{% static 'img/car-features/temp.svg' %}">
-                  <span>Air Conditioning</span>
+                <div class="cc-spec">
+                  <img src="{% static 'img/car-features/transmission.svg' %}" alt="">
+                  <span>{{ car.get_transmission_display }}</span>
                 </div>
               </div>
 
-              <hr class="car-card-divider">
-
-              <div class="car-card-price-row">
-                <span class="car-price-label">Price</span>
-                <span class="car-price-value">
-                  ₹{{ car.rent_per_day|floatformat:0 }} <small>/day</small>
-                </span>
+              <div class="cc-pricing">
+                <div class="cc-price-box" data-plan="daily" data-car-id="{{ car.id }}">
+                  <div class="cc-price-amt">₹{{ car.rent_per_day|floatformat:0 }}/day</div>
+                  <div class="cc-price-period">Daily</div>
+                </div>
+                <div class="cc-price-box" data-plan="weekly" data-car-id="{{ car.id }}">
+                  <div class="cc-price-amt">₹{% if car.weekly_rent %}{{ car.weekly_rent|floatformat:0 }}{% else %}{% widthratio car.rent_per_day 100 84 %}{% endif %}/day</div>
+                  <div class="cc-price-period">Weekly</div>
+                </div>
+                <div class="cc-price-box" data-plan="monthly" data-car-id="{{ car.id }}">
+                  <div class="cc-price-amt">₹{% if car.monthly_rent %}{{ car.monthly_rent|floatformat:0 }}{% else %}{% widthratio car.rent_per_day 100 54 %}{% endif %}/day</div>
+                  <div class="cc-price-period">Monthly</div>
+                </div>
               </div>
-
-              <button class="car-rent-btn">
-                Rent Now <i class="ri-arrow-right-line"></i>
-              </button>
 
             </div>
           </a>
@@ -190,7 +193,7 @@
     {% endif %}
   </div>
 
-</div><!-- /cars-main -->
+</div>
 
 <script>
 function updatePrice(val) {
@@ -199,7 +202,16 @@ function updatePrice(val) {
 }
 updatePrice(document.getElementById('priceRange').value);
 
-/* ── Mobile filter drawer ── */
+document.querySelectorAll('.cc-price-box[data-plan]').forEach(function(box) {
+  box.addEventListener('click', function(e) {
+    e.preventDefault();
+    e.stopPropagation();
+    var plan  = box.dataset.plan;
+    var carId = box.dataset.carId;
+    window.location.href = '/cars/' + carId + '/?plan=' + plan;
+  });
+});
+
 (function () {
   var openBtn  = document.getElementById('filterOpenBtn');
   var closeBtn = document.getElementById('filterCloseBtn');

@@ -25,18 +25,11 @@
   </div>
 
   <nav>
-    {% if user.is_authenticated %}
-      {% if user.profile.role == 'renter' %}
-        <a href="/dashboard/renter/">Renter Dashboard</a>
-      {% else %}
-        <a href="/become-renter/">Become a Renter</a>
-      {% endif %}
-    {% else %}
-      <a href="/become-renter//">Become a Renter</a>
-    {% endif %}
-    <a href="/#deals">Rental deals</a>
-    <a href="/#steps">How it works</a>
-    <a href="#experience">Why choose us</a>
+    <a href="#" class="nav-link">Rental Deals</a>
+    <a href="/#deals" class="nav-l
+    ink nav-scroll" data-target="deals">Our Fleet</a>
+    <a href="/#steps" class="nav-link nav-scroll" data-target="steps">How It Works</a>
+    <a href="/#experience" class="nav-link nav-scroll" data-target="experience">Why Choose Us</a>
   </nav>
 
   <div class="auth">
@@ -45,7 +38,7 @@
         <i class="ri-user-3-line"></i>
         {{ user.first_name|default:user.username }}
       </a>
-      {% if user.profile.role == 'renter' %}
+      {% if user.profile.is_renter or user.profile.role == 'renter' %}
         <a href="/dashboard/renter/"><button>Dashboard</button></a>
       {% else %}
         <a href="/dashboard/customer/"><button>Dashboard</button></a>
@@ -70,18 +63,10 @@
     <i class="ri-close-line"></i>
   </button>
   <div class="mobile-nav-links">
-    {% if user.is_authenticated %}
-      {% if user.profile.role == 'renter' %}
-        <a href="/dashboard/renter/">Renter Dashboard</a>
-      {% else %}
-        <a href="/become-renter/">Become a Renter</a>
-      {% endif %}
-    {% else %}
-      <a href="/login/">Become a Renter</a>
-    {% endif %}
-    <a href="/#deals">Rental deals</a>
-    <a href="/#steps">How it works</a>
-    <a href="#experience">Why choose us</a>
+    <a href="#" class="nav-link">Rental Deals</a>
+    <a href="/#deals" class="nav-link nav-scroll" data-target="deals">Our Fleet</a>
+    <a href="/#steps" class="nav-link nav-scroll" data-target="steps">How It Works</a>
+    <a href="/#experience" class="nav-link nav-scroll" data-target="experience">Why Choose Us</a>
   </div>
   <div class="mobile-nav-auth">
     {% if user.is_authenticated %}
@@ -89,7 +74,7 @@
         <i class="ri-user-3-line"></i>
         {{ user.first_name|default:user.username }}
       </a>
-      {% if user.profile.role == 'renter' %}
+      {% if user.profile.is_renter or user.profile.role == 'renter' %}
         <a href="/dashboard/renter/"><button>Dashboard</button></a>
       {% else %}
         <a href="/dashboard/customer/"><button>Dashboard</button></a>
@@ -219,6 +204,42 @@
 </script>
 
 <script src="https://cdn.jsdelivr.net/npm/tom-select@2.3.1/dist/js/tom-select.complete.min.js"></script>
+
+<script>
+(function () {
+  var isHome = (window.location.pathname === '/' || window.location.pathname === '');
+
+  document.querySelectorAll('.nav-scroll').forEach(function (link) {
+    link.addEventListener('click', function (e) {
+      var target = this.getAttribute('data-target');
+      if (!target) return;
+
+      if (isHome) {
+        e.preventDefault();
+        var el = document.getElementById(target);
+        if (el) {
+          el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+          var mobileNav = document.getElementById('mobileNav');
+          var overlay = document.getElementById('mobileNavOverlay');
+          if (mobileNav) mobileNav.classList.remove('open');
+          if (overlay) overlay.classList.remove('open');
+          document.body.style.overflow = '';
+        }
+      }
+      // if not on home, let the browser navigate to /#target naturally
+    });
+  });
+
+  // on page load, if there is a hash, smooth-scroll to it after render
+  if (isHome && window.location.hash) {
+    var id = window.location.hash.slice(1);
+    window.addEventListener('load', function () {
+      var el = document.getElementById(id);
+      if (el) setTimeout(function () { el.scrollIntoView({ behavior: 'smooth', block: 'start' }); }, 100);
+    });
+  }
+})();
+</script>
 
 {% block extra_js %}
 

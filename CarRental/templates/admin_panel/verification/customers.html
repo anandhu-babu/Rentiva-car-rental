@@ -1,0 +1,93 @@
+{% extends 'admin_panel/base.html' %}
+{% block title %}Customer KYC — Rentiva Admin{% endblock %}
+{% block breadcrumb %}Customer KYC Verification{% endblock %}
+
+{% block content %}
+<div class="page-hd">
+  <h1 class="page-title">Customer KYC Verification</h1>
+  <p class="page-sub">Review and verify customer driving licence submissions.</p>
+</div>
+
+<div class="status-tabs">
+  <a href="?status=pending"  class="stab {% if status_filter == 'pending'  %}active{% endif %}">Pending</a>
+  <a href="?status=approved" class="stab {% if status_filter == 'approved' %}active{% endif %}">Approved</a>
+  <a href="?status=rejected" class="stab {% if status_filter == 'rejected' %}active{% endif %}">Rejected</a>
+</div>
+
+{% if profiles %}
+<div class="verify-grid">
+  {% for p in profiles %}
+  <div class="verify-card">
+    <div class="vc-head">
+      <div class="vc-user">
+        {% if p.profile %}
+        <div class="vc-avatar"><img src="{{ p.profile.url }}" alt=""></div>
+        {% else %}
+        <div class="vc-avatar">{{ p.user.first_name|first|upper }}{{ p.user.last_name|first|upper }}</div>
+        {% endif %}
+        <div>
+          <div class="vc-name">{{ p.user.get_full_name }}</div>
+          <div class="vc-email">{{ p.user.email }}</div>
+        </div>
+      </div>
+      <span class="badge b-{{ p.verification_status }}">{{ p.get_verification_status_display }}</span>
+    </div>
+
+    <div class="vc-fields">
+      <div class="vc-field">
+        <div class="vc-field-label">Date of Birth</div>
+        <div class="vc-field-value">{{ p.dob|date:"M d, Y"|default:"Not provided" }}</div>
+      </div>
+      <div class="vc-field">
+        <div class="vc-field-label">Phone</div>
+        <div class="vc-field-value">{{ p.phone|default:"—" }}</div>
+      </div>
+      <div class="vc-field" style="grid-column:span 2;">
+        <div class="vc-field-label">Driving Licence Number</div>
+        <div class="vc-field-value">{{ p.driving_license_number|default:"Not provided" }}</div>
+      </div>
+    </div>
+
+    <div>
+      {% if p.driving_license_file %}
+      <a href="{{ p.driving_license_file.url }}" target="_blank" class="vc-doc-link">
+        <i class="ri-file-text-line"></i> View Licence Document
+      </a>
+      {% else %}
+      <span class="vc-doc-link missing"><i class="ri-file-warning-line"></i> No document uploaded</span>
+      {% endif %}
+    </div>
+
+    <div class="vc-actions">
+      {% if p.verification_status != 'approved' %}
+      <form method="post" action="/admin-panel/verification/customers/{{ p.id }}/approve/" class="inline-form">
+        {% csrf_token %}
+        <button type="submit" class="btn-a btn-approve"><i class="ri-check-double-line"></i> Approve KYC</button>
+      </form>
+      {% endif %}
+      {% if p.verification_status != 'rejected' %}
+      <form method="post" action="/admin-panel/verification/customers/{{ p.id }}/reject/" class="inline-form"
+            onsubmit="return confirm('Reject KYC for {{ p.user.get_full_name }}?')">
+        {% csrf_token %}
+        <button type="submit" class="btn-a btn-reject"><i class="ri-close-circle-line"></i> Reject</button>
+      </form>
+      {% endif %}
+      {% if p.verification_status == 'approved' %}
+      <span style="font-size:12.5px;color:var(--success);display:flex;align-items:center;gap:4px;">
+        <i class="ri-shield-check-fill"></i> KYC Verified
+      </span>
+      {% endif %}
+    </div>
+  </div>
+  {% endfor %}
+</div>
+{% else %}
+<div class="admin-card">
+  <div class="empty-state" style="padding:60px 20px;">
+    <i class="ri-user-follow-line"></i>
+    <h3>No {{ status_filter }} KYC submissions</h3>
+    <p>Customer verification requests will appear here.</p>
+  </div>
+</div>
+{% endif %}
+{% endblock %}

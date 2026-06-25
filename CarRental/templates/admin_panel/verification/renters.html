@@ -1,0 +1,99 @@
+{% extends 'admin_panel/base.html' %}
+{% block title %}Renter KYC — Rentiva Admin{% endblock %}
+{% block breadcrumb %}Renter KYC Verification{% endblock %}
+
+{% block content %}
+<div class="page-hd">
+  <h1 class="page-title">Renter KYC Verification</h1>
+  <p class="page-sub">Verify renter identity, bank details, and government-issued ID.</p>
+</div>
+
+<div class="status-tabs">
+  <a href="?status=pending"  class="stab {% if status_filter == 'pending'  %}active{% endif %}">Pending</a>
+  <a href="?status=approved" class="stab {% if status_filter == 'approved' %}active{% endif %}">Approved</a>
+  <a href="?status=rejected" class="stab {% if status_filter == 'rejected' %}active{% endif %}">Rejected</a>
+</div>
+
+{% if profiles %}
+<div class="verify-grid">
+  {% for p in profiles %}
+  <div class="verify-card">
+    <div class="vc-head">
+      <div class="vc-user">
+        {% if p.profile %}
+        <div class="vc-avatar"><img src="{{ p.profile.url }}" alt=""></div>
+        {% else %}
+        <div class="vc-avatar">{{ p.user.first_name|first|upper }}{{ p.user.last_name|first|upper }}</div>
+        {% endif %}
+        <div>
+          <div class="vc-name">{{ p.user.get_full_name }}</div>
+          <div class="vc-email">{{ p.user.email }}</div>
+        </div>
+      </div>
+      <span class="badge b-{{ p.verification_status }}">{{ p.get_verification_status_display }}</span>
+    </div>
+
+    <div class="vc-fields">
+      <div class="vc-field">
+        <div class="vc-field-label">Phone</div>
+        <div class="vc-field-value">{{ p.phone|default:"—" }}</div>
+      </div>
+      <div class="vc-field">
+        <div class="vc-field-label">Date of Birth</div>
+        <div class="vc-field-value">{{ p.dob|date:"M d, Y"|default:"—" }}</div>
+      </div>
+      <div class="vc-field" style="grid-column:span 2;">
+        <div class="vc-field-label">Address</div>
+        <div class="vc-field-value">{{ p.address|default:"Not provided" }}</div>
+      </div>
+      <div class="vc-field">
+        <div class="vc-field-label">Aadhaar / PAN</div>
+        <div class="vc-field-value">{{ p.aadhaar_pan|default:"Not provided" }}</div>
+      </div>
+      <div class="vc-field">
+        <div class="vc-field-label">IFSC Code</div>
+        <div class="vc-field-value">{{ p.ifsc_code|default:"—" }}</div>
+      </div>
+      <div class="vc-field" style="grid-column:span 2;">
+        <div class="vc-field-label">Bank Account Holder</div>
+        <div class="vc-field-value">{{ p.bank_account_holder|default:"—" }}</div>
+      </div>
+      <div class="vc-field" style="grid-column:span 2;">
+        <div class="vc-field-label">Bank Account Number</div>
+        <div class="vc-field-value">{{ p.bank_account_number|default:"—" }}</div>
+      </div>
+    </div>
+
+    <div class="vc-actions">
+      {% if p.verification_status != 'approved' %}
+      <form method="post" action="/admin-panel/verification/renters/{{ p.id }}/approve/" class="inline-form">
+        {% csrf_token %}
+        <button type="submit" class="btn-a btn-approve"><i class="ri-check-double-line"></i> Approve KYC</button>
+      </form>
+      {% endif %}
+      {% if p.verification_status != 'rejected' %}
+      <form method="post" action="/admin-panel/verification/renters/{{ p.id }}/reject/" class="inline-form"
+            onsubmit="return confirm('Reject KYC for {{ p.user.get_full_name }}?')">
+        {% csrf_token %}
+        <button type="submit" class="btn-a btn-reject"><i class="ri-close-circle-line"></i> Reject</button>
+      </form>
+      {% endif %}
+      {% if p.verification_status == 'approved' %}
+      <span style="font-size:12.5px;color:var(--success);display:flex;align-items:center;gap:4px;">
+        <i class="ri-shield-check-fill"></i> KYC Verified
+      </span>
+      {% endif %}
+    </div>
+  </div>
+  {% endfor %}
+</div>
+{% else %}
+<div class="admin-card">
+  <div class="empty-state" style="padding:60px 20px;">
+    <i class="ri-file-user-line"></i>
+    <h3>No {{ status_filter }} renter KYC submissions</h3>
+    <p>Renter verification requests will appear here.</p>
+  </div>
+</div>
+{% endif %}
+{% endblock %}

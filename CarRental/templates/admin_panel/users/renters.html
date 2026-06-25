@@ -1,0 +1,107 @@
+{% extends 'admin_panel/base.html' %}
+{% block title %}Renters — Rentiva Admin{% endblock %}
+{% block breadcrumb %}Renters{% endblock %}
+
+{% block content %}
+<div class="page-hd">
+  <h1 class="page-title">Renter Management</h1>
+  <p class="page-sub">{{ renters|length }} renter{{ renters|length|pluralize }} registered on the platform.</p>
+</div>
+
+<form method="get" class="filter-bar">
+  <div class="search-wrap">
+    <i class="ri-search-line"></i>
+    <input type="text" name="search" class="search-inp" placeholder="Search name or email…" value="{{ search }}">
+  </div>
+  <select name="status" class="filter-sel">
+    <option value="">All Status</option>
+    <option value="active"    {% if status_filter == 'active'    %}selected{% endif %}>Active</option>
+    <option value="suspended" {% if status_filter == 'suspended' %}selected{% endif %}>Suspended</option>
+  </select>
+  <button type="submit" class="filter-btn"><i class="ri-equalizer-line"></i> Filter</button>
+  {% if search or status_filter %}
+  <a href="/admin-panel/users/renters/" class="btn-a btn-reject" style="padding:8px 14px;">
+    <i class="ri-close-line"></i> Clear
+  </a>
+  {% endif %}
+</form>
+
+<div class="admin-card">
+  <div class="tbl-wrap">
+    <table class="admin-tbl">
+      <thead>
+        <tr>
+          <th>#</th><th>Renter</th><th>Phone</th>
+          <th>Aadhaar / PAN</th><th>Vehicles Listed</th>
+          <th>KYC Status</th><th>Joined</th><th>Account</th><th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for u in renters %}
+        <tr>
+          <td style="color:var(--text-3);font-size:12px;">{{ forloop.counter }}</td>
+          <td>
+            <div class="user-cell">
+              {% if u.profile.profile %}
+              <div class="u-avatar"><img src="{{ u.profile.profile.url }}" alt=""></div>
+              {% else %}
+              <div class="u-avatar">{{ u.first_name|first|upper }}{{ u.last_name|first|upper }}</div>
+              {% endif %}
+              <div>
+                <div class="u-name">{{ u.get_full_name }}</div>
+                <div class="u-email">{{ u.email }}</div>
+              </div>
+            </div>
+          </td>
+          <td>{{ u.profile.phone|default:"—" }}</td>
+          <td style="font-size:12.5px;color:var(--text-2);">{{ u.profile.aadhaar_pan|default:"Not provided" }}</td>
+          <td style="text-align:center;">
+            <span class="badge b-active">{{ u.vehicle_count }}</span>
+          </td>
+          <td><span class="badge b-{{ u.profile.verification_status }}">{{ u.profile.get_verification_status_display }}</span></td>
+          <td style="font-size:12.5px;color:var(--text-2);">{{ u.date_joined|date:"M d, Y" }}</td>
+          <td>
+            {% if u.is_active %}
+            <span class="badge b-approved">Active</span>
+            {% else %}
+            <span class="badge b-rejected">Suspended</span>
+            {% endif %}
+          </td>
+          <td>
+            <div class="actions">
+              {% if u.is_active %}
+              <form method="post" action="/admin-panel/users/{{ u.id }}/suspend/" class="inline-form"
+                    onsubmit="return confirm('Suspend {{ u.email }}?')">
+                {% csrf_token %}
+                <button type="submit" class="btn-a btn-suspend"><i class="ri-forbid-line"></i> Suspend</button>
+              </form>
+              {% else %}
+              <form method="post" action="/admin-panel/users/{{ u.id }}/activate/" class="inline-form">
+                {% csrf_token %}
+                <button type="submit" class="btn-a btn-activate"><i class="ri-check-line"></i> Activate</button>
+              </form>
+              {% endif %}
+              <form method="post" action="/admin-panel/users/{{ u.id }}/delete/" class="inline-form"
+                    onsubmit="return confirm('Permanently delete {{ u.email }}?')">
+                {% csrf_token %}
+                <button type="submit" class="btn-a btn-delete"><i class="ri-delete-bin-6-line"></i> Delete</button>
+              </form>
+            </div>
+          </td>
+        </tr>
+        {% empty %}
+        <tr>
+          <td colspan="9">
+            <div class="empty-state">
+              <i class="ri-steering-2-line"></i>
+              <h3>No renters found</h3>
+              <p>Try a different search or filter.</p>
+            </div>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}
