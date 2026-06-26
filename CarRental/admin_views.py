@@ -101,7 +101,6 @@ def admin_dashboard(request):
     recent_notifications = Notification.objects.order_by('-created_at')[:8]
     recent_bookings      = Booking.objects.select_related('user', 'car').order_by('-booked_at')[:6]
 
-    # Last 6-month revenue for line chart
     months_data = []
     for i in range(5, -1, -1):
         d = (today.replace(day=1) - timedelta(days=i * 30))
@@ -119,7 +118,6 @@ def admin_dashboard(request):
         for s in ['pending', 'approved', 'active', 'completed', 'cancelled']
     }
 
-    # Use category breakdown if data exists, otherwise fall back to fuel type
     cats = list(CarCategory.objects.annotate(cnt=Count('car')).order_by('-cnt')[:6])
     if cats and any(c.cnt > 0 for c in cats):
         vehicle_by_category = [{'name': c.name, 'count': c.cnt} for c in cats]

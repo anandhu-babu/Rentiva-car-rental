@@ -1,4 +1,4 @@
-{% extends 'admin_panel/base.html' %}
+﻿{% extends 'admin_panel/base.html' %}
 {% block title %}Complaints — Rentiva Admin{% endblock %}
 {% block breadcrumb %}Complaints &amp; Disputes{% endblock %}
 
@@ -48,7 +48,7 @@
           <td>
             {% if c.status == 'open' or c.status == 'escalated' %}
             <div class="actions">
-              <!-- Resolve (with note modal) -->
+              
               <button type="button" class="btn-a btn-resolve"
                       onclick="openResolve({{ c.id }})">
                 <i class="ri-check-double-line"></i> Resolve
@@ -88,7 +88,7 @@
   </div>
 </div>
 
-<!-- Resolve Modal (pure HTML/CSS) -->
+
 <div id="resolveModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:2000;align-items:center;justify-content:center;">
   <div style="background:#fff;border-radius:14px;padding:28px;width:460px;max-width:90vw;box-shadow:0 20px 60px rgba(0,0,0,.2);">
     <h3 style="font-size:16px;font-weight:700;margin-bottom:14px;color:var(--text);">

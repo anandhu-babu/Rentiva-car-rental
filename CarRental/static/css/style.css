@@ -9,8 +9,7 @@
   font-family: "Plus Jakarta Sans", Arial, sans-serif;
 }
 
-/* Global responsive image rule — prevents any img from overflowing its container.
-   Specific rules (logo, store buttons, etc.) override height as needed. */
+
 img {
   max-width: 100%;
   height: auto;
@@ -166,8 +165,7 @@ button {
   width: auto;
 }
 
-/* .hero-img is the class used in home.html; .hero-right is an alias kept for
-   the CSS visual rules. Both receive identical responsive treatment. */
+
 .hero-right,
 .hero-img {
   width: 55%;
@@ -211,9 +209,7 @@ button {
 }
 
 .search-box {
-  /* fluid width = content area (hero minus left+right padding).
-     max-width caps it on ultra-wide monitors; on 1201-1280px viewports
-     the old fixed 1120px overflowed the hero — this fixes that. */
+  
   width: calc(100% - 320px);
   max-width: 1120px;
   height:72px;
@@ -290,9 +286,7 @@ button {
   text-align: center;
 }
 
-/* Override global 160px side-padding so 4-col grid fits at desktop.
-   Media queries at ≤1200px / ≤900px / ≤480px still cascade and win
-   (they appear later in the file), so responsive padding is preserved. */
+
 .deals {
   padding-left: 40px;
   padding-right: 40px;
@@ -472,7 +466,6 @@ button {
   gap: 24px;
 }
 
-/* Individual card styles live in style.css */
 
 .show-all {
   display: inline-block;
@@ -535,7 +528,7 @@ button {
     max-width: none;
     height: auto;
     position: relative;
-    bottom: -46px;   /* footerilekku overlap */
+    bottom: -46px;   
     z-index: 5;
     display: block;
 }
@@ -771,28 +764,28 @@ footer {
 
   .list-container { padding-left: 80px; padding-right: 80px; }
 
-  /* Deals: 2-col at large tablet */
+  
   .car-list { grid-template-columns: repeat(2, minmax(240px, 340px)); }
 }
 
-/* Tablet — hamburger kicks in */
+
 @media (max-width: 900px) {
-  /* Navigation */
+  
   .hamburger { display: flex; }
   nav         { display: none; }
   .auth       { display: none; }
 
-  /* Section gutters */
+  
   header, .steps, .experience,
   .deals, .testimonial, .app, footer {
     padding-left: 24px;
     padding-right: 24px;
   }
 
-  /* Typography */
+  
   h2 { font-size: 34px; }
 
-  /* Hero — stack vertically, enough bottom padding for search box */
+  
   .hero {
     flex-direction: column;
     padding: 28px 24px 30px;
@@ -815,7 +808,7 @@ footer {
   .hero-text h1 { font-size: 36px; }
   .hero-text p  { max-width: 100%; }
 
-  /* Search box becomes vertical stack */
+  
   .search-box {
     flex-direction: column;
     align-items: flex-start;
@@ -836,14 +829,14 @@ footer {
   .search-divider { display: none; }
   .search-box button { margin-left: 0; width: 100%; height: 48px; }
 
-  /* Steps */
+  
   .step-box {
     flex-direction: column;
     align-items: center;
     gap: 36px;
   }
 
-  /* Brands */
+  
   .brands-container {
     flex-wrap: wrap;
     justify-content: center;
@@ -863,13 +856,13 @@ footer {
   .exp-content { width: 100%; text-align: center; }
   .exp-content h2 { font-size: 28px; text-align: center; }
   .exp-content .tag { display: block; text-align: center; }
-  /* Reset: only the badge and heading are centered — feature items stay left-aligned */
+  
   .feature-text { text-align: left; }
 
-  /* Deals car list */
+  
   .car-list { grid-template-columns: repeat(2, minmax(240px, 340px)); }
 
-  /* App section */
+  
   .app {
     flex-direction: column;
     text-align: center;
@@ -897,22 +890,22 @@ footer {
   }
   .store-buttons { justify-content: center; }
 
-  /* Reduce excessive vertical padding on tablet */
+  
   .steps  { padding-top: 50px; padding-bottom: 50px; }
   .brands { padding-top: 40px; padding-bottom: 40px; }
 
-  /* Testimonials pagination: add side padding so arrows aren't edge-flush */
+  
   .testi-pagination-wrap { padding: 0 24px; }
 
-  /* Footer: brand full-width at top, 4 link cols in 2-col grid */
+  
   .footer-top { grid-template-columns: repeat(2, 1fr); gap: 28px; }
   .footer-brand { grid-column: 1 / -1; }
 
-  /* List container */
+  
   .list-container { padding-left: 24px; padding-right: 24px; }
 }
 
-/* Large mobile */
+
 @media (max-width: 640px) {
   h2 { font-size: 28px; }
 
@@ -920,7 +913,7 @@ footer {
   .hero-text p  { font-size: 15px; }
   .hero { padding-bottom: 30px; }
   .car-list { grid-template-columns: 1fr; }
-  /* Footer: keep 2-col grid with brand spanning full width */
+  
   .footer-top { grid-template-columns: repeat(2, 1fr); }
   .footer-brand { grid-column: 1 / -1; }
   .brands-container img { max-width: 80px; }
@@ -930,7 +923,7 @@ footer {
   .steps h2, .deals h2 { margin-bottom: 30px; }
 }
 
-/* Small mobile */
+
 @media (max-width: 480px) {
   h2 { font-size: 22px; }
 
@@ -949,7 +942,7 @@ footer {
   .steps  { padding-top: 24px; padding-bottom: 24px; }
   .brands { padding-top: 20px; padding-bottom: 20px; }
   .steps h2, .deals h2 { margin-bottom: 18px; }
-  /* align pagination arrows with the narrowed swiper outer margin */
+  
   .testi-pagination-wrap { padding: 0 20px; }
 
   .store-buttons img { height: 36px; }
@@ -995,20 +988,20 @@ footer {
   .footer-bottom p { font-size: 11px; }
 }
 
-/* Mobile/tablet boundary — iOS zoom fix, touch improvements */
+
 @media (max-width: 767px) {
-  /* 1-column for car list, 2-col for footer (brand spans full width) */
+  
   .car-list   { grid-template-columns: 1fr; }
   .footer-top { grid-template-columns: repeat(2, 1fr); }
   .footer-brand { grid-column: 1 / -1; }
 
-  /* Step cards fill width on mobile */
+  
   .step { width: 100%; max-width: 300px; }
 
-  /* Prevent iOS from auto-zooming when focusing search inputs */
+  
   .search-field-text input { font-size: 16px; }
 
-  /* Eliminate double-tap delay on interactive elements */
+  
   button, a { touch-action: manipulation; }
 }
 
@@ -1162,21 +1155,20 @@ footer {
 }
 
 
-/* Tablet (768–1023 px): 2 cards per row */
 @media (max-width: 1023px) {
   .car-list {
     grid-template-columns: repeat(2, minmax(240px, 340px)) !important;
   }
 }
 
-/* Mobile (≤ 767 px): 1 card per row */
+
 @media (max-width: 767px) {
   .car-list {
     grid-template-columns: 1fr !important;
   }
 }
 
-/* Small mobile (≤ 480 px): single column, compact gap */
+
 @media (max-width: 480px) {
   .car-list {
     grid-template-columns: 1fr !important;
@@ -1243,7 +1235,7 @@ footer {
 .breadcrumb a:hover { text-decoration: underline; }
 .breadcrumb i { font-size: 16px; }
 
-/* Messages */
+
 .messages-bar {
   padding: 12px 160px;
 }
@@ -1278,7 +1270,7 @@ footer {
 }
 .alert-close:hover { opacity: 1; }
 
-/* Buttons */
+
 .btn-primary {
   display: inline-flex;
   align-items: center;
@@ -1331,7 +1323,7 @@ footer {
 }
 .btn-cancel:hover { background: #e0e0e0; }
 
-/* Form controls */
+
 .form-group {
   display: flex;
   flex-direction: column;
@@ -1369,7 +1361,7 @@ textarea.form-control {
 }
 select.form-control { cursor: pointer; }
 
-/* Tom Select — match .form-control appearance */
+
 .ts-wrapper.form-control {
   padding: 0;
   height: auto;
@@ -1436,7 +1428,7 @@ select.form-control { cursor: pointer; }
 .form-error { font-size: 13px; color: #be123c; }
 .required { color: #ef4444; }
 
-/* Status badges */
+
 .status-badge {
   display: inline-block;
   padding: 4px 11px;
@@ -1452,7 +1444,7 @@ select.form-control { cursor: pointer; }
 .status-cancelled  { background:#fee2e2; color:#991b1b; }
 .status-completed  { background:#dbeafe; color:#1d4ed8; }
 
-/* Empty state */
+
 .empty-state {
   text-align: center;
   padding: 64px 20px;
@@ -1464,7 +1456,6 @@ select.form-control { cursor: pointer; }
 .empty-state h3 { font-size: 20px; color: #333; margin-bottom: 6px; }
 .empty-state p  { color: #888; font-size: 14px; margin-bottom: 20px; }
 .empty-state.small { padding: 30px 20px; }
-
 
 
 .cars-page { padding: 0; }
@@ -1523,7 +1514,7 @@ select.form-control { cursor: pointer; }
   padding: 36px 40px;
 }
 
-/* Filter sidebar */
+
 .filters-sidebar {
   flex: 0 0 300px;
   width: 300px;
@@ -1603,7 +1594,7 @@ select.form-control { cursor: pointer; }
 }
 .filter-clear-btn:hover { color: #1572D3; }
 
-/* Car grid */
+
 .cars-grid-wrapper { flex: 1; min-width: 0; }
 .cars-grid {
   display: grid;
@@ -1624,7 +1615,6 @@ select.form-control { cursor: pointer; }
 .no-cars h3 { font-size: 20px; color: #555; margin-bottom: 8px; }
 .no-cars p  { color: #aaa; margin-bottom: 22px; }
 
-/* ── Car Listing Cards (scoped to .cars-grid only, home page unaffected) ── */
 
 .car-list .car-card {
   border: 1px solid #e6e6e6;
@@ -1640,7 +1630,7 @@ select.form-control { cursor: pointer; }
   background: #fff;
 }
 
-/* Category label */
+
 .cc-category {
   text-align: center;
   font-size: 12px;
@@ -1650,7 +1640,7 @@ select.form-control { cursor: pointer; }
   margin-bottom: 10px;
 }
 
-/* Image container */
+
 .cc-img {
   width: 100%;
   height: 152px;
@@ -1669,7 +1659,7 @@ select.form-control { cursor: pointer; }
   object-fit: contain;
 }
 
-/* Vehicle info */
+
 .cc-info {
   padding-bottom: 12px;
 }
@@ -1696,14 +1686,14 @@ select.form-control { cursor: pointer; }
   color: #bbb;
 }
 
-/* Dividers */
+
 .cc-divider {
   border: none;
   border-top: 1px solid #f0f0f0;
   margin: 0;
 }
 
-/* Availability */
+
 .cc-availability {
   padding: 12px 0;
 }
@@ -1728,7 +1718,7 @@ select.form-control { cursor: pointer; }
   margin-top: 2px;
 }
 
-/* Specs row */
+
 .cc-specs {
   display: flex;
   align-items: center;
@@ -1751,7 +1741,7 @@ select.form-control { cursor: pointer; }
   flex-shrink: 0;
 }
 
-/* Pricing boxes */
+
 .cc-pricing {
   display: flex;
   gap: 6px;
@@ -1850,7 +1840,6 @@ select.form-control { cursor: pointer; }
   font-family: inherit;
 }
 .filter-drawer-close:hover { background: #e0e0e0; }
-
 
 
 .booking-layout {
@@ -1970,7 +1959,6 @@ select.form-control { cursor: pointer; }
   font-family: "Plus Jakarta Sans", sans-serif;
 }
 .btn-book:hover { background: #1260b5; }
-
 
 
 .payment-layout {
@@ -2099,7 +2087,6 @@ select.form-control { cursor: pointer; }
 .btn-pay:hover { background: #1260b5; }
 
 
-
 .owner-dashboard {
   padding: 40px 160px;
   min-height: calc(100vh - 75px - 220px);
@@ -2224,7 +2211,6 @@ select.form-control { cursor: pointer; }
 }
 .view-btn   { background: #e8f3ff; color: #1572D3; }
 .view-btn:hover { background: #1572D3; color: #fff; }
-
 
 
 .add-car-page {
@@ -2368,72 +2354,70 @@ select.form-control { cursor: pointer; }
 }
 
 
-
-/* Large tablet — narrow 160 px gutters to 80 px (matches base.css) */
 @media (max-width: 1200px) {
   .owner-dashboard,
   .page-wrapper { padding-left: 80px; padding-right: 80px; }
-  /* cars-main keeps its own tighter padding; group rule above would push it to 80px */
+  
   .cars-main    { padding-left: 32px; padding-right: 32px; }
   .cars-header  { padding: 40px 80px; }
   .messages-bar { padding: 12px 80px; }
-  /* Stats from 3-col → 2-col at large tablet */
+  
   .stats-grid   { grid-template-columns: 1fr 1fr; }
-  /* Car grid: 2-col once sidebar + grid no longer fit 3 columns */
+  
   .cars-grid    { grid-template-columns: repeat(2, 1fr) !important; }
 }
 
-/* Tablet (768–1023 px) — 24 px gutters, 2-col car grid */
+
 @media (max-width: 1023px) {
   .cars-main,
   .owner-dashboard,
   .page-wrapper { padding-left: 24px; padding-right: 24px; }
   .cars-header  { padding: 30px 24px; }
   .messages-bar { padding: 12px 24px; }
-  /* Car list grid: 2 columns while filter sidebar still visible */
+  
   .cars-grid    { grid-template-columns: repeat(2, 1fr) !important; }
 }
 
-/* Small tablet / stacked breakpoint — layouts go vertical */
+
 @media (max-width: 900px) {
   .booking-layout,
   .payment-layout { grid-template-columns: 1fr; }
-  /* Filter sidebar width reset; positioning handled by drawer CSS below */
+  
   .filters-sidebar { width: 100%; }
   .cars-main { flex-direction: column; }
   .cars-search-bar { min-width: 100%; }
   .cars-header { flex-direction: column; align-items: flex-start; }
-  /* All form grids become single-column */
+  
   .form-grid { grid-template-columns: 1fr; }
   .form-row  { grid-template-columns: 1fr; }
-  /* Stats: 1-col on small tablet */
+  
   .stats-grid { grid-template-columns: 1fr; }
   .od-header { flex-direction: column; gap: 14px; }
   .form-actions { flex-direction: column-reverse; }
   .form-section { padding: 18px; }
 }
 
-/* Mobile (≤ 767 px) — 1-col car grid on the cars listing page */
+
 @media (max-width: 767px) {
   .cars-grid { grid-template-columns: 1fr !important; }
 
-  /* Remove split gradient — looks bad at narrow widths */
+  
   .cars-header { background: #fff; }
 
-  /* Breadcrumb wraps on long paths instead of overflowing */
+  
   .breadcrumb { flex-wrap: wrap; }
 
-  /* 16 px minimum prevents iOS Safari from auto-zooming on input focus */
+  
   .form-control,
   .filter-select { font-size: 16px; }
 
-  /* Larger tap target for filter radio rows */
+  
   .filter-radio { min-height: 40px; padding: 6px 0; }
 
-  /* Search bar submit button — ensure 44 px minimum tap height */
+  
   .cars-search-bar button { min-height: 44px; }
 
-  /* Table action buttons — meet 44px minimum touch target */
+  
   .action-btn {
     padding: 9px 14px;
     font-size: 13px;
@@ -2444,7 +2428,7 @@ select.form-control { cursor: pointer; }
   }
 }
 
-/* Large mobile */
+
 @media (max-width: 640px) {
   .page-wrapper    { padding: 24px 16px; }
   .cars-header     { padding: 30px 16px; }
@@ -2466,7 +2450,7 @@ select.form-control { cursor: pointer; }
   .stat-info h3 { font-size: 22px; }
 }
 
-/* Small mobile */
+
 @media (max-width: 480px) {
   .page-wrapper    { padding: 16px; }
   .cars-header     { padding: 20px 16px; }
@@ -2482,7 +2466,7 @@ select.form-control { cursor: pointer; }
   .data-table th,
   .data-table td { padding: 10px 12px; font-size: 12px; }
 
-  /* Form action buttons go full-width and stack on tiny screens */
+  
   .form-actions {
     flex-direction: column-reverse;
     gap: 10px;
@@ -2494,14 +2478,14 @@ select.form-control { cursor: pointer; }
     text-align: center;
   }
 
-  /* Car list: single column on small mobile */
+  
   .cars-grid { grid-template-columns: 1fr !important; gap: 12px; }
   .cc-img { height: 130px; }
   .cc-price-amt { font-size: 11px; }
 }
 
 @media (max-width: 900px) {
-  /* Show the mobile filter trigger bar above the car grid */
+  
   .filter-mobile-bar {
     display: flex;
     align-items: center;
@@ -2513,7 +2497,7 @@ select.form-control { cursor: pointer; }
   .filter-open-btn   { display: inline-flex; }
   .filter-drawer-close { display: flex; }
 
-  /* Convert sidebar to fixed bottom-sheet drawer */
+  
   .filters-sidebar {
     position: fixed !important;
     bottom: 0;
@@ -2531,7 +2515,7 @@ select.form-control { cursor: pointer; }
     box-shadow: 0 -8px 40px rgba(0, 0, 0, 0.2);
     padding: 8px 20px 48px;
   }
-  /* Drag-handle indicator at top of drawer */
+  
   .filters-sidebar::before {
     content: '';
     display: block;
@@ -2547,12 +2531,7 @@ select.form-control { cursor: pointer; }
   .filters-sidebar .filter-group { margin-bottom: 16px; }
 }
 
-/* CONFLICT RESOLVED: this was a generic `body { font-family: "Poppins", sans-serif; background: #f5f5f5; }`
-   rule in car_details.css. base.css (loaded on every page) also defines `body`, and since this merged
-   file is now loaded on every page, a plain `body` rule here would overwrite the base styling
-   site-wide instead of only on the car-details page. Scoping it with :has(.car-details) — a class that
-   only exists on this page's markup — reproduces the exact original per-page result without renaming
-   any class or touching templates. */
+
 body:has(.car-details) {
   font-family: "Poppins", sans-serif;
   background: #f5f5f5;
@@ -2572,7 +2551,6 @@ body:has(.car-details) {
   padding-bottom: 80px;
   background: #fff;
 }
-
 
 
 .left-side {
@@ -2655,7 +2633,6 @@ body:has(.car-details) {
 }
 
 
-
 .right-side {
   flex: 1;
   min-width: 0;
@@ -2711,7 +2688,6 @@ body:has(.car-details) {
 }
 
 
-
 .rent-btn {
   width: 100%;
   max-width: 380px;
@@ -2731,7 +2707,6 @@ body:has(.car-details) {
 .rent-btn:hover {
   background: #4a2ee0;
 }
-
 
 
 .equipment-grid {
@@ -2756,7 +2731,6 @@ body:has(.car-details) {
   font-size: 16px;
   color: #555;
 }
-
 
 
 .other-cars {
@@ -2812,7 +2786,7 @@ body:has(.car-details) {
   color: #111;
   margin-bottom: 24px;
 }
-/* min(300px, 100%) prevents overflow on narrow viewports */
+
 .car-reviews-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(min(300px, 100%), 1fr));
@@ -2899,36 +2873,36 @@ body:has(.car-details) {
   .price small { font-size: 15px; }
   .main-image  { height: 175px; margin-bottom: 12px; }
 
-  /* Spec cards: ~25% smaller */
+  
   .spec-grid { gap: 8px; margin-bottom: 16px; }
   .spec-card { padding: 12px 10px; border-radius: 10px; }
   .spec-card img { width: 22px; height: 22px; margin-bottom: 8px; }
   .spec-card h4  { font-size: 12px; margin-bottom: 3px; }
   .spec-card p   { font-size: 11px; }
 
-  /* Section headings */
+  
   .right-side > h2,
   .equipment h2 { font-size: 16px; margin-bottom: 14px; }
 
-  /* Rent button */
+  
   .rent-btn { height: 50px; font-size: 16px; margin-bottom: 22px; }
 
-  /* Equipment */
+  
   .equipment-grid { row-gap: 12px; }
   .equipment-item { gap: 8px; }
   .equipment-item i    { font-size: 18px; }
   .equipment-item span { font-size: 12px; }
 
-  /* Other cars section */
+  
   .other-cars { padding-top: 24px; padding-bottom: 28px; }
   .other-cars-header { margin-bottom: 14px; }
   .other-cars-header h2 { font-size: 20px; }
 }
 
-/* Very small phones — shrink thumbnails so 3 fit per row */
+
 @media (max-width: 380px) {
   .thumb {
-    /* flex: 1 lets each thumb grow to fill equal thirds */
+    
     flex: 1 0 calc(33% - 8px);
     min-width: 72px;
     height: 56px;
@@ -2981,7 +2955,7 @@ body:has(.car-details) {
   max-width: 340px;
 }
 
-/* Avatar */
+
 .profile-avatar {
   width: 110px;
   height: 110px;
@@ -3006,7 +2980,7 @@ body:has(.car-details) {
   color: #b0b0b0;
 }
 
-/* Name & Join Date */
+
 .profile-name {
   font-size: 28px;
   font-weight: 700;
@@ -3021,7 +2995,7 @@ body:has(.car-details) {
   margin: 0 0 32px;
 }
 
-/* Verified Info */
+
 .verified-section {
   display: flex;
   flex-direction: column;
@@ -3154,7 +3128,6 @@ body:has(.car-details) {
 }
 
 
-
 .ep-wrapper {
   background: #f7f7f7;
   min-height: calc(100vh - 70px);
@@ -3241,7 +3214,7 @@ body:has(.car-details) {
   padding-top: 52px;
 }
 
-/* Avatar circle */
+
 .ep-avatar {
   width: 90px;
   height: 90px;
@@ -3326,7 +3299,7 @@ body:has(.car-details) {
   margin: 0 0 14px;
 }
 
-/* Form field group */
+
 .ep-field-group {
   display: flex;
   flex-direction: column;
@@ -3368,14 +3341,14 @@ body:has(.car-details) {
   resize: none;
 }
 
-/* Joined date */
+
 .ep-joined {
   font-size: 13px;
   color: #888;
   margin: 0 0 24px;
 }
 
-/* Verified Info block */
+
 .ep-verified-section {
   display: flex;
   flex-direction: column;
@@ -3549,7 +3522,7 @@ body:has(.car-details) {
 
 
 @media (max-width: 900px) {
-  /* User dashboard */
+  
   .dashboard-wrapper { padding: 32px 0 60px; }
 
   .dashboard-container {
@@ -3572,7 +3545,7 @@ body:has(.car-details) {
 
   .dashboard-right { padding-top: 0; }
 
-  /* Edit profile */
+  
   .ep-wrapper { padding: 32px 0 60px; }
 
   .ep-container {
@@ -3605,7 +3578,7 @@ body:has(.car-details) {
   .profile-name { font-size: 22px; }
   .ep-name      { font-size: 22px; }
 
-  /* Booking items in customer dashboard — stack on narrow screens */
+  
   .booking-item {
     flex-wrap: wrap;
     gap: 10px;
@@ -3632,22 +3605,15 @@ body:has(.car-details) {
   }
 }
 
-/* iOS zoom prevention — inputs below 16 px trigger auto-zoom in Safari */
+
 @media (max-width: 767px) {
   .ep-field-input,
   .ep-textarea { font-size: 16px; }
 
-  /* Touch-friendly ep-actions row — stack on very narrow screens */
+  
   .ep-actions { flex-wrap: wrap; gap: 8px; }
 }
 
-/* DUPLICATE REMOVED: sign.css repeated `* { margin:0; padding:0; box-sizing:border-box; }`,
-   which is already fully covered by the `*` rule at the top of this file (from base.css) —
-   removing it changes nothing visually. */
-
-/* CONFLICT RESOLVED: this was a generic `body { font-family:"Poppins",sans-serif; background:#FFFFFF; }`
-   rule (immediately overridden further down by another `body{ background:#f5f9ff }` rule — see below).
-   Scoped with :has() further down so it only affects the auth pages. */
 
 .signin-page{
     width: 100%;
@@ -3743,7 +3709,6 @@ body:has(.car-details) {
     color: #777;
     margin-bottom: 35px;
 }
-
 
 
 .input-box{
@@ -3876,7 +3841,6 @@ body:has(.car-details) {
 }
 
 
-
 .google-btn{
     width: 100%;
     height: 58px;
@@ -3908,7 +3872,6 @@ body:has(.car-details) {
 }
 
 
-
 .signup-text{
     text-align: center;
 
@@ -3923,7 +3886,6 @@ body:has(.car-details) {
     color: #1572D3;
     font-weight: 600;
 }
-
 
 
 @media(max-width: 950px){
@@ -3951,19 +3913,11 @@ body:has(.car-details) {
 }
 
 
-/* CONFLICT RESOLVED: sign.css originally had two `body{...}` rules (the second one, here, won the
-   cascade and set the real auth-page background to #f5f9ff). Because base.css's `body` rule is now
-   loaded on every page via this single merged stylesheet, repeating a plain `body` selector here
-   would override that base rule site-wide rather than only on the sign-in/sign-up pages. Scoping it
-   with :has() — using the existing `.signin-page` / `.signup-page` wrapper classes already present in
-   the markup — reproduces the exact original look on the auth pages without affecting any other page,
-   without renaming any class, and without touching the templates. */
 body:has(.signin-page),
 body:has(.signup-page){
     font-family: "Poppins", sans-serif;
     background: #f5f9ff;
 }
-
 
 
 .signup-page{
@@ -4043,7 +3997,6 @@ body:has(.signup-page){
 }
 
 
-
 .right{
     width: 50%;
 
@@ -4080,7 +4033,6 @@ body:has(.signup-page){
 
     margin-bottom: 35px;
 }
-
 
 
 .input-box{
@@ -4128,7 +4080,6 @@ body:has(.signup-page){
 }
 
 
-
 .terms{
     display: flex;
     align-items: center;
@@ -4149,11 +4100,9 @@ body:has(.signup-page){
 }
 
 
-
 .signup-btn:hover{
     background: #0f5fb5;
 }
-
 
 
 .divider{
@@ -4188,7 +4137,6 @@ body:has(.signup-page){
 }
 
 
-
 .google-btn{
     width: 100%;
     height: 58px;
@@ -4220,7 +4168,6 @@ body:has(.signup-page){
 }
 
 
-
 .signin-text{
     text-align: center;
 
@@ -4235,7 +4182,6 @@ body:has(.signup-page){
     color: #1572D3;
     font-weight: 600;
 }
-
 
 
 @media(max-width: 950px){
@@ -4273,10 +4219,10 @@ body:has(.signup-page){
 }
 
 @media (max-width: 767px) {
-  /* Reduce image-panel height so form reaches screen faster */
+  
   .left { min-height: 260px; }
 
-  /* Touch-friendly: eliminate double-tap delay */
+  
   .signin-btn,
   .signup-btn,
   .google-btn { touch-action: manipulation; }
@@ -4307,7 +4253,7 @@ body:has(.signup-page){
   padding-bottom: 80px;
 }
 
-/* Header */
+
 .testi-header {
   text-align: center;
   position: relative;
@@ -4345,7 +4291,7 @@ body:has(.signup-page){
   margin: 0 0 32px;
 }
 
-/* Stats row */
+
 .testi-stats {
   display: flex;
   justify-content: center;
@@ -4394,7 +4340,7 @@ body:has(.signup-page){
   flex-shrink: 0;
 }
 
-/* Swiper container */
+
 .testi-swiper-outer {
   overflow: hidden;
   position: relative;
@@ -4417,7 +4363,7 @@ body:has(.signup-page){
   transform: scale(1);
 }
 
-/* Card */
+
 .testi-card {
   display: flex;
   flex-direction: column;
@@ -4432,7 +4378,7 @@ body:has(.signup-page){
   box-shadow: 0 16px 60px rgba(21, 114, 211, 0.14);
 }
 
-/* Card top: rating + quote icon */
+
 .testi-card__top {
   display: flex;
   align-items: flex-start;
@@ -4471,7 +4417,7 @@ body:has(.signup-page){
   flex-shrink: 0;
 }
 
-/* Review text */
+
 .testi-text {
   font-size: 14px;
   color: #4b5563;
@@ -4480,7 +4426,7 @@ body:has(.signup-page){
   flex: 1;
 }
 
-/* Badges */
+
 .testi-card__badges {
   display: flex;
   flex-wrap: wrap;
@@ -4511,7 +4457,7 @@ body:has(.signup-page){
   border: 1px solid rgba(5, 150, 105, 0.25);
 }
 
-/* Card footer */
+
 .testi-card__footer {
   display: flex;
   align-items: center;
@@ -4574,7 +4520,7 @@ body:has(.signup-page){
   flex-shrink: 0;
 }
 
-/* Pagination + Navigation */
+
 .testi-pagination-wrap {
   display: flex;
   justify-content: space-between;
@@ -4623,9 +4569,7 @@ body:has(.signup-page){
   align-items: center;
   justify-content: center;
   gap: 6px;
-  /* Swiper injects position:absolute + left:0 + width:100% onto this element,
-     which pulls it out of the flex row and left-aligns the dots.
-     These overrides restore it as a normal flex child. */
+  
   position: static !important;
   flex: 1;
   bottom: auto !important;
@@ -4692,7 +4636,7 @@ body:has(.signup-page){
 @media (max-width: 480px) {
   .testimonials { padding-top: 40px; padding-bottom: 40px; }
 
-  /* Header: pull in from full-width edges */
+  
   .testi-header { padding: 0 16px; margin-bottom: 24px; }
   .testi-heading { font-size: 19px; }
   .testi-subtext { font-size: 12px; margin-bottom: 16px; }
@@ -4700,10 +4644,10 @@ body:has(.signup-page){
   .testi-stat__lbl { font-size: 11px; }
   .testi-stat-sep { height: 28px; }
 
-  /* Swiper: constrain to viewport-40px so card isn't edge-to-edge */
+  
   .testi-swiper-outer { margin: 0 20px; }
 
-  /* Compact card */
+  
   .testi-card { padding: 14px 12px 10px; border-radius: 14px; }
   .testi-card__top { margin-bottom: 10px; }
   .testi-rating__num { font-size: 24px; }
@@ -5079,7 +5023,7 @@ body:has(.signup-page){
   border: 1.5px solid #e8ecf0;
   border-radius: 10px;
   padding: 0 11px;
-  font-size: 16px; /* 16px prevents iOS Safari zoom on focus */
+  font-size: 16px; 
   color: #222;
   background: #f8fafc;
   outline: none;
@@ -5320,8 +5264,6 @@ body:has(.reg-choose-page) {
 }
 
 
-
-/* Keep the right panel scrollable for long forms */
 .auth-reg-right {
   overflow-y: auto;
   max-height: 100vh;
@@ -5330,27 +5272,27 @@ body:has(.reg-choose-page) {
   padding-bottom: 40px;
 }
 
-/* Slightly wider form card */
+
 .auth-reg-form {
   max-width: 560px !important;
 }
 
-/* Left panel: taller min-height so it covers the long form */
+
 .auth-reg-left {
   min-height: 100vh;
   position: sticky;
   top: 0;
 }
 
-/* Renter left panel: green-toned overlay */
+
 .auth-reg-left--renter .overlay {
   background: linear-gradient(rgba(5,77,50,.72), rgba(2,44,28,.65));
 }
 
-/* Content tweaks for auth pages */
+
 .auth-reg-content .logo i { color: #fff; }
 
-/* Trust badges under the headline */
+
 .auth-trust-badges {
   display: flex;
   flex-direction: column;
@@ -5372,7 +5314,7 @@ body:has(.reg-choose-page) {
 }
 .auth-trust-badge i { font-size: 20px; flex-shrink: 0; }
 
-/* Back link */
+
 .auth-reg-back {
   margin-bottom: 20px;
 }
@@ -5394,7 +5336,7 @@ body:has(.reg-choose-page) {
   gap: 16px;
 }
 
-/* Section divider with icon */
+
 .form-section-divider {
   display: flex;
   align-items: center;
@@ -5414,7 +5356,7 @@ body:has(.reg-choose-page) {
 }
 .form-section-divider i { font-size: 18px; flex-shrink: 0; }
 
-/* Tall input-field for textarea */
+
 .input-field--tall {
   height: auto !important;
   align-items: flex-start;
@@ -5434,7 +5376,7 @@ body:has(.reg-choose-page) {
   line-height: 1.55;
 }
 
-/* Error state */
+
 .input-field--error {
   border-color: #ef4444 !important;
   background: #fff5f5;
@@ -5552,10 +5494,7 @@ body:has(.reg-choose-page) {
   .auth-reg-form { padding: 28px 20px !important; }
 }
 
-/* ══════════════════════════════════════════════════════════════
-   DATA TABLE → RESPONSIVE CARDS  (≤ 640 px)
-   Requires data-label="…" on every <td> in .data-table
-══════════════════════════════════════════════════════════════ */
+
 @media (max-width: 640px) {
 
   .table-wrapper {
@@ -5615,10 +5554,9 @@ body:has(.reg-choose-page) {
 }
 
 
-/* Renter dashboard: pending confirmation cards wrap on small screens */
 @media (max-width: 480px) {
   .od-section[style*="border:2px solid #fde68a"] > div { margin-top: 12px; }
-  /* KYC banner flex column on tiny screens */
+  
   .od-header > div[style*="background:#fffbeb"],
   .od-header > div[style*="padding:10px 18px"] {
     width: 100%;
@@ -5626,37 +5564,36 @@ body:has(.reg-choose-page) {
   }
 }
 
-/* Booking item right column: prevent overflow on very small screens */
+
 @media (max-width: 380px) {
   .booking-item { flex-wrap: wrap; }
   .booking-item-right { text-align: left; flex-shrink: 1; width: 100%; }
 }
 
-/* Home page: experience content fixed width already has responsive rule at 900px,
-   ensure it also resets at 640px */
+
 @media (max-width: 640px) {
   .exp-content { width: 100% !important; }
 }
 
-/* Payment methods grid: stack on small mobile */
+
 @media (max-width: 480px) {
   .payment-methods { flex-direction: column; }
   .payment-method-option { flex: none; width: 100%; }
 }
 
-/* Car details: spec-grid 2-col on mobile instead of 3-col */
+
 @media (max-width: 480px) {
   .spec-grid { grid-template-columns: repeat(2, 1fr); gap: 10px; }
 }
 
-/* Renter confirm page: pending card info wrap on mobile */
+
 @media (max-width: 480px) {
   .od-section div[style*="display:flex;align-items:flex-start;gap:16px"] {
     flex-wrap: wrap;
   }
 }
 
-/* Ensure no element causes horizontal overflow at any breakpoint */
+
 @media (max-width: 767px) {
   img { max-width: 100%; }
   .od-section { overflow: hidden; }

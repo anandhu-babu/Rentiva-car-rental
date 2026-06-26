@@ -1,4 +1,4 @@
-{% extends 'admin_panel/base.html' %}
+﻿{% extends 'admin_panel/base.html' %}
 {% block title %}Analytics Dashboard — Rentiva Admin{% endblock %}
 {% block breadcrumb %}Analytics Dashboard{% endblock %}
 
@@ -19,9 +19,7 @@
   </div>
 </div>
 
-<!-- ══════════════════════════════════════════════════════════
-     ROW 1 — STATS (4 cards)
-══════════════════════════════════════════════════════════ -->
+
 <div class="stats-grid" style="grid-template-columns:repeat(4,1fr);">
 
   <div class="stat-card sc-blue">
@@ -62,9 +60,7 @@
 
 </div>
 
-<!-- ══════════════════════════════════════════════════════════
-     ROW 2 — STATS (4 more cards)
-══════════════════════════════════════════════════════════ -->
+
 <div class="stats-grid" style="grid-template-columns:repeat(4,1fr);">
 
   <div class="stat-card sc-yellow">
@@ -105,12 +101,10 @@
 
 </div>
 
-<!-- ══════════════════════════════════════════════════════════
-     ROW 3 — REVENUE LINE CHART + BOOKING BAR CHART
-══════════════════════════════════════════════════════════ -->
+
 <div class="dash-row dash-row-82 mb-4">
 
-  <!-- Revenue Line Chart -->
+  
   <div class="admin-card">
     <div class="card-head">
       <div>
@@ -126,7 +120,7 @@
     </div>
   </div>
 
-  <!-- Booking Status Bar Chart -->
+  
   <div class="admin-card">
     <div class="card-head">
       <div class="card-head-title"><i class="ri-bar-chart-grouped-line"></i> Booking Status</div>
@@ -140,12 +134,10 @@
 
 </div>
 
-<!-- ══════════════════════════════════════════════════════════
-     ROW 4 — VEHICLE DOUGHNUT + PAYMENT PIE + LOCATION
-══════════════════════════════════════════════════════════ -->
+
 <div class="dash-row dash-row-333 mb-4">
 
-  <!-- Vehicle Breakdown -->
+  
   <div class="admin-card">
     <div class="card-head">
       <div class="card-head-title"><i class="ri-donut-chart-line"></i> Vehicle Breakdown</div>
@@ -157,7 +149,7 @@
     </div>
   </div>
 
-  <!-- Payment Distribution -->
+  
   <div class="admin-card">
     <div class="card-head">
       <div class="card-head-title"><i class="ri-pie-chart-2-line"></i> Payment Status</div>
@@ -169,7 +161,7 @@
     </div>
   </div>
 
-  <!-- Location Analytics -->
+  
   <div class="admin-card">
     <div class="card-head">
       <div class="card-head-title"><i class="ri-map-pin-line"></i> Top Booking Locations</div>
@@ -197,12 +189,10 @@
 
 </div>
 
-<!-- ══════════════════════════════════════════════════════════
-     ROW 5 — PENDING VERIFICATIONS + ACTIVITY FEED
-══════════════════════════════════════════════════════════ -->
+
 <div class="dash-row dash-row-55 mb-4">
 
-  <!-- Pending Verifications Widget -->
+  
   <div class="admin-card">
     <div class="card-head">
       <div>
@@ -266,7 +256,7 @@
     {% endif %}
   </div>
 
-  <!-- Live Activity Feed -->
+  
   <div class="admin-card">
     <div class="card-head">
       <div class="card-head-title"><i class="ri-pulse-line"></i> Live Activity Feed</div>
@@ -312,9 +302,7 @@
 
 </div>
 
-<!-- ══════════════════════════════════════════════════════════
-     ROW 6 — RECENT BOOKINGS TABLE
-══════════════════════════════════════════════════════════ -->
+
 <div class="admin-card mb-4">
   <div class="card-head">
     <div class="card-head-title"><i class="ri-calendar-line"></i> Recent Bookings</div>
@@ -370,12 +358,10 @@
   </div>
 </div>
 
-<!-- ══════════════════════════════════════════════════════════
-     ROW 7 — VEHICLE APPROVAL PANEL + OPEN COMPLAINTS
-══════════════════════════════════════════════════════════ -->
+
 <div class="dash-row dash-row-55">
 
-  <!-- Vehicle Approval Panel -->
+  
   <div class="admin-card">
     <div class="card-head">
       <div class="card-head-title"><i class="ri-car-fill"></i> Pending Vehicle Approval</div>
@@ -433,7 +419,7 @@
     </div>
   </div>
 
-  <!-- Open Complaints Panel -->
+  
   <div class="admin-card">
     <div class="card-head">
       <div class="card-head-title"><i class="ri-error-warning-line"></i> Open Complaints</div>

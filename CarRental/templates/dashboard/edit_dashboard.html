@@ -1,4 +1,4 @@
-{% extends 'base.html' %}
+﻿{% extends 'base.html' %}
 {% load static %}
 
 {% block content %}
@@ -7,7 +7,7 @@
   <form method="post" enctype="multipart/form-data" class="ep-container">
     {% csrf_token %}
 
-    <!-- Top-right action buttons -->
+    
     <div class="ep-actions">
       <button type="submit" class="ep-save-btn" id="ep-save-btn">Save profile</button>
       <button type="button" class="ep-cancel-btn" id="ep-cancel-btn">Cancel</button>
@@ -15,7 +15,7 @@
 
     <div class="ep-left">
 
-      <!-- Avatar -->
+      
       <div class="ep-avatar">
         {% if user.profile.profile %}
           <img src="{{ user.profile.profile.url }}" alt="{{ user.username }}" id="avatar-preview">
@@ -36,10 +36,10 @@
       {% endif %}
       <p class="ep-photo-hint" id="ep-photo-hint">Add a face to the name. It'll help other hosts and guests recognize you at the beginning of a trip.</p>
 
-      <!-- Name (read-only display) -->
+      
       <h1 class="ep-name">{{ user.first_name|default:user.username }}</h1>
 
-      <!-- Lives -->
+      
       <div class="ep-field-group">
         <label class="ep-field-label" for="id_location">Lives</label>
         <input class="ep-field-input" type="text" id="id_location" name="location"
@@ -48,7 +48,7 @@
 
       <p class="ep-joined">Joined {{ user.date_joined|date:"F Y" }}</p>
 
-      <!-- Verified Info -->
+      
       <div class="ep-verified-section">
         <p class="ep-section-label">Verified Info</p>
 
@@ -83,21 +83,21 @@
         </p>
       </div>
 
-      <!-- Languages -->
+      
       <div class="ep-field-group">
         <label class="ep-field-label" for="id_languages">Languages</label>
         <input class="ep-field-input" type="text" id="id_languages" name="languages"
                value="{{ user.profile.languages|default:'' }}" placeholder="">
       </div>
 
-      <!-- Works -->
+      
       <div class="ep-field-group">
         <label class="ep-field-label" for="id_work">Works</label>
         <input class="ep-field-input" type="text" id="id_work" name="work"
                value="{{ user.profile.work|default:'' }}" placeholder="">
       </div>
 
-      <!-- School -->
+      
       <div class="ep-field-group">
         <label class="ep-field-label" for="id_school">School</label>
         <input class="ep-field-input" type="text" id="id_school" name="school"
@@ -108,7 +108,7 @@
 
     <div class="ep-right">
 
-      <!-- About section -->
+      
       <div class="ep-about-section">
         <p class="ep-section-label">About {{ user.first_name|default:user.username }}</p>
         <p class="ep-about-hint">
@@ -120,7 +120,7 @@
                   placeholder="">{{ user.profile.about|default:'' }}</textarea>
       </div>
 
-      <!-- Reviews -->
+      
       <div class="ep-reviews-section">
         <p class="ep-section-label">Reviews From Hosts</p>
 

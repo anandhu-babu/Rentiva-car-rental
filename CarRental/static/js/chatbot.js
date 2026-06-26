@@ -54,7 +54,6 @@ function scrollToBottom() {
     });
 }
 
-// role: "user" | "bot"  |  html: true renders innerHTML (bot only)
 function appendMessage(role, content, html = false) {
     const div = document.createElement("div");
     div.classList.add(role === "user" ? "user-message" : "bot-message");

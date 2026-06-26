@@ -2,7 +2,6 @@ document.addEventListener('DOMContentLoaded', function () {
 
   const testimonialsSwiper = new Swiper('.testimonials-swiper', {
 
-    /* Core layout — Swiper controls slide widths via slidesPerView */
     slidesPerView: 1,
     centeredSlides: true,
     loop: true,
@@ -27,7 +26,6 @@ document.addEventListener('DOMContentLoaded', function () {
       pauseOnMouseEnter: true,
     },
 
-    /* Keyboard navigation (arrow keys when section is in view) */
     keyboard: {
       enabled: true,
       onlyInViewport: true,
@@ -39,10 +37,6 @@ document.addEventListener('DOMContentLoaded', function () {
       nextSlideMessage: 'Next testimonial',
     },
 
-    /* Responsive breakpoints:
-       Mobile  (<640px)  → 1 card
-       Tablet  (640px+)  → 2 cards
-       Desktop (1024px+) → 3 cards, centered active */
     breakpoints: {
       640: {
         slidesPerView: 2,

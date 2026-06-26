@@ -1,4 +1,4 @@
-{% extends 'admin_panel/base.html' %}
+﻿{% extends 'admin_panel/base.html' %}
 {% block title %}Vehicle Docs — Rentiva Admin{% endblock %}
 {% block breadcrumb %}Vehicle Document Verification{% endblock %}
 
@@ -54,7 +54,7 @@
       </div>
     </div>
 
-    <!-- Document Links -->
+    
     <div style="display:flex;flex-direction:column;gap:7px;">
       {% if car.rc_book %}
       <a href="{{ car.rc_book.url }}" target="_blank" class="vc-doc-link">

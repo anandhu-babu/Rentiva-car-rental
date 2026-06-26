@@ -1,4 +1,4 @@
-{% extends 'base.html' %}
+﻿{% extends 'base.html' %}
 {% load static %}
 
 {% block content %}
@@ -17,8 +17,6 @@
     <div class="left-side-main">
       <h1>{{ car.car_name }}</h1>
 
-
-      <!-- Server-side pricing data — read by JS, keeps script tag Django-free -->
       <div id="plan-data"
            data-daily="{{ price_daily }}"
            data-weekly="{{ price_weekly }}"
@@ -145,7 +143,7 @@
 
       </div>
 
-      <!-- Approximate area map (zoomed out, no exact pin) -->
+      
       {% if car.pickup_latitude and car.pickup_longitude %}
       <div style="position:relative;margin-bottom:12px;">
         <div id="details-map" style="height:180px;border-radius:10px;overflow:hidden;border:1.5px solid #e5e7eb;filter:blur(1.5px);pointer-events:none;"></div>

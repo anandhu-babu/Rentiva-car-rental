@@ -1,4 +1,4 @@
-{% extends 'admin_panel/base.html' %}
+﻿{% extends 'admin_panel/base.html' %}
 {% block title %}Notifications — Rentiva Admin{% endblock %}
 {% block breadcrumb %}Notifications{% endblock %}
 
@@ -13,7 +13,7 @@
   <div class="notif-list">
     {% for n in notifications %}
     <div class="notif-item {% if not n.is_read %}unread{% endif %}">
-      <!-- Icon by type -->
+      
       {% if n.notification_type == 'new_customer' %}
       <div class="notif-icon ni-blue"><i class="ri-user-add-line"></i></div>
       {% elif n.notification_type == 'new_renter' %}

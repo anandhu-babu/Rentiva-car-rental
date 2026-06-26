@@ -3,7 +3,6 @@ from django.contrib.auth.models import User
 
 
 class AdminAuthenticationMiddleware:
-    # Paths under /admin-panel/ that do NOT require an active admin session
     EXEMPT = {'/admin-panel/login/'}
 
     def __init__(self, get_response):
@@ -20,7 +19,6 @@ class AdminAuthenticationMiddleware:
             try:
                 request.admin_user = User.objects.get(pk=admin_id, is_staff=True)
             except User.DoesNotExist:
-                # Stale or tampered session key — force re-login
                 request.session.pop('admin_user_id', None)
                 return redirect('/admin-panel/login/')
 

@@ -55,7 +55,6 @@ class Profile(models.Model):
             self.role = 'renter'
         if self.role == 'renter':
             self.is_renter = True
-        # Staff accounts are auto-approved so they don't appear in the KYC queue
         if self.user_id and self.user.is_staff:
             self.verification_status = 'approved'
         super().save(*args, **kwargs)

@@ -38,7 +38,6 @@ from CarRental.admin_views import (
 urlpatterns = [
     path('admin/', admin.site.urls),
 
-    # Public pages
     path('', home),
     path('register/', register),
     path('register/customer/', customer_register),
@@ -46,24 +45,20 @@ urlpatterns = [
     path('login/', login_view),
     path('logout/', logout_view),
 
-    # Dashboards & profile
     path('dashboard/customer/', customer_dashboard),
     path('dashboard/renter/', renter_dashboard),
     path('profile/', edit_profile),
     path('edit-profile/', edit_profile),
     path('remove-profile-photo/', remove_profile_photo),
 
-    # Car listings
     path('cars/', car_list),
     path('car/list/', car_list),
     path('cars/<int:car_id>/', car_details),
 
-    # Car management (renter only)
     path('add-car/', add_car),
     path('my-cars/edit/<int:car_id>/', edit_car),
     path('my-cars/delete/<int:car_id>/', delete_car),
 
-    # Booking flow
     path('booking/<int:car_id>/', booking),
     path('booking/confirmation/<int:booking_id>/', booking_confirmation),
     path('booking/cancel/<int:booking_id>/', cancel_booking),
@@ -73,10 +68,8 @@ urlpatterns = [
     path('booking/<int:booking_id>/renter-action/', renter_confirm_booking),
     path('payment/<int:booking_id>/', payment),
 
-    # Chatbot
     path('chatbot/query/', chatbot_query),
 
-    # REST API
     path('api/cars/', api_car_list),
     path('api/cars/<int:car_id>/', api_car_details),
     path('api/cars/search/', api_search_cars),
@@ -84,7 +77,6 @@ urlpatterns = [
     path('api/booking/<int:car_id>/', api_booking),
     path('api/my-bookings/', api_my_bookings),
 
-    # Admin panel
     path('admin-panel/login/', admin_login),
     path('admin-panel/logout/', admin_logout),
     path('admin-panel/', admin_dashboard),

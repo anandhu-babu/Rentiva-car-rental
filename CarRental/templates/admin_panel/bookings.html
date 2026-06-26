@@ -1,4 +1,4 @@
-{% extends 'admin_panel/base.html' %}
+﻿{% extends 'admin_panel/base.html' %}
 {% block title %}Bookings — Rentiva Admin{% endblock %}
 {% block breadcrumb %}Booking Management{% endblock %}
 
@@ -8,7 +8,7 @@
   <p class="page-sub">{{ bookings|length }} booking record{{ bookings|length|pluralize }} found.</p>
 </div>
 
-<!-- Status Tabs -->
+
 <div class="status-tabs">
   <a href="?status=" class="stab {% if not status_filter %}active{% endif %}">All</a>
   <a href="?status=pending"   class="stab {% if status_filter == 'pending'   %}active{% endif %}">Pending</a>

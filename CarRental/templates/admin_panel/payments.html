@@ -1,4 +1,4 @@
-{% extends 'admin_panel/base.html' %}
+﻿{% extends 'admin_panel/base.html' %}
 {% block title %}Payments — Rentiva Admin{% endblock %}
 {% block breadcrumb %}Payment Management{% endblock %}
 
@@ -8,7 +8,7 @@
   <p class="page-sub">Monitor and manage all platform transactions.</p>
 </div>
 
-<!-- Summary Cards -->
+
 <div class="row g-3 mb-4">
   <div class="col-md-3">
     <div class="stat-card" style="padding:16px;">
@@ -30,7 +30,7 @@
   </div>
 </div>
 
-<!-- Filters -->
+
 <div class="status-tabs">
   <a href="?status="          class="stab {% if not status_filter %}active{% endif %}">All</a>
   <a href="?status=paid"      class="stab {% if status_filter == 'paid'     %}active{% endif %}">Paid</a>

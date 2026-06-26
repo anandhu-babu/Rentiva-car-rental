@@ -1,4 +1,4 @@
-{% extends 'base.html' %}
+﻿{% extends 'base.html' %}
 {% load static %}
 
 {% block content %}
@@ -121,7 +121,7 @@
             {% for booking in bookings %}
 
             {% if booking.booking_status == 'confirmed' or booking.booking_status == 'approved' or booking.booking_status == 'completed' %}
-            <!-- Confirmed / completed: full pickup details revealed -->
+            
             <div style="border:2px solid #86efac;border-radius:14px;overflow:hidden;background:#fff;">
               <div style="background:#f0fdf4;border-bottom:1px solid #bbf7d0;padding:10px 16px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;">
                 <div style="display:flex;align-items:center;gap:8px;">
@@ -215,7 +215,7 @@
             </div>
 
             {% elif booking.booking_status == 'awaiting_renter_confirmation' %}
-            <!-- Awaiting renter confirmation: location hidden until approved -->
+            
             <div style="border:2px solid #fde68a;border-radius:14px;overflow:hidden;background:#fff;">
               <div style="background:#fffbeb;border-bottom:1px solid #fde68a;padding:10px 16px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;">
                 <div style="display:flex;align-items:center;gap:8px;">
